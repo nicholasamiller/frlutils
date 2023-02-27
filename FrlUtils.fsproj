@@ -3,9 +3,9 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
 		  <PackageId>Shoshin.FrlUtils</PackageId>
-		  <Version>1.0.0</Version>
+		  <Version>1.0.1</Version>
 		  <Authors>Nick Miller</Authors>
-		  <Description>A description of my package</Description>
+		  <Description>Utilities for scraping and parsing data from Federal Register of Legislation (Australia), in F# using RoP.</Description>
 		  <RepositoryUrl>http://githum.com/nicholasamiller/frlutils</RepositoryUrl>
   </PropertyGroup>
 
