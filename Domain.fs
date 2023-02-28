@@ -1,4 +1,4 @@
-﻿namespace Dajio
+﻿namespace FrlUtils
 
 open NodaTime
 open Newtonsoft.Json.Linq

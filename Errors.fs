@@ -1,6 +1,6 @@
 ﻿namespace FrlUtils
 
-open Dajio.Domain
+open Domain
 open System.Net
 open HtmlAgilityPack
 open Shoshin.HtmlUtils.Errors

@@ -10,6 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="Domain.fs" />
     <Compile Include="Errors.fs" />
     <Compile Include="EmailParsing.fs" />
     <Compile Include="DocParsing.fs" />
@@ -25,10 +26,6 @@
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="NodaTime" Version="3.1.1" />
     <PackageReference Include="Shoshin.HtmlUtils" Version="0.1.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="FrlUtils.Domain\Dajio.Domain.fsproj" />
   </ItemGroup>
 
   <ItemGroup>

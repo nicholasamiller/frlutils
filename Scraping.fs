@@ -11,7 +11,7 @@ open NodaTime.Text
 open System.Text.RegularExpressions
 open System.Net
 open System
-open Dajio.Domain
+open Domain
 open Errors
 open FsToolkit
 

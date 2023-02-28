@@ -7,7 +7,7 @@ open DocumentFormat.OpenXml.Packaging
 open System.Collections.Generic
 open System.Linq
 open System.Text
-open Dajio.Domain
+open Domain
 open Errors
 
 
