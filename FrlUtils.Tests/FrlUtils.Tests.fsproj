@@ -9,6 +9,10 @@
 
   <ItemGroup>
     <Compile Include="Tests.fs" />
+    <None Include="TestData\treeParseTest.docx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="TestData\F2023L01180.docx" />
     <None Include="TestData\F2022C00414.docx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

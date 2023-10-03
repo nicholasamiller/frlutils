@@ -5,6 +5,9 @@ open FrlUtils.WebScraping
 open FrlUtils.DocParsing
 open FrlUtils.EmailParsing
 open System.IO
+open System.Collections.Generic
+open DocumentFormat.OpenXml.Wordprocessing
+open DocumentFormat.OpenXml
 
 
 [<TestClass>]
@@ -93,5 +96,30 @@ type TestClass () =
         | Ok(r) -> Assert.IsNotNull r
         | _ -> Assert.Fail()
 
-  //  [<TestMethod>]
+    [<TestMethod>]
+    member this.ParseDocxToTree() =
+        let testDoc = System.IO.File.ReadAllBytes("TestData/treeParseTest.docx")
+        let bodyParts = getBodyParts testDoc
+        let testStack = new Stack<DocNode>();
+
+        let isParagraphNode (e : OpenXmlElement) =
+            match e with
+            | :? Paragraph  -> true
+            | _ -> false
+        
+        let testDocNodes = bodyParts |> Seq.filter (fun e -> isParagraphNode e)
+        
+        testDocNodes |> Seq.iter (fun e -> testStack.Push {Element = e; Children = []})
+        Assert.IsTrue (testStack.Count = 8)
+        
+        
+        let testNode = testStack.Peek();
+        
+        let testNodeLevel = getNodeLevel testNode
+        Assert.IsTrue (testNodeLevel.Value = 3)
+        unwindToNextAncestor testNode testStack
+        Assert.IsTrue (testStack.Count = 7)
+       
+      
+        
    
