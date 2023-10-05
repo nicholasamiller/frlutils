@@ -13,6 +13,7 @@ module EmailParsing =
         RegisterId : string;
         UpdateType : FrlUpdateType;
         Url : Uri;
+        Date: NodaTime.LocalDate;
     }
 
     let parseUpdateType (updateDescription: string) =
@@ -21,6 +22,18 @@ module EmailParsing =
         | d when d.Contains("repealed") -> FrlUpdateType.Repeal
         | d when d.Contains("Compilation") -> FrlUpdateType.Compilation
         | _ -> FrlUpdateType.Enactment
+    
+    let dateRegex = new Regex(@"\d{1,2}\/\d{1,2}\/\d{4}");
+    let parseDate(updateDescription: string) = 
+        let pattern = NodaTime.Text.LocalDatePattern.CreateWithInvariantCulture("d/M/yyyy")
+        let dateString = dateRegex.Match(updateDescription)
+        match dateString.Success with
+        | true ->
+            let parseResult = pattern.Parse(dateString.Value)
+            match parseResult.Success with
+            | true -> parseResult.Value
+            | false -> failwith ( "Could not parse date from line: " + updateDescription)
+        | false ->  failwith ("Could not parse date from line: " + updateDescription)
         
 
 // parse to text 
@@ -54,26 +67,31 @@ module EmailParsing =
 
     let parseRegisterId (urlLine : string) = (new Uri(urlLine)).Segments.Last()
 
-    let parseLineItemGroup (g : string list) =
-        match g with
-        | c when c.Length = 3 -> 
-            {
-                InstrumentName = g[0];
-                RegisterId = parseRegisterId(g[2]);
-                UpdateType = parseUpdateType(g[1]);
-                Url = new Uri(g[2]) 
-            }
-        | c when c.Length = 4-> 
-            {
-                InstrumentName = g[0];
-                RegisterId = parseRegisterId(g[3]);
-                UpdateType = parseUpdateType(g[2]);
-                Url = new Uri(g[3])  
-            }
-        | _ -> failwith (sprintf "Could not parse line item group: %s " (g.ToString()))
+    let parseLineItemGroup (g : string list) : Result<FrlEmailUpdateItem,string> =
+       try
+            match g with
+            | c when c.Length = 3 -> 
+                Ok({
+                    InstrumentName = g[0];
+                    RegisterId = parseRegisterId(g[2]);
+                    UpdateType = parseUpdateType(g[1]);
+                     Url = new Uri(g[2]);
+                    Date = parseDate(g[1]);
+                })
+            | c when c.Length = 4-> 
+                Ok({
+                    InstrumentName = g[0];
+                    RegisterId = parseRegisterId(g[3]);
+                    UpdateType = parseUpdateType(g[2]);
+                    Url = new Uri(g[3]);
+                    Date = parseDate(g[2]);
+                })
+            | _ -> failwith (sprintf "Could not parse line item group: %s " (g.ToString()))
+       with
+       | _ as ex -> Error("Could not parse: " + System.Environment.NewLine + g.ToString() + System.Environment.NewLine + ex.Message)
 
         
-    let ParseEmailUpdate(bodyText: string) = getItemLineGroups(bodyText) |> List.map (fun g -> parseLineItemGroup g)
+    let ParseEmailUpdate(bodyText: string) : List<Result<FrlEmailUpdateItem,string>> = getItemLineGroups(bodyText) |> List.map (fun g -> parseLineItemGroup g)
         
 
     

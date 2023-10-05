@@ -17,8 +17,15 @@ module DocParsing =
   
     type DocNode = {
         Element: OpenXmlElement;
-        Children: DocNode list;
-    }
+        mutable Children: DocNode list;
+    } with 
+        member this.PrettyPrint() =
+            let rec recurse (node : DocNode) (indent : int) =
+                let indentString = String.replicate indent " "
+                let elementString = node.Element.InnerText 
+                let childrenString = node.Children |> List.map (fun i -> recurse i (indent + 2)) |> String.concat ""
+                indentString + elementString + System.Environment.NewLine + childrenString
+            recurse this 0
    
     let getWordDoc (ms : MemoryStream) =
         WordprocessingDocument.Open(ms,false)
@@ -28,8 +35,7 @@ module DocParsing =
         let wd = getWordDoc ms
         wd.MainDocumentPart.Document.Body.OfType<OpenXmlElement>()
                 
-    let titleStyle = "Plain header"
-    let sequenceOfStyleLevels = ["Plain header"; "LV1"; "LV2"; "LV3"; "LV4"; "LV5"; "LV6"; "LV7"; "LV8"; "LV9"; "LV10"]
+    let sequenceOfStyleLevels = ["Plainheader"; "LV1"; "LV2"; "LV3"; "LV4"; "LV5"; "LV6"; "LV7"; "LV8"; "LV9"; "LV10"]
     
     let getParagraphStyle (p: Paragraph) =
         match p.ParagraphProperties with
@@ -74,33 +80,19 @@ module DocParsing =
                 ancestorsStack.Pop() |> ignore
  
         
-    //let parseElementListToTree (openXmlElements: OpenXmlElement list) : DocNode =
-    //    let rootElement = openXmlElements |> List.tryFind (fun i -> getElementStyle i = Some(titleStyle))
-    //    let rootNode = {Element = rootElement; Children = []}
-    //    let ancestorStack = new Stack<DocNode>()
-    //    ancestorStack.Push(rootNode)
-        
-    //    for e in openXmlElements do
-    //        let newNode = {Element = Some(e); Children = []}
-    //        let level = getElementOutlineLevel e
-    //        match level with
-    //        | Some(currentLevel) -> 
-    //            let lastNode = ancestorStack.Peek()
-    //            let lastNodeLevel = lastNode.Element |> Option.bind (fun i -> getElementOutlineLevel i)
-    //            match lastNodeLevel with
+    let parseElementListToTree (rootElement: OpenXmlElement) (subsequentElements: OpenXmlElement list) : DocNode =
+        let rootNode = {Element = rootElement; Children = []}
+        let ancestorStack = new Stack<DocNode>()
+        ancestorStack.Push(rootNode)
+        for e in subsequentElements do
+           let newNode = {Element = e; Children = []}
+           unwindToNextAncestor newNode ancestorStack
+           let parent = ancestorStack.Pop()
+           parent.Children <- parent.Children @ [newNode]
+           ancestorStack.Push(parent)
+           ancestorStack.Push(newNode)
+        rootNode
                 
-                   
-                
-    //        | None ->
-    //            // add as child of current parent
-    //            let parent = ancestorStack.Pop()
-    //            let newParent = {parent with Children = newNode :: parent.Children}
-    //            stack.Push(newParent)
-                    
-                                    
-                
-        
-        
         
     
    
