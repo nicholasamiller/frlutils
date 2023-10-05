@@ -6,7 +6,7 @@
 		  <Version>1.1.0</Version>
 		  <Authors>Nick Miller</Authors>
 		  <Description>Utilities for scraping and parsing data from Federal Register of Legislation (Australia), in F# using RoP.</Description>
-		  <RepositoryUrl>http://githum.com/nicholasamiller/frlutils</RepositoryUrl>
+		  <RepositoryUrl>http://github.com/nicholasamiller/frlutils</RepositoryUrl>
   </PropertyGroup>
 
   <ItemGroup>
