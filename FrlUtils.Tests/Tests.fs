@@ -108,6 +108,7 @@ https://www.legislation.gov.au/Details/F2015L01330""".Split('\n') |> List.ofArra
 
     [<TestMethod>]
     member this.TestAncensorStackUnwind() =
+        let sequenceOfStyleLevels = ["Plainheader"; "LV1"; "LV2"; "LV3"; "LV4"; "LV5"; "LV6"; "LV7"; "LV8"; "LV9"; "LV10"]
         let testDoc = System.IO.File.ReadAllBytes("TestData/treeParseTest.docx")
         let bodyParts = getBodyParts testDoc
         let testStack = new Stack<DocNode>();
@@ -125,36 +126,46 @@ https://www.legislation.gov.au/Details/F2015L01330""".Split('\n') |> List.ofArra
         
         let testNode = testStack.Peek();
         
-        let testNodeLevel = getNodeLevel testNode
+        let testNodeLevel = getNodeLevel testNode sequenceOfStyleLevels
         Assert.IsTrue (testNodeLevel.Value = 3)
-        unwindToNextAncestor testNode testStack
+        unwindToNextAncestor testNode testStack sequenceOfStyleLevels
         Assert.IsTrue (testStack.Count = 8)
         
         let topOfStack = testStack.Peek()
         let topOfStackText = topOfStack.Element.InnerText
         Assert.AreEqual (topOfStackText, "Level 2 D")
     
+    
     [<TestMethod>]
     member this.TestParseDocXToTree() = 
+        let sequenceOfStyleLevels = ["Plainheader"; "LV1"; "LV2"; "LV3"; "LV4"; "LV5"; "LV6"; "LV7"; "LV8"; "LV9"; "LV10"]
         let testDoc = System.IO.File.ReadAllBytes("TestData/treeParseTest.docx")
         let bodyParts = getBodyParts testDoc |> List.ofSeq
         let rootElement = bodyParts |> List.find (fun e -> getElementStyle e = Some("Plainheader"))
         let rootElementIndex = bodyParts |> List.findIndex (fun e -> e = rootElement)
         let remaineder = bodyParts |> List.skip (rootElementIndex + 1)
-        let result = parseElementListToTree rootElement remaineder
+        let result = parseElementListToTree rootElement remaineder sequenceOfStyleLevels
         Assert.IsTrue (result.Children.Length = 2)
         
     
     [<TestMethod>]
     member this.ParseRealDocXToTree() = 
+        let sequenceOfStyleLevels = ["Plainheader"; "LV1"; "LV2"; "LV3"; "LV4"; "LV5"; "LV6"; "LV7"; "LV8"; "LV9"; "LV10"]
         let testDoc = System.IO.File.ReadAllBytes("TestData/F2023L01180.docx")
         let bodyParts = getBodyParts testDoc |> List.ofSeq
         let rootElement = bodyParts |> List.find (fun e -> getElementStyle e = Some("Plainheader"))
-        let remainder = bodyParts |> List.skipWhile (fun e -> getElementOutlineLevel e <> Some(1)) |> List.takeWhile (fun i -> getElementStyle i <> Some("SHHeader"))
-        let result = parseElementListToTree rootElement remainder
+        let remainder = bodyParts |> List.skipWhile (fun e -> getElementOutlineLevel e sequenceOfStyleLevels <> Some(1)) |> List.takeWhile (fun i -> getElementStyle i <> Some("SHHeader"))
+        let result = parseElementListToTree rootElement remainder sequenceOfStyleLevels
         Assert.IsTrue (result.Children.Length = 10)
         printfn "%s" (result.PrettyPrint())
-        
+
+    [<TestMethod>]
+    member this.TestSyntheticRootElement() = 
+        let style = "Plainheader"
+        let testDoc = System.IO.File.ReadAllBytes("TestData/F2023L01180.docx")
+        let bodyParts = getBodyParts testDoc |> List.ofSeq
+        let result = buildSyntheticRootElementForStyle style bodyParts
+        printfn "%s" result.InnerText
         
 
 

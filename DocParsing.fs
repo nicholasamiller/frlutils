@@ -35,7 +35,6 @@ module DocParsing =
         let wd = getWordDoc ms
         wd.MainDocumentPart.Document.Body.OfType<OpenXmlElement>()
                 
-    let sequenceOfStyleLevels = ["Plainheader"; "LV1"; "LV2"; "LV3"; "LV4"; "LV5"; "LV6"; "LV7"; "LV8"; "LV9"; "LV10"]
     
     let getParagraphStyle (p: Paragraph) =
         match p.ParagraphProperties with
@@ -50,51 +49,50 @@ module DocParsing =
         | :? Paragraph as p -> getParagraphStyle p
         | _ -> None
         
-    let getParagraphOutlineLevel (p: Paragraph) =
-        let style = getParagraphStyle p
+    let getParagraphOutlineLevel (p: Paragraph) (styleList: string list) =
+        let style = getParagraphStyle p 
         match style with
         | None -> None
-        | s -> sequenceOfStyleLevels |> List.tryFindIndex (fun i -> i = s.Value)
+        | s -> styleList |> List.tryFindIndex (fun i -> i = s.Value)
     
-    let getElementOutlineLevel (e : OpenXmlElement) =
+    let getElementOutlineLevel (e : OpenXmlElement) (styleList: string list) =
         match e with
-        | :? Paragraph as p -> getParagraphOutlineLevel p
+        | :? Paragraph as p -> getParagraphOutlineLevel p styleList
         | _ -> None
     
-    let getNodeLevel (node : DocNode) = getElementOutlineLevel node.Element
+    let getNodeLevel (node : DocNode) (styleList: string list) = getElementOutlineLevel node.Element styleList
     
-    let unwindToNextAncestor (node: DocNode) (ancestorsStack : Stack<DocNode>) =
+    let unwindToNextAncestor (node: DocNode) (ancestorsStack : Stack<DocNode>) (styleList : string list) =
         // pop stack while level of ancestor is greater than current node or none
-        let nodeLevel = getNodeLevel node
+        let nodeLevel = getNodeLevel node styleList
         match nodeLevel with 
         | None ->
             // remove until level is not none
-            while (ancestorsStack.Count > 0 && getNodeLevel (ancestorsStack.Peek()) = None) do
+            while (ancestorsStack.Count > 0 && getNodeLevel (ancestorsStack.Peek()) styleList = None) do
                 ancestorsStack.Pop() |> ignore
         | Some(level) ->
             let shouldPop = fun (n : DocNode) -> 
-                match getNodeLevel n with
+                match getNodeLevel n styleList with 
                 | None -> true
                 | Some(nl) -> nl >= level
             while (ancestorsStack.Count > 0 && shouldPop (ancestorsStack.Peek())) do
                 ancestorsStack.Pop() |> ignore
  
         
-    let parseElementListToTree (rootElement: OpenXmlElement) (subsequentElements: OpenXmlElement list) : DocNode =
+    let parseElementListToTree (rootElement: OpenXmlElement) (subsequentElements: OpenXmlElement list) (styleList : string list) : DocNode =
         let rootNode = {Element = rootElement; Children = []}
         let ancestorStack = new Stack<DocNode>()
         ancestorStack.Push(rootNode)
         for e in subsequentElements do
            let newNode = {Element = e; Children = []}
-           unwindToNextAncestor newNode ancestorStack
+           unwindToNextAncestor newNode ancestorStack styleList
            let parent = ancestorStack.Pop()
            parent.Children <- parent.Children @ [newNode]
            ancestorStack.Push(parent)
            ancestorStack.Push(newNode)
         rootNode
                 
-        
-    
+   
    
     let hasStyle (p : Paragraph) (styleId : string) =
         match p.ParagraphProperties with
@@ -104,8 +102,6 @@ module DocParsing =
                  | id -> id.Val.Value = styleId
       
        
-    
-      
       
     let getCellCount(tableElement : Table) =
         tableElement.ChildElements |> Seq.filter (fun i -> i :? TableRow) |> Seq.map (fun i -> i.OfType<TableCell>().Count()) |> Seq.max
@@ -133,6 +129,19 @@ module DocParsing =
         recurseTree p visitor |> ignore
         sb.ToString()
 
+   
+    let buildSyntheticRootElementForStyle (styleName : string) (elements: OpenXmlElement list) =
+        let elementsWithStyle = elements |> Seq.filter (fun e -> getElementStyle e = Some(styleName) && e.LocalName = "p")  |> Seq.cast<Paragraph>
+        let elementTextConcatenated = elementsWithStyle |> Seq.map (fun p -> p |> stringifyPara ) |> String.concat " "
+
+        let paraStyle = new ParagraphStyleId()
+        paraStyle.Val <- styleName
+        let paraProperties = new ParagraphProperties(paraStyle);
+        let text = new Text(elementTextConcatenated)
+        let run = new Run()
+        run.AddChild(text) |> ignore
+        new Paragraph(run, paraProperties)     
+        
    
  
     let stringifyTableCellText (t: TableCell) =
