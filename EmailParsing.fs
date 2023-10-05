@@ -53,7 +53,8 @@ module EmailParsing =
     let getItemLineGroups (text: string) =  groupSequentially((splitToLines text), fun line -> String.IsNullOrWhiteSpace(line)) |> List.filter (fun g -> isFrlItem g)
   
     let conditionNameString = new Regex("(Statement of Principles concerning)\s+(.*?)\s+(No\.|\()");
-    let parseConditionName line = 
+    
+    let parseConditionName (line : string) = 
         match conditionNameString.IsMatch(line) with
         | true -> Some(conditionNameString.Match(line).Groups.[2].Value)
         | false -> None
