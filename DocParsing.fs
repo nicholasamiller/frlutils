@@ -26,7 +26,20 @@ module DocParsing =
                 let childrenString = node.Children |> List.map (fun i -> recurse i (indent + 2)) |> String.concat ""
                 indentString + elementString + System.Environment.NewLine + childrenString
             recurse this 0
-   
+
+    let findFirstNode (node: DocNode) (predicate : DocNode -> bool) : DocNode option =
+            let rec recurse (node : DocNode) =
+                let isMatch = predicate node
+                match isMatch with
+                | true -> Some(node)
+                | false -> 
+                    let children = node.Children
+                    let childResults = children |> List.map (fun i -> recurse i) |> List.filter (fun i -> i.IsSome) 
+                    match childResults with
+                    | [] -> None
+                    | _ -> childResults |> List.head
+            recurse node
+    
     let getWordDoc (ms : MemoryStream) =
         WordprocessingDocument.Open(ms,false)
 
@@ -92,7 +105,11 @@ module DocParsing =
            ancestorStack.Push(newNode)
         rootNode
                 
-   
+    let parseElementListToTreeResult (rootElement: OpenXmlElement) (subsequentElements: OpenXmlElement list) (styleList : string list) : Result<DocNode,DocParsingError> =
+        try
+            Ok(parseElementListToTree rootElement subsequentElements styleList)
+        with 
+        | ex -> Error(DocParsingError.Exception(ex)) 
    
     let hasStyle (p : Paragraph) (styleId : string) =
         match p.ParagraphProperties with
@@ -100,8 +117,7 @@ module DocParsing =
         | ppr -> match ppr.ParagraphStyleId with
                  | null -> false
                  | id -> id.Val.Value = styleId
-      
-       
+        
       
     let getCellCount(tableElement : Table) =
         tableElement.ChildElements |> Seq.filter (fun i -> i :? TableRow) |> Seq.map (fun i -> i.OfType<TableCell>().Count()) |> Seq.max
@@ -131,17 +147,19 @@ module DocParsing =
 
    
     let buildSyntheticRootElementForStyle (styleName : string) (elements: OpenXmlElement list) =
-        let elementsWithStyle = elements |> Seq.filter (fun e -> getElementStyle e = Some(styleName) && e.LocalName = "p")  |> Seq.cast<Paragraph>
-        let elementTextConcatenated = elementsWithStyle |> Seq.map (fun p -> p |> stringifyPara ) |> String.concat " "
-
-        let paraStyle = new ParagraphStyleId()
-        paraStyle.Val <- styleName
-        let paraProperties = new ParagraphProperties(paraStyle);
-        let text = new Text(elementTextConcatenated)
-        let run = new Run()
-        run.AddChild(text) |> ignore
-        new Paragraph(run, paraProperties)     
-        
+        let elementsWithStyle = elements |> Seq.filter (fun e -> getElementStyle e = Some(styleName) && e.LocalName = "p")  |> Seq.cast<Paragraph> |> Seq.toList
+        match elementsWithStyle with
+        | [] -> None
+        | _ ->
+            let elementTextConcatenated = elementsWithStyle |> Seq.map (fun p -> p |> stringifyPara ) |> String.concat " "
+            let paraStyle = new ParagraphStyleId()
+            paraStyle.Val <- styleName
+            let paraProperties = new ParagraphProperties()
+            paraProperties.ParagraphStyleId <- paraStyle
+            let text = new Text(elementTextConcatenated)
+            let run = new Run()
+            run.AddChild(text) |> ignore
+            Some(new Paragraph(run, paraProperties))
    
  
     let stringifyTableCellText (t: TableCell) =

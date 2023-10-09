@@ -27,6 +27,15 @@ module Domain =
         InstrumentName: string;
         RegisterId: string;
     }
+
+    type DocumentType = PDF | WordDocx | WordDoc
+    type Document = {
+        Type: DocumentType;
+        Content: byte[];
+    }
+
+
+
     
     type LegRow = {
         items : string list    

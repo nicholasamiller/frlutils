@@ -73,7 +73,7 @@ module WebScraping =
             return doc
         }
 
-    let private getDocXUrlForRegisterId (registerid: string) (fetcher : asyncPageFetcher)   = async {
+    let private getDocUrlForRegisterId (registerid: string) (fetcher : asyncPageFetcher)   = async {
         let downloadpageurl = $"{frlBaseUrl}/Details/{registerid}/Download"
         let! contentResult = (fetcher downloadpageurl) 
 
@@ -91,19 +91,27 @@ module WebScraping =
         with
         | ex -> Error(ScrapeError.Exception(ex))
 
-    
-    let getInstrumentDocX (registerId: string) (fetcher : asyncPageFetcher) = async {
-        let! urlForDocx = getDocXUrlForRegisterId registerId fetcher
-        let! docStream = urlForDocx |> Result.bindAsync(fun url -> fetcher url)
+     
+    let getInstrumentUnauthorisedDoc (registerId: string) (fetcher : asyncPageFetcher) = async {
+        let! urlForDoc = getDocUrlForRegisterId registerId fetcher
+        let! docStream = urlForDoc |> Result.bindAsync(fun url -> fetcher url)
         let bytes = docStream |> Result.bind (fun i -> 
             use ms = new MemoryStream()
             i.CopyTo(ms) |> ignore
             Ok (ms.ToArray())
         )
         return bytes
-    } 
+    }
 
-    let getInstrumentDocXAsync (registerId: string) (httpClient : HttpClient) = getInstrumentDocX registerId (createFetcher httpClient) |> Async.StartAsTask
+    let inferDocumentTypeFromMagicNumbers(fileContent: byte[]) =
+        let magicNumbers = fileContent |> Array.take 4 
+        match magicNumbers with
+        | [| 0x50uy; 0x4Buy; 0x03uy; 0x04uy |] -> Ok(DocumentType.WordDocx)
+        | [| 0xD0uy; 0xCFuy; 0x11uy; 0xE0uy |] -> Ok(DocumentType.WordDoc)
+        | [| 0x25uy; 0x50uy; 0x44uy; 0x46uy |] -> Ok(DocumentType.PDF)
+        | _ -> Error(ScrapeError.Message("Could not determine document type from magic numbers."))
+       
+    let getInstrumentUnauthorisedDocAsync (registerId: string) (httpClient : HttpClient) = getInstrumentUnauthorisedDoc registerId (createFetcher httpClient) |> Async.StartAsTask
     
    
     let parseCompilationsTableData (table : TableData) : Result<CompilationsHistory,ScrapeError> =
@@ -297,7 +305,7 @@ module WebScraping =
     let getInstrumentData(registerId : string) (fetcher: asyncPageFetcher) =
         async {
             let! seriesInfo = getSeriesInfo registerId fetcher
-            let! docXBinary =  getInstrumentDocX registerId fetcher
+            let! docXBinary =  getInstrumentUnauthorisedDoc registerId fetcher
             let packagedResult =
                 match seriesInfo with
                 | Ok(si) ->

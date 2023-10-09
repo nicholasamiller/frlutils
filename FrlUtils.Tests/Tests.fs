@@ -34,10 +34,10 @@ type TestClass () =
 
     [<TestMethod>]
     member this.TestGetDocX() =
-          let result = getInstrumentDocX "F2021C00349" mockFetcher |> Async.RunSynchronously
+          let result = getInstrumentUnauthorisedDoc "F2021C00349" mockFetcher |> Async.RunSynchronously
           Assert.IsNotNull result
 
-
+  
     [<TestMethod>]
     member this.TestTableParser() = 
         let testDocument = (System.IO.File.ReadAllBytes("TestData/F2022C00414.docx"))
@@ -165,9 +165,45 @@ https://www.legislation.gov.au/Details/F2015L01330""".Split('\n') |> List.ofArra
         let testDoc = System.IO.File.ReadAllBytes("TestData/F2023L01180.docx")
         let bodyParts = getBodyParts testDoc |> List.ofSeq
         let result = buildSyntheticRootElementForStyle style bodyParts
-        printfn "%s" result.InnerText
+        Assert.IsTrue (Option.isSome result)
+        printfn "%s" result.Value.InnerText
         
+    
 
+    [<TestMethod>]
+    member this.TestTreeTraversal() =
+        let sequenceOfStyleLevels = ["Plainheader"; "LV1"; "LV2"; "LV3"; "LV4"; "LV5"; "LV6"; "LV7"; "LV8"; "LV9"; "LV10"]
+        let testDoc = System.IO.File.ReadAllBytes("TestData/F2023L01180.docx")
+        let bodyParts = getBodyParts testDoc |> List.ofSeq
+        let rootElement = bodyParts |> List.find (fun e -> getElementStyle e = Some("Plainheader"))
+        let remainder = bodyParts |> List.skipWhile (fun e -> getElementOutlineLevel e sequenceOfStyleLevels <> Some(1)) |> List.takeWhile (fun i -> getElementStyle i <> Some("SHHeader"))
+        let tree = parseElementListToTree rootElement remainder sequenceOfStyleLevels
+        let firstLvl1Header = FrlUtils.DocParsing.findFirstNode tree (fun i -> getNodeLevel i sequenceOfStyleLevels = Some(1))
+        Assert.IsTrue (firstLvl1Header.IsSome)
+        Assert.IsTrue (firstLvl1Header.Value.Element.InnerText = "Name")
+        printfn "%s" (firstLvl1Header.Value.PrettyPrint())
+
+        let conditionDescription = FrlUtils.DocParsing.findFirstNode tree (fun i -> i.Element.InnerText = "Kind of injury, disease or death to which this Statement of Principles relates")
+        printfn "%s" (conditionDescription.Value.PrettyPrint())
+
+
+    [<TestMethod>]
+    member this.TestDocumentTypeDoc() = 
+        let testDocument = File.ReadAllBytes("TestData/F2010L02846.doc")
+        let result =  FrlUtils.WebScraping.inferDocumentTypeFromMagicNumbers testDocument
+        match result with
+        | Ok(i) -> Assert.AreEqual(FrlUtils.Domain.DocumentType.WordDoc,i)
+        | _ -> Assert.Fail()
+
+
+    [<TestMethod>]
+    member this.TestDocumentTypeDocX() = 
+        let testDocument = File.ReadAllBytes("TestData/F2023L01180.docx")
+        let result =  FrlUtils.WebScraping.inferDocumentTypeFromMagicNumbers testDocument
+        match result with
+        | Ok(i) -> Assert.AreEqual(FrlUtils.Domain.DocumentType.WordDocx,i)
+        | _ -> Assert.Fail()
+    
 
     
        
