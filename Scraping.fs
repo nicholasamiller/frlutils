@@ -14,6 +14,7 @@ open System
 open Domain
 open Errors
 open FsToolkit
+open System.Globalization
 
 module WebScraping =
     // extract DocX download link
@@ -25,11 +26,44 @@ module WebScraping =
     let private idOfDocXDownloadAElement =  "ctl00_MainContent_AttachmentsRepeater_ctl00_ArtifactVersionRenderer_Repeater1_ctl00_ArtifactFormatTableRenderer1_RadGridNonHtml_ctl00_ctl04_hlPrimaryDoc"
 
     type asyncPageFetcher =  string ->  Async<Result<Stream,ScrapeError>>
-            
+    
+    
+
 
     [<Literal>]
     let private frlSearchUrl = "https://www.legislation.gov.au/Search"
     
+    let createApiFetcher (httpClient: HttpClient) =
+        fun (url:string) -> async {
+            try
+                let! response = httpClient.GetAsync(url) |> Async.AwaitTask
+                let! contentStream = response.Content.ReadAsStreamAsync() |> Async.AwaitTask
+                return Ok contentStream
+            with
+            | ex -> return Error(ScrapeError.Exception(ex))
+        }
+
+    let getWordDocInstrumentById(id: string) (fetcher: asyncPageFetcher) =
+        async {
+            
+            let todaysDate = DateTimeZoneProviders.Tzdb["Australia/Sydney"].AtStrictly(LocalDateTime.FromDateTime(DateTime.Now)).ToString("yyyy-MM-dd",CultureInfo.InvariantCulture)
+
+            let url = $"{frlBaseUrl}/{id}/{todaysDate}/{todaysDate}/original/word"
+            // read stream as binary and convert to word doc
+            let! contentResult = fetcher url
+            match contentResult with
+            | Ok stream ->
+                try
+                    use ms = new MemoryStream()
+                    do! stream.CopyToAsync(ms) |> Async.AwaitTask
+                    ms.Seek(0L, SeekOrigin.Begin) |> ignore
+                    let array = ms.ToArray()
+                    return Ok array
+                with
+                | ex -> return Error(ScrapeError.Exception(ex)) // Assuming Error takes a string message
+            | Error e -> return Error(e)
+        }
+
     let  createFetcher (httpClient: HttpClient) =
         fun (url:string) -> async {
             try
@@ -88,7 +122,7 @@ module WebScraping =
         try        
             use ms = new MemoryStream(docBinary)
             Ok (WordprocessingDocument.Create(ms,WordprocessingDocumentType.Document))
-        with
+         with
         | ex -> Error(ScrapeError.Exception(ex))
 
      

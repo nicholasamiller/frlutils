@@ -15,7 +15,8 @@
     <Compile Include="EmailParsing.fs" />
     <Compile Include="DocParsing.fs" />
     <Compile Include="AsyncExtensions.fs" />
-    <Compile Include="Scraping.fs" />   
+    <Compile Include="Scraping.fs" />
+    <Compile Include="FrlApiClient.fs" />   
   </ItemGroup>
 
   <ItemGroup>
