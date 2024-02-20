@@ -8,6 +8,9 @@ open System.IO
 open System.Collections.Generic
 open DocumentFormat.OpenXml.Wordprocessing
 open DocumentFormat.OpenXml
+open FrlUtils
+open System
+open Newtonsoft.Json.Linq
 
 
 [<TestClass>]
@@ -206,7 +209,23 @@ https://www.legislation.gov.au/Details/F2015L01330""".Split('\n') |> List.ofArra
     
 
     
-       
-      
+     
+    [<TestMethod>]
+    [<TestCategory("Integration")>]
+    member this.TestOdataPaging() =
+        let testQueryUrl = @"https://api.prod.legislation.gov.au/v1/titles/search(criteria='and(text(%22Statement%20of%20Principles%22,name,contains),pointintime(Latest),type(Principal,Amending),collection(LegislativeInstrument),administeringdepartments(%22O-000944%22))')?=administeringDepartments%2Ccollection%2ChasCommencedUnincorporatedAmendments%2Cid%2CisInForce%2CisPrincipal%2Cname%2Cnumber%2CoptionalSeriesNumber%2CsearchContexts%2CseriesType%2CsubCollection%2Cyear&=administeringDepartments%2CsearchContexts%28%3DfullTextVersion%2Ctext%29&=searchcontexts%2Ftext%2Frelevance%20desc&=true&=0"
+
+        let fetcher = FrlApiClient.createApiFetcher(new HttpClient())
+        let result = FrlApiClient.runODataQuery fetcher (new Uri(testQueryUrl)) [] |> Async.RunSynchronously
+        match result with
+        | Ok(r) -> 
+            Assert.IsTrue(r.Length > 0)
+            // make a jarray of the results and print
+            let jArray = new JArray(r)
+            printf "%s" (jArray.ToString())
+        | Error(e) ->
+            Assert.Fail()
+
+        
         
    

@@ -1,10 +1,13 @@
-﻿namespace FrlUtils
+﻿namespace FrlUtils  
 
 open System.IO
 open System.Net.Http
 open FrlUtils.Errors
 open System.Globalization
 open NodaTime
+open Newtonsoft.Json.Linq
+open System
+open System.Web
 
 
 
@@ -53,3 +56,53 @@ module FrlApiClient =
                 | ex -> return Error(ScrapeError.Exception(ex)) // Assuming Error takes a string message
             | Error e -> return Error(e)
         }
+
+
+
+
+    // run odata query and page through results, following the next link, aggregating results
+    let rec runODataQuery (fetcher: asyncPageFetcher) (url: Uri) (results: JObject list) : Async<Result<JObject list,ScrapeError>> =
+            
+            let withSkipParameterValue (uri: Uri) (skipValue: int) : Uri =
+                let query = HttpUtility.ParseQueryString(uri.Query)
+                query.["$skip"] <- skipValue.ToString()
+                let newQuery = query.ToString()
+                let uriBuilder = UriBuilder(uri.Scheme, uri.Host, uri.Port, uri.AbsolutePath)
+                uriBuilder.Query <- newQuery
+                uriBuilder.Uri
+            
+            
+            async {
+                let! contentResult = fetcher (url.ToString())
+                match contentResult with
+                | Ok stream ->
+                    try
+                        use sr = new StreamReader(stream)
+                        let json = sr.ReadToEnd()
+                        let jobj = JObject.Parse(json)
+                        // get values as array of JObjects
+                        let values = jobj.["value"].Children<JObject>() |> Seq.toList
+                        // check if there is a next link
+                        let nextLinkKey = "@odata.nextLink"
+                        match jobj.[nextLinkKey] with
+                        | null -> // last page
+                            return Ok (results @ values)
+                        | nextLinkString -> 
+                        // get the skip parameter from the next link
+                            let nextLinkAsUri = new Uri(nextLinkString.Value<string>())
+                            let queryParamsInNextLink = HttpUtility.ParseQueryString(nextLinkAsUri.Query)
+                            let skipValueOrNull = queryParamsInNextLink.Get("$skip")
+                            match skipValueOrNull with
+                            | null -> // last page
+                                return Ok (results @ values)
+                            | "" -> // last page
+                                return Ok (results @ values)
+                            | v -> // more pages
+                                let skip = int v
+                                // add skip param tu url parameter, not nextLink
+                                let nextLinkWithSkip = withSkipParameterValue url skip
+                                return! runODataQuery fetcher (nextLinkWithSkip) (results @ values)
+                        with
+                    | ex -> return Error(ScrapeError.Exception(ex))
+                | Error e -> return Error(e)
+            }
