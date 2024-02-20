@@ -1,9 +1,10 @@
 ﻿namespace FrlUtilsTests
 open Microsoft.VisualStudio.TestTools.UnitTesting
 open System.Net.Http
-open FrlUtils.WebScraping
+open FrlUtils.Domain
 open FrlUtils.DocParsing
 open FrlUtils.EmailParsing
+open FrlUtils.FrlApiClient
 open System.IO
 open System.Collections.Generic
 open DocumentFormat.OpenXml.Wordprocessing
@@ -36,12 +37,6 @@ type TestClass () =
 
 
     [<TestMethod>]
-    member this.TestGetDocX() =
-          let result = getInstrumentUnauthorisedDoc "F2021C00349" mockFetcher |> Async.RunSynchronously
-          Assert.IsNotNull result
-
-  
-    [<TestMethod>]
     member this.TestTableParser() = 
         let testDocument = (System.IO.File.ReadAllBytes("TestData/F2022C00414.docx"))
         let result = getTablesBetweenParas "Schedule 1—Warlike service" "Endnotes" (getBodyParts (testDocument))
@@ -57,48 +52,7 @@ type TestClass () =
         Assert.IsTrue(result.Length > 0)
 
 
-    [<TestMethod>]
-    member this.ParseCompilationsPage() =
-        let result = FrlUtils.WebScraping.getCompilationsList "C2004A03268" mockFetcher |> Async.RunSynchronously
-        match result with
-        | Ok(r) -> Assert.IsTrue(r.Compilations.Length = 10)
-        | _ -> Assert.Fail()
-     
-    [<TestMethod>]
-    member this.GetLatestCompilation() =
-        let result = FrlUtils.WebScraping.getLatestCompilation "C2004A03268" mockFetcher  |> Async.RunSynchronously
-        match result with
-        | Ok(r) -> Assert.IsTrue(r.Value.RegisterId = "C2022C00150")
-        | _ -> Assert.Fail()
-    
-    [<TestMethod>]
-    member this.GetPrincipalData() =
-        let result = FrlUtils.WebScraping.getPrincipal "C2004A03268" mockFetcher |> Async.RunSynchronously
-        match result with 
-        | Ok(r) -> Assert.IsTrue(r.RegisterId = "C2004A03268")
-        | _ -> Assert.Fail()
-
-    [<TestMethod>]
-    member this.GetRepealedBy() =
-        let result = FrlUtils.WebScraping.getRepealedBy "F2014L00022"  mockFetcher |> Async.RunSynchronously
-        match result with
-        | Ok(r) -> Assert.IsTrue(r.Value = {InstrumentName = "Statement of Principles concerning morbid obesity (Balance of Probabilities) (No. 44 of 2022)"; RegisterId = "F2022L00663"}) 
-        | _ -> Assert.Fail()
-
-    [<TestMethod>]
-    member this.GetEmptyRepealedBy() =
-        let result = FrlUtils.WebScraping.getRepealedBy "F2022L00663" mockFetcher |> Async.RunSynchronously
-        match result with
-        | Ok(r) -> Assert.IsTrue r.IsNone
-        | _ -> Assert.Fail()
-     
-    [<TestMethod>]
-    member this.GetWhatsNew() =
-        let r = FrlUtils.WebScraping.getWhatsNew(mockFetcher) |> Async.RunSynchronously
-        match r with
-        | Ok(r) -> Assert.IsNotNull r
-        | _ -> Assert.Fail()
-
+   
     [<TestMethodAttribute>]
     member this.TestAmendmentParse() =
         let testData = """Statement of Principles concerning external burn (Reasonable Hypothesis) (No. 110 of 2015)
@@ -188,26 +142,6 @@ https://www.legislation.gov.au/Details/F2015L01330""".Split('\n') |> List.ofArra
 
         let conditionDescription = FrlUtils.DocParsing.findFirstNode tree (fun i -> i.Element.InnerText = "Kind of injury, disease or death to which this Statement of Principles relates")
         printfn "%s" (conditionDescription.Value.PrettyPrint())
-
-
-    [<TestMethod>]
-    member this.TestDocumentTypeDoc() = 
-        let testDocument = File.ReadAllBytes("TestData/F2010L02846.doc")
-        let result =  FrlUtils.WebScraping.inferDocumentTypeFromMagicNumbers testDocument
-        match result with
-        | Ok(i) -> Assert.AreEqual(FrlUtils.Domain.DocumentType.WordDoc,i)
-        | _ -> Assert.Fail()
-
-
-    [<TestMethod>]
-    member this.TestDocumentTypeDocX() = 
-        let testDocument = File.ReadAllBytes("TestData/F2023L01180.docx")
-        let result =  FrlUtils.WebScraping.inferDocumentTypeFromMagicNumbers testDocument
-        match result with
-        | Ok(i) -> Assert.AreEqual(FrlUtils.Domain.DocumentType.WordDocx,i)
-        | _ -> Assert.Fail()
-    
-
     
      
     [<TestMethod>]

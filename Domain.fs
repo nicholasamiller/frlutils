@@ -3,7 +3,7 @@
 open NodaTime
 open Newtonsoft.Json.Linq
 open NodaTime.Text
-
+open System.IO
 
 
 module Domain =
@@ -33,8 +33,6 @@ module Domain =
         Type: DocumentType;
         Content: byte[];
     }
-
-
 
     
     type LegRow = {

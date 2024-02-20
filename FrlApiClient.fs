@@ -13,10 +13,11 @@ open System.Web
 
 module FrlApiClient =
     
+    type asyncPageFetcher =  string ->  Async<Result<Stream,ScrapeError>>
+    
     [<Literal>]
     let private frlBaseUrl = "https://www.legislation.gov.au"
     
-    type asyncPageFetcher =  string ->  Async<Result<Stream,ScrapeError>>
     
     open NodaTime
 
