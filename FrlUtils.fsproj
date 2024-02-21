@@ -1,35 +1,33 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
-		  <PackageId>Shoshin.FrlUtils</PackageId>
-		  <Version>4.0.0</Version>
-		  <Authors>Nick Miller</Authors>
-		  <Description>Utilities for scraping and parsing data from Federal Register of Legislation (Australia), in F# using RoP.</Description>
-		  <RepositoryUrl>http://github.com/nicholasamiller/frlutils</RepositoryUrl>
+    <PackageId>Shoshin.FrlUtils</PackageId>
+    <Version>4.0.0</Version>
+    <Authors>Nick Miller</Authors>
+    <Description>Utilities for scraping and parsing data from Federal Register of Legislation (Australia), in F# using RoP.</Description>
+    <RepositoryUrl>http://github.com/nicholasamiller/frlutils</RepositoryUrl>
   </PropertyGroup>
-
   <ItemGroup>
     <Compile Include="Domain.fs" />
     <Compile Include="Errors.fs" />
     <Compile Include="EmailParsing.fs" />
     <Compile Include="DocParsing.fs" />
     <Compile Include="AsyncExtensions.fs" />
-    <Compile Include="FrlApiClient.fs" />   
+    <Compile Include="FrlApiClient.fs" />
   </ItemGroup>
-
   <ItemGroup>
     <PackageReference Include="DocumentFormat.OpenXml" Version="2.17.1" />
     <PackageReference Include="FsToolkit.ErrorHandling" Version="2.13.0" />
     <PackageReference Include="HtmlAgilityPack" Version="1.11.43" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="NodaTime" Version="3.1.1" />
     <PackageReference Include="Shoshin.HtmlUtils" Version="0.1.0" />
   </ItemGroup>
-
   <ItemGroup>
     <PackageReference Update="FSharp.Core" Version="7.0.200" />
   </ItemGroup>
-
+  <ItemGroup>
+    <OpenApiReference Include="swagger.json" />
+  </ItemGroup>
 </Project>

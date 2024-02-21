@@ -16,8 +16,11 @@ module Errors =
     | Message of string
     | RowParseError of LegRow * string
     | TableParseError of LegTable * string
-   
-     type ScrapeError =
+    
+    type FrlApiDeserialisationError = Message of string   
+  
+
+    type ScrapeError =
         | HtmlParseError of Shoshin.HtmlUtils.Errors.HtmlParseError
         | DocParsingError of DocParsingError
         | NotFound of string
