@@ -124,6 +124,7 @@ module Domain =
         dateChanged: DateChange option
     }
 
+
     type Status =  InForce | Ceased | Repealed | NeverEffective
     type StatusHistory = {
         status: Status
@@ -156,4 +157,21 @@ module Domain =
     }
 
 
- 
+    type VersionInfo = {
+        titleId: string option
+        start: DateTime
+        retrospectiveStart: DateTime
+        endDate: DateTime option
+        isLatest: Boolean
+        name: string option
+        status: Status
+        registerId: string option
+        compilationNumber: int option
+        hasUnincorporatedAmendments: bool
+        reasons: StatusReason list
+    }
+
+
+    
+
+

@@ -143,14 +143,14 @@ https://www.legislation.gov.au/Details/F2015L01330""".Split('\n') |> List.ofArra
         let conditionDescription = FrlUtils.DocParsing.findFirstNode tree (fun i -> i.Element.InnerText = "Kind of injury, disease or death to which this Statement of Principles relates")
         printfn "%s" (conditionDescription.Value.PrettyPrint())
     
-     
+        
     [<TestMethod>]
     [<TestCategory("Integration")>]
     member this.TestOdataPaging() =
         let testQueryUrl = @"https://api.prod.legislation.gov.au/v1/titles/search(criteria='and(text(%22Statement%20of%20Principles%22,name,contains),pointintime(Latest),type(Principal,Amending),collection(LegislativeInstrument),administeringdepartments(%22O-000944%22))')"//?=administeringDepartments%2Ccollection%2ChasCommencedUnincorporatedAmendments%2Cid%2CisInForce%2CisPrincipal%2Cname%2Cnumber%2CoptionalSeriesNumber%2CsearchContexts%2CseriesType%2CsubCollection%2Cyear&=administeringDepartments%2CsearchContexts%28%3DfullTextVersion%2Ctext%29&=searchcontexts%2Ftext%2Frelevance%20desc"
 
         let fetcher = FrlApiClient.createApiFetcher(new HttpClient())
-        let result = FrlApiClient.runODataQuery fetcher (new Uri(testQueryUrl)) [] |> Async.RunSynchronously
+        let result = FrlApiClient.runOdataQuery fetcher (new Uri(testQueryUrl)) |> Async.RunSynchronously
         match result with
         | Ok(r) -> 
             Assert.IsTrue(r.Length > 0)
@@ -159,6 +159,67 @@ https://www.legislation.gov.au/Details/F2015L01330""".Split('\n') |> List.ofArra
             printf "%s" (jArray.ToString())
         | Error(e) ->
             Assert.Fail()
+    
+    [<TestMethod>]
+    [<TestCategory("Integration")>]
+    member this.TestGetLatestComplationWhereThereAreSome() = 
+        let fetcher = FrlApiClient.createApiFetcher(new HttpClient())
+        let result = FrlApiClient.getLatestVersion "F2019L01198" fetcher |> Async.RunSynchronously
+        match result with
+        | Ok(r) -> 
+            match r with
+            | Some(v) -> printf "%s" (v.ToString())
+            | None -> Assert.Fail()
+        | Error(e) ->
+            Assert.Fail()
+    
+    [<TestMethod>]
+
+    [<TestCategory("Integration")>]
+    member this.TestGetLatestComplationWhereNone() = 
+        let fetcher = FrlApiClient.createApiFetcher(new HttpClient())
+        let result = FrlApiClient.getLatestVersion "goat" fetcher |> Async.RunSynchronously
+        match result with
+        | Ok(r) -> 
+            Assert.IsTrue((r = Option.None))
+        | Error(e) ->
+            Assert.Fail()
+        
+
+    [<TestMethod>]
+    member this.TestVersionDeserialisation() =
+        let testJson = """{
+            "titleId": "F2019L01198",
+            "start": "2022-04-02T00:00:00",
+            "retrospectiveStart": "2022-04-02T00:00:00",
+            "end": null,
+            "isLatest": true,
+            "name": "Military Rehabilitation and Compensation (Warlike Service) Determination 2019",
+            "status": "InForce",
+            "registerId": "F2022C00414",
+            "compilationNumber": "3",
+            "publishComments": null,
+            "hasUnincorporatedAmendments": false,
+            "reasons": [
+                {
+                    "affect": "Amend",
+                    "markdown": "sch 1 (item 1) of the [Military Rehabilitation and Compensation (Warlike Service) Amendment Determination 2022 (No. 1)](/F2022L00495)",
+                    "affectedByTitle": {
+                        "titleId": "F2022L00495",
+                        "name": "Military Rehabilitation and Compensation (Warlike Service) Amendment Determination 2022 (No. 1)",
+                        "provisions": "sch 1 (item 1)"
+                    },
+                    "amendedByTitle": null,
+                    "dateChanged": null
+                }
+            ]
+        }"""
+        let jObject = JObject.Parse(testJson)
+        let result = deserializeVersion jObject
+        match result with
+        | Ok(r) -> printf "%s" (r.ToString())
+        | _ -> Assert.Fail()
+
 
     [<TestMethod>]
     member this.TestTitleDeserialisation() =
@@ -217,6 +278,6 @@ https://www.legislation.gov.au/Details/F2015L01330""".Split('\n') |> List.ofArra
         | _ -> Assert.Fail()
 
 
-       
+        
         
    

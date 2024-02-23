@@ -17,8 +17,6 @@ module Errors =
     | RowParseError of LegRow * string
     | TableParseError of LegTable * string
     
-    type FrlApiDeserialisationError = Message of string   
-  
 
     type ScrapeError =
         | HtmlParseError of Shoshin.HtmlUtils.Errors.HtmlParseError
@@ -30,6 +28,7 @@ module Errors =
         | XPath of XPathFoundNoNodes
         | MissingAttribute of MissingAttribute
         | CompositeScrapeError of ScrapeError list
+        | FrlApiDeserialisationError of string
 
 
   

@@ -17,12 +17,13 @@ module FrlApiClient =
     type asyncPageFetcher =  string ->  Async<Result<Stream,ScrapeError>>
     
     [<Literal>]
-    let private frlBaseUrl = "https://www.legislation.gov.au"
+    let private frlBaseUrl = "https://api.prod.legislation.gov.au/v1"
+    
     
     
     open NodaTime
 
-    let getTodaysDateInSydneyAsIsoString () =
+    let private getTodaysDateInSydneyAsIsoString () =
         let now = SystemClock.Instance.GetCurrentInstant()
         let sydneyZone = DateTimeZoneProviders.Tzdb["Australia/Sydney"]
         let sydneyToday = now.InZone(sydneyZone).LocalDateTime.Date
@@ -33,8 +34,11 @@ module FrlApiClient =
         fun (url:string) -> async {
             try
                 let! response = httpClient.GetAsync(url) |> Async.AwaitTask
-                let! contentStream = response.Content.ReadAsStreamAsync() |> Async.AwaitTask
-                return Ok contentStream
+                match response.IsSuccessStatusCode with
+                | true ->
+                    let! contentStream = response.Content.ReadAsStreamAsync() |> Async.AwaitTask
+                    return Ok contentStream
+                | false -> return Error(ScrapeError.UnexpectedHttpStatusCode(response.StatusCode))
             with
             | ex -> return Error(ScrapeError.Exception(ex))
         }
@@ -58,11 +62,8 @@ module FrlApiClient =
                 | ex -> return Error(ScrapeError.Exception(ex)) // Assuming Error takes a string message
             | Error e -> return Error(e)
         }
-
-    
-    let deserializeTitle(titleJObject : JObject) : Result<LegislativeInstrumentInfo, FrlApiDeserialisationError> =
-       
-        let stringToAffect (input: string) : Affect =
+   
+    let private stringToAffect (input: string) : Affect =
             match input with
             | "AsMade" -> AsMade
             | "Amend" -> Amend
@@ -71,43 +72,105 @@ module FrlApiClient =
             | "ChangeDate" -> ChangeDate
             | _ -> failwithf "Unsupported Affect value: %s" input
                     
-        let stringToCollection (input: string) : Collection =
-            match input with
-            | "Act" -> Collection.Act
-            | "LegislativeInstrument" -> LegislativeInstrument
-            | "NotifiableInstrument" -> NotifiableInstrument
-            | "AdministrativeArrangementsOrder" -> AdministrativeArrangementsOrder
-            | "Constitution" -> Constitution
-            | "ContinuedLaw" -> ContinuedLaw
-            | "Gazette" -> Gazette
-            | "PrerogativeInstrument" -> PrerogativeInstrument
-            | _ -> failwithf "Unsupported Collection value: %s" input
-        
-        let stringToSubCollection (input: string) : SubCollection option =
-            match input with
-            | null | "" -> None
-            | "Regulations" -> Some Regulations
-            | "CourtRules" -> Some CourtRules
-            | "Rules" -> Some Rules
-            | "ByLaws" -> Some ByLaws
-            | _ -> failwithf "Unsupported SubCollection value: %s" input
+    let private stringToCollection (input: string) : Collection =
+        match input with
+        | "Act" -> Collection.Act
+        | "LegislativeInstrument" -> LegislativeInstrument
+        | "NotifiableInstrument" -> NotifiableInstrument
+        | "AdministrativeArrangementsOrder" -> AdministrativeArrangementsOrder
+        | "Constitution" -> Constitution
+        | "ContinuedLaw" -> ContinuedLaw
+        | "Gazette" -> Gazette
+        | "PrerogativeInstrument" -> PrerogativeInstrument
+        | _ -> failwithf "Unsupported Collection value: %s" input
+    
+    let private stringToSubCollection (input: string) : SubCollection option =
+        match input with
+        | null | "" -> None
+        | "Regulations" -> Some Regulations
+        | "CourtRules" -> Some CourtRules
+        | "Rules" -> Some Rules
+        | "ByLaws" -> Some ByLaws
+        | _ -> failwithf "Unsupported SubCollection value: %s" input
 
-        let stringToStatus (input: string) : Status =
-            match input with
-            | "InForce" -> InForce
-            | "Ceased" -> Ceased
-            | "Repealed" -> Repealed
-            | "NeverEffective" -> NeverEffective
-            | _ -> failwithf "Unsupported Status value: %s" input
+    let private stringToStatus (input: string) : Status =
+        match input with
+        | "InForce" -> InForce
+        | "Ceased" -> Ceased
+        | "Repealed" -> Repealed
+        | "NeverEffective" -> NeverEffective
+        | _ -> failwithf "Unsupported Status value: %s" input
 
-        let stringToFrlSeriesType (input: string) : FrlSeriesType option =
-            match input with
-            | null | "" -> None
-            | "Act" -> Some Act
-            | "SR" -> Some SR
-            | "SLI" -> Some SLI
-            | _ -> failwithf "Unsupported FrlSeriesType value: %s" input
-        
+    let private stringToFrlSeriesType (input: string) : FrlSeriesType option =
+        match input with
+        | null | "" -> None
+        | "Act" -> Some Act
+        | "SR" -> Some SR
+        | "SLI" -> Some SLI
+        | _ -> failwithf "Unsupported FrlSeriesType value: %s" input
+    
+    let private deserializeReason(r: JToken) = 
+        let affect = r.["affect"].Value<string>() |> stringToAffect
+        let markdown = r.["markdown"].Value<string>()
+        let affectedByTitle = 
+            match (r.["affectedByTitle"].HasValues) with
+            | true -> 
+                let titleId = r.["affectedByTitle"].["titleId"].Value<string>()
+                let name = r.["affectedByTitle"].["name"].Value<string>()
+                let provisions = r.["affectedByTitle"].["provisions"].Value<string>()
+                Some {titleId = titleId; name = name; provisions = provisions}
+            | false -> None
+        let amendedByTitle = 
+            match (r.["amendedByTitle"].HasValues) with
+            | true -> 
+                let titleId = r.["amendedByTitle"].["titleId"].Value<string>()
+                let name = r.["amendedByTitle"].["name"].Value<string>()
+                let provisions = r.["amendedByTitle"].["provisions"].Value<string>()
+                Some {titleId = titleId; name = name; provisions = provisions}
+            | false -> None
+        let dateChanged = 
+            match r.["dateChanged"].HasValues with
+            | true -> 
+                let fromDate = r.["dateChanged"].["fromDate"].Value<DateTime>()
+                let toDate = r.["dateChanged"].["to"].Value<DateTime>()
+                Some({fromDate = fromDate; toDate = toDate})
+            | false -> None
+        {affect = affect; markdown = markdown; affectedByTitle = affectedByTitle; amendedByTitle = amendedByTitle; dateChanged = dateChanged}
+
+    // method to deserialize a json token value to a type or get none if the value is null
+    let private deserializeOptional<'T>(jToken: JToken)  : 'T option =
+            match jToken with
+            | null -> None
+            | t -> 
+                match t.Type with
+                | JTokenType.Null -> None
+                | _ -> Some(jToken.Value<'T>())
+
+
+    let private deserializeVersion(versionJObject : JObject) : Result<VersionInfo, ScrapeError> =
+        try
+            let titleId = deserializeOptional<string>(versionJObject.["titleId"])
+            let start = versionJObject.["start"].Value<DateTime>()
+            let retrospectiveStart = versionJObject.["retrospectiveStart"].Value<DateTime>()
+            let endDateOption  = deserializeOptional<DateTime>(versionJObject.["end"])
+            let isLatest = versionJObject.["isLatest"].Value<bool>()
+            let name = deserializeOptional(versionJObject.["name"])
+            let status = versionJObject.["status"].Value<string>() |> stringToStatus
+            let registerId = deserializeOptional versionJObject.["registerId"]
+            let compilationNumber = deserializeOptional versionJObject.["compilationNumber"]
+            let hasUnincorporatedAmendments = versionJObject.["hasUnincorporatedAmendments"].Value<bool>()
+            let reasons =
+                match versionJObject.["reasons"].HasValues with
+                | true -> 
+                    versionJObject.["reasons"].Children()
+                    |> Seq.map (fun r -> deserializeReason r) |> Seq.toList
+                | false -> []
+            Ok({titleId = titleId; start = start; retrospectiveStart = retrospectiveStart; endDate = endDateOption; isLatest = isLatest; name = name; status = status; registerId = registerId; compilationNumber = compilationNumber; hasUnincorporatedAmendments = hasUnincorporatedAmendments; reasons = reasons})
+        with
+        | ex -> Error(ScrapeError.FrlApiDeserialisationError(ex.Message))
+
+    let private deserializeTitle(titleJObject : JObject) : Result<LegislativeInstrumentInfo, ScrapeError> =
+       
         try
             let id = titleJObject.["id"].Value<string>()
             let name = titleJObject.["name"].Value<string>()
@@ -146,35 +209,7 @@ module FrlApiClient =
                 let start = j.["start"].Value<DateTime>() 
                 let reasons = 
                     j.["reasons"].Children()
-                    |> Seq.map (fun r ->
-                        let affect = 
-                            r.["affect"].Value<string>() |> stringToAffect
-                        let markdown = r.["markdown"].Value<string>()
-                        let affectedByTitle = 
-                            match r.["affectedByTitle"].HasValues with
-                            | true -> 
-                                let titleId = r.["affectedByTitle"].["titleId"].Value<string>()
-                                let name = r.["affectedByTitle"].["name"].Value<string>()
-                                let provisions = r.["affectedByTitle"].["provisions"].Value<string>()
-                                Some {titleId = titleId; name = name; provisions = provisions}
-                            | false -> None
-                        let amendedByTitle = 
-                            match r.["amendedByTitle"].HasValues with
-                            | true -> 
-                                let titleId = r.["amendedByTitle"].["titleId"].Value<string>()
-                                let name = r.["amendedByTitle"].["name"].Value<string>()
-                                let provisions = r.["amendedByTitle"].["provisions"].Value<string>()
-                                Some {titleId = titleId; name = name; provisions = provisions}
-                            | false -> None
-                        let dateChanged = 
-                            match r.["dateChanged"].HasValues with
-                            | true -> 
-                                let fromDate = r.["dateChanged"].["fromDate"].Value<DateTime>()
-                                let toDate = r.["dateChanged"].["to"].Value<DateTime>()
-                                Some({fromDate = fromDate; toDate = toDate})
-                            | false -> None
-                        {affect = affect; markdown = markdown; affectedByTitle = affectedByTitle; amendedByTitle = amendedByTitle; dateChanged = dateChanged}
-                    ) |> Seq.toList
+                    |> Seq.map (fun r -> deserializeReason r) |> Seq.toList
                 {status = status; start = start; reasons = reasons}
             
 
@@ -192,7 +227,7 @@ module FrlApiClient =
                 id = id;
                 makingDate = makingDate;
                 collection = collection;
-                subCollection = subCollection;
+                subCollection = subCollection; 
                 isPrincipal = isPrincipal;
                 isInForce = isInForce;
                 status = status;
@@ -206,13 +241,16 @@ module FrlApiClient =
                 })
 
         with
-        | ex -> Error(FrlApiDeserialisationError.Message(ex.Message))
+        | ex -> Error(ScrapeError.FrlApiDeserialisationError(ex.Message))
         
             
 
 
     // run odata query and page through results, following the next link, aggregating results
-    let rec runODataQuery (fetcher: asyncPageFetcher) (url: Uri) (results: JObject list) : Async<Result<JObject list,ScrapeError>> =
+    
+        
+        
+    let rec private runODataQueryRecursive (fetcher: asyncPageFetcher) (url: Uri) (results: JObject list) : Async<Result<JObject list,ScrapeError>> =
             
             let withSkipParameterValue (uri: Uri) (skipValue: int) : Uri =
                 let query = HttpUtility.ParseQueryString(uri.Query)
@@ -252,8 +290,43 @@ module FrlApiClient =
                                 let skip = int v
                                 // add skip param tu url parameter, not nextLink
                                 let nextLinkWithSkip = withSkipParameterValue url skip
-                                return! runODataQuery fetcher (nextLinkWithSkip) (results @ values)
+                                return! runODataQueryRecursive fetcher (nextLinkWithSkip) (results @ values)
                         with
                     | ex -> return Error(ScrapeError.Exception(ex))
                 | Error e -> return Error(e)
             }
+
+    
+    let runOdataQuery(fetcher: asyncPageFetcher) (url: Uri) = 
+        runODataQueryRecursive fetcher url []
+
+
+    let private deserializeJObjectList(jObjectList: JObject list) (deserializerFunction : JObject -> Result<'T,ScrapeError>) : Result<'T list, ScrapeError> =
+        let listOfResults = jObjectList |> List.map (fun j -> deserializerFunction j)
+        let listOfErrors = listOfResults |> List.choose (fun r -> 
+            match r with
+            | Ok _ -> None
+            | Error e -> Some e)
+        match listOfErrors with
+        | [] -> 
+            let successValues = listOfResults |> List.choose (fun r -> 
+                match r with
+                | Ok v -> Some v
+                | Error _ -> None)
+            Ok(successValues)
+        | _ -> Error(ScrapeError.CompositeScrapeError(listOfErrors))
+
+
+    let getLatestVersion(titleId: string) (fetcher: asyncPageFetcher) : Async<Result<Option<VersionInfo>, ScrapeError>> =
+        async {
+            let currentDateIso = getTodaysDateInSydneyAsIsoString()
+            let query = "versions/search(criteria='affects(Amend)')?$select=compilationNumber,end,hasUnincorporatedAmendments,isLatest,name,reasons,registerId,retrospectiveStart,start,status,titleId&$filter=compilationNumber%20ne%20%270%27%20and%20start%20le%20" + currentDateIso + "%20and%20titleId%20eq%20%27" + titleId + "%27&$orderby=start%20desc&$count=true"
+            let urlWithQuery = $"{frlBaseUrl}/{query}"
+            let! odataQueryResults = runOdataQuery fetcher (new Uri(urlWithQuery))
+            let deserializedVersionInfo = odataQueryResults |> Result.bind (fun jObjectList -> deserializeJObjectList jObjectList deserializeVersion)
+            let latestVersion = deserializedVersionInfo |> Result.map (fun versionInfos -> versionInfos |> List.tryFind (fun v -> v.isLatest))
+            match latestVersion with
+            | Ok(None) -> return Ok(Option.None)
+            | Ok(Some v) -> return Ok(Some(v))
+            | Error e -> return Error e
+        }
