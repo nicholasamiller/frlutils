@@ -9,11 +9,12 @@ open Newtonsoft.Json.Linq
 open System
 open System.Web
 open FrlUtils.Domain
-
+open System.Runtime.CompilerServices
 
 
 module FrlApiClient =
     
+
     type asyncPageFetcher =  string ->  Async<Result<Stream,ScrapeError>>
     
     [<Literal>]
@@ -147,7 +148,7 @@ module FrlApiClient =
                 | _ -> Some(jToken.Value<'T>())
 
 
-    let private deserializeVersion(versionJObject : JObject) : Result<VersionInfo, ScrapeError> =
+    let deserializeVersion(versionJObject : JObject) : Result<VersionInfo, ScrapeError> =
         try
             let titleId = deserializeOptional<string>(versionJObject.["titleId"])
             let start = versionJObject.["start"].Value<DateTime>()
@@ -169,7 +170,7 @@ module FrlApiClient =
         with
         | ex -> Error(ScrapeError.FrlApiDeserialisationError(ex.Message))
 
-    let private deserializeTitle(titleJObject : JObject) : Result<LegislativeInstrumentInfo, ScrapeError> =
+    let deserializeTitle(titleJObject : JObject) : Result<LegislativeInstrumentInfo, ScrapeError> =
        
         try
             let id = titleJObject.["id"].Value<string>()
@@ -328,5 +329,13 @@ module FrlApiClient =
             match latestVersion with
             | Ok(None) -> return Ok(Option.None)
             | Ok(Some v) -> return Ok(Some(v))
-            | Error e -> return Error e
+            | Error e -> return Error e 
         }
+
+    let inferDocumentTypeFromMagicNumbers(fileContent: byte[]) =
+        let magicNumbers = fileContent |> Array.take 4 
+        match magicNumbers with
+        | [| 0x50uy; 0x4Buy; 0x03uy; 0x04uy |] -> Ok(DocumentType.WordDocx)
+        | [| 0xD0uy; 0xCFuy; 0x11uy; 0xE0uy |] -> Ok(DocumentType.WordDoc)
+        | [| 0x25uy; 0x50uy; 0x44uy; 0x46uy |] -> Ok(DocumentType.PDF)
+        | _ -> Error(ScrapeError.Message("Could not determine document type from magic numbers."))

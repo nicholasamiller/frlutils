@@ -14,6 +14,7 @@ open System
 open Newtonsoft.Json.Linq
 open Newtonsoft.Json
 
+
 [<TestClass>]
 type TestClass () =
 
@@ -272,7 +273,7 @@ https://www.legislation.gov.au/Details/F2015L01330""".Split('\n') |> List.ofArra
         
         
         let jObject = JObject.Parse(testJson)
-        let result = deserializeTitle jObject
+        let result = FrlApiClient.deserializeTitle jObject
         match result with
         | Ok(r) -> printf "%s" (r.ToString())
         | _ -> Assert.Fail()

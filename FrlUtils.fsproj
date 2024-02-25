@@ -2,12 +2,13 @@
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
     <PackageId>Shoshin.FrlUtils</PackageId>
-    <Version>4.1.0</Version>
+    <Version>4.1.1</Version>
     <Authors>Nick Miller</Authors>
     <Description>Utilities for scraping and parsing data from Federal Register of Legislation (Australia), in F# using RoP.</Description>
-    <RepositoryUrl>http://github.com/nicholasamiller/frlutils</RepositoryUrl>
+    <RepositoryUrl>https://github.com/nicholasamiller/frlutils</RepositoryUrl>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="AssemblyInfo.fs" />
     <Compile Include="Domain.fs" />
     <Compile Include="Errors.fs" />
     <Compile Include="EmailParsing.fs" />
