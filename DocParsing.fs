@@ -151,7 +151,7 @@ module DocParsing =
         match elementsWithStyle with
         | [] -> None
         | _ ->
-            let elementTextConcatenated = elementsWithStyle |> Seq.map (fun p -> p |> stringifyPara ) |> String.concat " "
+            let elementTextConcatenated = elementsWithStyle  |> Seq.map (fun p -> p |> stringifyPara ) |> String.concat " "
             let paraStyle = new ParagraphStyleId()
             paraStyle.Val <- styleName
             let paraProperties = new ParagraphProperties()
@@ -202,9 +202,12 @@ module DocParsing =
             Ok( getTablesBetweenParas paraStartText paraEndText (getBodyParts docxBinary))
         with 
         | ex -> Error(DocParsingError.Message("Could not get tables."))
-            
     
 
+
+
+    
+        
 
      
 
