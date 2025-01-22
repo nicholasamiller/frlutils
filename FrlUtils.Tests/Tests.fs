@@ -1,13 +1,18 @@
 ﻿namespace FrlUtilsTests
 open Microsoft.VisualStudio.TestTools.UnitTesting
 open System.Net.Http
-open FrlUtils.WebScraping
+open FrlUtils.Domain
 open FrlUtils.DocParsing
 open FrlUtils.EmailParsing
+open FrlUtils.FrlApiClient
 open System.IO
 open System.Collections.Generic
 open DocumentFormat.OpenXml.Wordprocessing
 open DocumentFormat.OpenXml
+open FrlUtils
+open System
+open Newtonsoft.Json.Linq
+open Newtonsoft.Json
 
 
 [<TestClass>]
@@ -33,12 +38,6 @@ type TestClass () =
 
 
     [<TestMethod>]
-    member this.TestGetDocX() =
-          let result = getInstrumentUnauthorisedDoc "F2021C00349" mockFetcher |> Async.RunSynchronously
-          Assert.IsNotNull result
-
-  
-    [<TestMethod>]
     member this.TestTableParser() = 
         let testDocument = (System.IO.File.ReadAllBytes("TestData/F2022C00414.docx"))
         let result = getTablesBetweenParas "Schedule 1—Warlike service" "Endnotes" (getBodyParts (testDocument))
@@ -54,48 +53,7 @@ type TestClass () =
         Assert.IsTrue(result.Length > 0)
 
 
-    [<TestMethod>]
-    member this.ParseCompilationsPage() =
-        let result = FrlUtils.WebScraping.getCompilationsList "C2004A03268" mockFetcher |> Async.RunSynchronously
-        match result with
-        | Ok(r) -> Assert.IsTrue(r.Compilations.Length = 10)
-        | _ -> Assert.Fail()
-     
-    [<TestMethod>]
-    member this.GetLatestCompilation() =
-        let result = FrlUtils.WebScraping.getLatestCompilation "C2004A03268" mockFetcher  |> Async.RunSynchronously
-        match result with
-        | Ok(r) -> Assert.IsTrue(r.Value.RegisterId = "C2022C00150")
-        | _ -> Assert.Fail()
-    
-    [<TestMethod>]
-    member this.GetPrincipalData() =
-        let result = FrlUtils.WebScraping.getPrincipal "C2004A03268" mockFetcher |> Async.RunSynchronously
-        match result with 
-        | Ok(r) -> Assert.IsTrue(r.RegisterId = "C2004A03268")
-        | _ -> Assert.Fail()
-
-    [<TestMethod>]
-    member this.GetRepealedBy() =
-        let result = FrlUtils.WebScraping.getRepealedBy "F2014L00022"  mockFetcher |> Async.RunSynchronously
-        match result with
-        | Ok(r) -> Assert.IsTrue(r.Value = {InstrumentName = "Statement of Principles concerning morbid obesity (Balance of Probabilities) (No. 44 of 2022)"; RegisterId = "F2022L00663"}) 
-        | _ -> Assert.Fail()
-
-    [<TestMethod>]
-    member this.GetEmptyRepealedBy() =
-        let result = FrlUtils.WebScraping.getRepealedBy "F2022L00663" mockFetcher |> Async.RunSynchronously
-        match result with
-        | Ok(r) -> Assert.IsTrue r.IsNone
-        | _ -> Assert.Fail()
-     
-    [<TestMethod>]
-    member this.GetWhatsNew() =
-        let r = FrlUtils.WebScraping.getWhatsNew(mockFetcher) |> Async.RunSynchronously
-        match r with
-        | Ok(r) -> Assert.IsNotNull r
-        | _ -> Assert.Fail()
-
+   
     [<TestMethodAttribute>]
     member this.TestAmendmentParse() =
         let testData = """Statement of Principles concerning external burn (Reasonable Hypothesis) (No. 110 of 2015)
@@ -185,28 +143,142 @@ https://www.legislation.gov.au/Details/F2015L01330""".Split('\n') |> List.ofArra
 
         let conditionDescription = FrlUtils.DocParsing.findFirstNode tree (fun i -> i.Element.InnerText = "Kind of injury, disease or death to which this Statement of Principles relates")
         printfn "%s" (conditionDescription.Value.PrettyPrint())
+    
+        
+    [<TestMethod>]
+    [<TestCategory("Integration")>]
+    member this.TestOdataPaging() =
+        let testQueryUrl = @"https://api.prod.legislation.gov.au/v1/titles/search(criteria='and(text(%22Statement%20of%20Principles%22,name,contains),pointintime(Latest),type(Principal,Amending),collection(LegislativeInstrument),administeringdepartments(%22O-000944%22))')"//?=administeringDepartments%2Ccollection%2ChasCommencedUnincorporatedAmendments%2Cid%2CisInForce%2CisPrincipal%2Cname%2Cnumber%2CoptionalSeriesNumber%2CsearchContexts%2CseriesType%2CsubCollection%2Cyear&=administeringDepartments%2CsearchContexts%28%3DfullTextVersion%2Ctext%29&=searchcontexts%2Ftext%2Frelevance%20desc"
 
+        let fetcher = FrlApiClient.createApiFetcher(new HttpClient())
+        let result = FrlApiClient.runOdataQuery fetcher (new Uri(testQueryUrl)) |> Async.RunSynchronously
+        match result with
+        | Ok(r) -> 
+            Assert.IsTrue(r.Length > 0)
+            // make a jarray of the results and print
+            let jArray = new JArray(r)
+            printf "%s" (jArray.ToString())
+        | Error(e) ->
+            Assert.Fail()
+    
+    [<TestMethod>]
+    [<TestCategory("Integration")>]
+    member this.TestGetLatestComplationWhereThereAreSome() = 
+        let fetcher = FrlApiClient.createApiFetcher(new HttpClient())
+        let result = FrlApiClient.getLatestVersion "F2019L01198" fetcher |> Async.RunSynchronously
+        match result with
+        | Ok(r) -> 
+            match r with
+            | Some(v) -> printf "%s" (v.ToString())
+            | None -> Assert.Fail()
+        | Error(e) ->
+            Assert.Fail()
+    
+    [<TestMethod>]
+
+    [<TestCategory("Integration")>]
+    member this.TestGetLatestComplationWhereNone() = 
+        let fetcher = FrlApiClient.createApiFetcher(new HttpClient())
+        let result = FrlApiClient.getLatestVersion "goat" fetcher |> Async.RunSynchronously
+        match result with
+        | Ok(r) -> 
+            Assert.IsTrue((r = Option.None))
+        | Error(e) ->
+            Assert.Fail()
+        
 
     [<TestMethod>]
-    member this.TestDocumentTypeDoc() = 
-        let testDocument = File.ReadAllBytes("TestData/F2010L02846.doc")
-        let result =  FrlUtils.WebScraping.inferDocumentTypeFromMagicNumbers testDocument
+    member this.TestVersionDeserialisation() =
+        let testJson = """{
+            "titleId": "F2019L01198",
+            "start": "2022-04-02T00:00:00",
+            "retrospectiveStart": "2022-04-02T00:00:00",
+            "end": null,
+            "isLatest": true,
+            "name": "Military Rehabilitation and Compensation (Warlike Service) Determination 2019",
+            "status": "InForce",
+            "registerId": "F2022C00414",
+            "compilationNumber": "3",
+            "publishComments": null,
+            "hasUnincorporatedAmendments": false,
+            "reasons": [
+                {
+                    "affect": "Amend",
+                    "markdown": "sch 1 (item 1) of the [Military Rehabilitation and Compensation (Warlike Service) Amendment Determination 2022 (No. 1)](/F2022L00495)",
+                    "affectedByTitle": {
+                        "titleId": "F2022L00495",
+                        "name": "Military Rehabilitation and Compensation (Warlike Service) Amendment Determination 2022 (No. 1)",
+                        "provisions": "sch 1 (item 1)"
+                    },
+                    "amendedByTitle": null,
+                    "dateChanged": null
+                }
+            ]
+        }"""
+        let jObject = JObject.Parse(testJson)
+        let result = deserializeVersion jObject
         match result with
-        | Ok(i) -> Assert.AreEqual(FrlUtils.Domain.DocumentType.WordDoc,i)
+        | Ok(r) -> printf "%s" (r.ToString())
         | _ -> Assert.Fail()
 
 
     [<TestMethod>]
-    member this.TestDocumentTypeDocX() = 
-        let testDocument = File.ReadAllBytes("TestData/F2023L01180.docx")
-        let result =  FrlUtils.WebScraping.inferDocumentTypeFromMagicNumbers testDocument
+    member this.TestTitleDeserialisation() =
+        let testJson = """{
+    "id": "F2019L01091",
+    "name": "Amendment Statement of Principles concerning hypertension No. 89 of 2019",
+    "makingDate": "2019-08-23T00:00:00",
+    "collection": "LegislativeInstrument",
+    "subCollection": null,
+    "isPrincipal": false,
+    "isInForce": false,
+    "publishComments": null,
+    "status": "Repealed",
+    "hasCommencedUnincorporatedAmendments": false,
+    "originatingBillUri": null,
+    "asMadeRegisteredAt": "2019-08-26T10:17:23.613",
+    "optionalSeriesNumber": "No. 89 of 2019",
+    "year": null,
+    "number": null,
+    "seriesType": null,
+    "nameHistory": [
+      {
+        "name": "Amendment Statement of Principles concerning hypertension No. 89 of 2019",
+        "start": "2019-08-26T00:00:00"
+      }
+    ],
+    "namePossibleFuture": [],
+    "statusHistory": [
+      {
+        "status": "InForce",
+        "start": "2019-08-26T00:00:00",
+        "reasons": []
+      },
+      {
+        "status": "Repealed",
+        "start": "2019-11-15T00:00:00",
+        "reasons": [
+          {
+            "affect": "Repeal",
+            "markdown": "Division 1 of Part 3 of Chapter 3 of the [Legislation Act 2003](/C2004A01224)",
+            "affectedByTitle": null,
+            "amendedByTitle": null,
+            "dateChanged": null
+          }
+        ]
+      }
+    ],
+    "statusPossibleFuture": []
+  }"""
+        
+        
+        let jObject = JObject.Parse(testJson)
+        let result = FrlApiClient.deserializeTitle jObject
         match result with
-        | Ok(i) -> Assert.AreEqual(FrlUtils.Domain.DocumentType.WordDocx,i)
+        | Ok(r) -> printf "%s" (r.ToString())
         | _ -> Assert.Fail()
-    
 
-    
-       
-      
+
+        
         
    

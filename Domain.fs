@@ -3,12 +3,16 @@
 open NodaTime
 open Newtonsoft.Json.Linq
 open NodaTime.Text
-
-
+open System.IO
+open System
+open Newtonsoft.Json
+open Newtonsoft.Json.Converters
 
 module Domain =
+    
 
-       
+   
+           
     let formatDate (d: LocalDate) = LocalDatePattern.Iso.Format(d)
     
     let formatDateOpt (d: LocalDate option) =
@@ -33,8 +37,6 @@ module Domain =
         Type: DocumentType;
         Content: byte[];
     }
-
-
 
     
     type LegRow = {
@@ -93,7 +95,83 @@ module Domain =
             SeriesInfo: SeriesInfo;            
             DocX: byte[];
         }
+    
+
+   
+    type NameHistory = {
+        name: string
+        start: DateTime
+    }
+    
+    type Affect = AsMade | Amend | Repeal | Cease | ChangeDate
+    
+    type AffectingTitle = {
+        titleId: string
+        name: string
+        provisions: string
+    }
+    
+    type DateChange = {
+        fromDate: DateTime
+        toDate: DateTime
+    }
+
+    type StatusReason = {
+        affect: Affect
+        markdown: string
+        affectedByTitle: AffectingTitle option
+        amendedByTitle: AffectingTitle option
+        dateChanged: DateChange option
+    }
+
+
+    type Status =  InForce | Ceased | Repealed | NeverEffective
+    type StatusHistory = {
+        status: Status
+        start: DateTime
+        reasons: StatusReason list
+    }
+    
+    type Collection =  Act | LegislativeInstrument | NotifiableInstrument | AdministrativeArrangementsOrder | Constitution | ContinuedLaw | Gazette | PrerogativeInstrument
+
+    type SubCollection =  Regulations | CourtRules | Rules | ByLaws
+    
+    
+    type FrlSeriesType =  Act | SR | SLI
+   
+    type LegislativeInstrumentInfo = {
+        id: string
+        makingDate: DateTime
+        collection: Collection
+        subCollection: SubCollection option
+        isPrincipal: bool
+        isInForce: bool
+        status: Status
+        hasCommencedUnincorporatedAmendments: bool
+        asMadeRegisteredAt: DateTime
+        optionalSeriesNumber: string option
+        nameHistory: NameHistory list
+        namePossibleFuture: NameHistory list
+        statusHistory: StatusHistory list
+        statusPossibleFuture: StatusHistory list
+    }
+
+
+    type VersionInfo = {
+        titleId: string option
+        start: DateTime
+        retrospectiveStart: DateTime
+        endDate: DateTime option
+        isLatest: Boolean
+        name: string option
+        status: Status
+        registerId: string option
+        compilationNumber: int option
+        hasUnincorporatedAmendments: bool
+        reasons: StatusReason list
+    }
+
 
     
-        
-        
+
+

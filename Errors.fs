@@ -16,8 +16,9 @@ module Errors =
     | Message of string
     | RowParseError of LegRow * string
     | TableParseError of LegTable * string
-   
-     type ScrapeError =
+    
+
+    type ScrapeError =
         | HtmlParseError of Shoshin.HtmlUtils.Errors.HtmlParseError
         | DocParsingError of DocParsingError
         | NotFound of string
@@ -27,6 +28,7 @@ module Errors =
         | XPath of XPathFoundNoNodes
         | MissingAttribute of MissingAttribute
         | CompositeScrapeError of ScrapeError list
+        | FrlApiDeserialisationError of string
 
 
   
