@@ -155,6 +155,7 @@ module FrlApiClient =
             let retrospectiveStart = versionJObject.["retrospectiveStart"].Value<DateTime>()
             let endDateOption  = deserializeOptional<DateTime>(versionJObject.["end"])
             let isLatest = versionJObject.["isLatest"].Value<bool>()
+            let isCurrent = versionJObject.["isCurrent"].Value<bool>()  
             let name = deserializeOptional(versionJObject.["name"])
             let status = versionJObject.["status"].Value<string>() |> stringToStatus
             let registerId = deserializeOptional versionJObject.["registerId"]
@@ -166,7 +167,7 @@ module FrlApiClient =
                     versionJObject.["reasons"].Children()
                     |> Seq.map (fun r -> deserializeReason r) |> Seq.toList
                 | false -> []
-            Ok({titleId = titleId; start = start; retrospectiveStart = retrospectiveStart; endDate = endDateOption; isLatest = isLatest; name = name; status = status; registerId = registerId; compilationNumber = compilationNumber; hasUnincorporatedAmendments = hasUnincorporatedAmendments; reasons = reasons})
+            Ok({titleId = titleId; start = start; retrospectiveStart = retrospectiveStart; endDate = endDateOption; isLatest = isLatest; isCurrent = isCurrent; name = name; status = status; registerId = registerId; compilationNumber = compilationNumber; hasUnincorporatedAmendments = hasUnincorporatedAmendments; reasons = reasons})
         with
         | ex -> Error(ScrapeError.FrlApiDeserialisationError(ex.Message))
 

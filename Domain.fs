@@ -163,6 +163,7 @@ module Domain =
         retrospectiveStart: DateTime
         endDate: DateTime option
         isLatest: Boolean
+        isCurrent: Boolean
         name: string option
         status: Status
         registerId: string option
