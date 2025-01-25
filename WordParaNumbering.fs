@@ -29,13 +29,19 @@ module WordDocumentParser =
                     styles.[numId] <- numFormatList
         styles
 
+
     let private extractText (body: Body, numberingStyles: Dictionary<_, _>) =
         let text = ref ""
         let currentNumbers = Dictionary<_, _>() // Level, CurrentNumber
 
         for para in body.Elements<Paragraph>() do
-            let numIdElement = para.ParagraphProperties?.NumberingProperties?.NumberingId
-            let levelIdElement = para.ParagraphProperties?.NumberingProperties?.NumberingLevelReference
+
+            let numIdElement =
+                if para.ParagraphProperties <> null && para.ParagraphProperties.NumberingProperties <> null then para.ParagraphProperties.NumberingProperties.NumberingId else null
+
+            let levelIdElement =
+                if para.ParagraphProperties <> null && para.ParagraphProperties.NumberingProperties <> null then para.ParagraphProperties.NumberingProperties.NumberingLevelReference else null
+
 
             if numIdElement <> null && levelIdElement <> null then
                 let numId = numIdElement.Val.Value
