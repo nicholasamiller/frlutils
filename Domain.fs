@@ -56,7 +56,6 @@ module Domain =
             CompilationNumber:  int option;
             StartDate: LocalDate;
             EndDate: LocalDate option;
-            IncorporatingAmendmentsTo: string
         }
         member this.toResponseJson() =
          
@@ -68,8 +67,7 @@ module Domain =
                 new JProperty("registerId", this.RegisterId),
                 new JProperty("compilationNumber", formatCompilationNumber this.CompilationNumber ),
                 new JProperty("startDate", formatDate this.StartDate),
-                new JProperty("endDate", formatDateOpt this.EndDate),
-                new JProperty("incorporatingAmendmentsTo", this.IncorporatingAmendmentsTo)
+                new JProperty("endDate", formatDateOpt this.EndDate)
             )
             
 
