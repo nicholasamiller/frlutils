@@ -18,7 +18,10 @@ module FrlApiClient =
     type asyncPageFetcher =  string ->  Async<Result<Stream,ScrapeError>>
     
     [<Literal>]
-    let private frlBaseUrl = "https://api.prod.legislation.gov.au/v1"
+    let private frlApiBaseUrl = "https://api.prod.legislation.gov.au/v1"
+
+    [<Literal>]
+    let private frlSiteBaseUrl = "https://www.legislation.gov.au"
     
     
     
@@ -43,13 +46,14 @@ module FrlApiClient =
             with
             | ex -> return Error(ScrapeError.Exception(ex))
         }
+    
+
 
     let getWordDocInstrumentById(id: string) (fetcher: asyncPageFetcher) =
         async {
             
             let todaysDate = getTodaysDateInSydneyAsIsoString()
-            let url = $"{frlBaseUrl}/{id}/{todaysDate}/{todaysDate}/original/word"
-            // read stream as binary and convert to word doc
+            let url = $"{frlSiteBaseUrl}/{id}/{todaysDate}/{todaysDate}/original/word"
             let! contentResult = fetcher url
             match contentResult with
             | Ok stream ->
@@ -63,7 +67,27 @@ module FrlApiClient =
                 | ex -> return Error(ScrapeError.Exception(ex)) // Assuming Error takes a string message
             | Error e -> return Error(e)
         }
-   
+
+
+    let getPdfDocInstrumentById(id: string) (fetcher: asyncPageFetcher) =
+        async {
+            let todaysDate = getTodaysDateInSydneyAsIsoString()
+            let url = $"{frlSiteBaseUrl}/{id}/asmade/{todaysDate}/text/original/pdf"
+            let! contentResult = fetcher url
+            match contentResult with
+            | Ok stream ->
+                try
+                    use ms = new MemoryStream()
+                    do! stream.CopyToAsync(ms) |> Async.AwaitTask
+                    ms.Seek(0L, SeekOrigin.Begin) |> ignore
+                    let array = ms.ToArray()
+                    return Ok array
+                with
+                | ex -> return Error(ScrapeError.Exception(ex))
+            | Error e -> return Error(e)
+        }
+
+    
     let private stringToAffect (input: string) : Affect =
             match input with
             | "AsMade" -> AsMade
@@ -303,7 +327,7 @@ module FrlApiClient =
         runODataQueryRecursive fetcher url []
 
 
-    let private deserializeJObjectList(jObjectList: JObject list) (deserializerFunction : JObject -> Result<'T,ScrapeError>) : Result<'T list, ScrapeError> =
+    let deserializeJObjectList(jObjectList: JObject list) (deserializerFunction : JObject -> Result<'T,ScrapeError>) : Result<'T list, ScrapeError> =
         let listOfResults = jObjectList |> List.map (fun j -> deserializerFunction j)
         let listOfErrors = listOfResults |> List.choose (fun r -> 
             match r with
@@ -323,7 +347,7 @@ module FrlApiClient =
         async {
             let currentDateIso = getTodaysDateInSydneyAsIsoString()
             let query = "versions/search(criteria='affects(Amend)')?$select=compilationNumber,end,hasUnincorporatedAmendments,isLatest,name,reasons,registerId,retrospectiveStart,start,status,titleId&$filter=compilationNumber%20ne%20%270%27%20and%20start%20le%20" + currentDateIso + "%20and%20titleId%20eq%20%27" + titleId + "%27&$orderby=start%20desc&$count=true"
-            let urlWithQuery = $"{frlBaseUrl}/{query}"
+            let urlWithQuery = $"{frlApiBaseUrl}/{query}"
             let! odataQueryResults = runOdataQuery fetcher (new Uri(urlWithQuery))
             let deserializedVersionInfo = odataQueryResults |> Result.bind (fun jObjectList -> deserializeJObjectList jObjectList deserializeVersion)
             let latestVersion = deserializedVersionInfo |> Result.map (fun versionInfos -> versionInfos |> List.tryFind (fun v -> v.isLatest))
