@@ -356,6 +356,17 @@ module FrlApiClient =
             | Ok(Some v) -> return Ok(Some(v))
             | Error e -> return Error e 
         }
+    
+
+    let getVersionsForTitleId(titleid: string) (fetcher: asyncPageFetcher) : Async<Result<VersionInfo list, ScrapeError>> =
+        async {
+            let currentDateIso = getTodaysDateInSydneyAsIsoString()
+            let query = "versions/search(criteria='affects(Amend)')?$filter=start%20le%20" + currentDateIso + "%20and%20titleId%20eq%20%27" +  titleid  + "%27&$orderby=start%20desc&$count=true&$skip=0"
+            let urlWithQuery = $"{frlApiBaseUrl}/{query}"
+            let! odataQueryResults = runOdataQuery fetcher (new Uri(urlWithQuery))
+            let deserializedVersionInfo = odataQueryResults |> Result.bind (fun jObjectList -> deserializeJObjectList jObjectList deserializeVersion)
+            return deserializedVersionInfo
+        }
 
     let inferDocumentTypeFromMagicNumbers(fileContent: byte[]) =
         let magicNumbers = fileContent |> Array.take 4 
