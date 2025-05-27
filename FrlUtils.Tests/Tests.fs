@@ -103,8 +103,15 @@ https://www.legislation.gov.au/Details/F2015L01330""".Split('\n') |> List.ofArra
         let rootElementIndex = bodyParts |> List.findIndex (fun e -> e = rootElement)
         let remaineder = bodyParts |> List.skip (rootElementIndex + 1)
         let result = parseElementListToTree rootElement remaineder sequenceOfStyleLevels
+        printfn "%s" (result.PrettyPrint())
         Assert.IsTrue (result.Children.Length = 2)
+    
+//    [<TestMethod>]
+//    member this.GetParaNumbers() =
         
+          
+
+
     
     [<TestMethod>]
     member this.ParseRealDocXToTree() = 

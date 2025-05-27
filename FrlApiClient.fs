@@ -47,13 +47,12 @@ module FrlApiClient =
             | ex -> return Error(ScrapeError.Exception(ex))
         }
     
-
-
+    // example https://www.legislation.gov.au/F2025L00144/asmade/2025-02-19/text/original/word
     let getWordDocInstrumentById(id: string) (fetcher: asyncPageFetcher) =
         async {
             
             let todaysDate = getTodaysDateInSydneyAsIsoString()
-            let url = $"{frlSiteBaseUrl}/{id}/{todaysDate}/{todaysDate}/original/word"
+            let url = $"{frlSiteBaseUrl}/{id}/asmade/{todaysDate}/text/original/word"
             let! contentResult = fetcher url
             match contentResult with
             | Ok stream ->
@@ -357,16 +356,24 @@ module FrlApiClient =
             | Error e -> return Error e 
         }
     
-
-    let getVersionsForTitleId(titleid: string) (fetcher: asyncPageFetcher) : Async<Result<VersionInfo list, ScrapeError>> =
+    
+    let getVersionsForTitleIds (fetcher: asyncPageFetcher) ([<ParamArray>] titleids: string[]) : Async<Result<VersionInfo list, ScrapeError>> =
         async {
             let currentDateIso = getTodaysDateInSydneyAsIsoString()
-            let query = "versions/search(criteria='affects(Amend)')?$filter=start%20le%20" + currentDateIso + "%20and%20titleId%20eq%20%27" +  titleid  + "%27&$orderby=start%20desc&$count=true&$skip=0"
-            let urlWithQuery = $"{frlApiBaseUrl}/{query}"
-            let! odataQueryResults = runOdataQuery fetcher (new Uri(urlWithQuery))
-            let deserializedVersionInfo = odataQueryResults |> Result.bind (fun jObjectList -> deserializeJObjectList jObjectList deserializeVersion)
+            let titleIdFilter =
+                titleids
+                |> Array.map (fun id -> sprintf "titleId eq '%s'" id)
+                |> String.concat " or "
+            let query =
+                sprintf "versions?$filter=(%s)&$orderby=start%%20desc&$count=true&$skip=0"
+                         titleIdFilter
+            let urlWithQuery = sprintf "%s/%s" frlApiBaseUrl query
+            let! odataQueryResults = runOdataQuery fetcher (Uri(urlWithQuery))
+            let deserializedVersionInfo =
+                odataQueryResults |> Result.bind (fun jObjectList -> deserializeJObjectList jObjectList deserializeVersion)
             return deserializedVersionInfo
         }
+
 
     let inferDocumentTypeFromMagicNumbers(fileContent: byte[]) =
         let magicNumbers = fileContent |> Array.take 4 

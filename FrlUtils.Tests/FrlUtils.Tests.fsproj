@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <Compile Include="Tests.fs" />
+    <Page Include="TestData\generatedParaNumbersTest.docx" />
     <None Include="TestData\F2010L02846.doc">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
