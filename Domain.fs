@@ -1,5 +1,6 @@
 ﻿namespace FrlUtils
 
+open DocumentFormat.OpenXml.Wordprocessing
 open NodaTime
 open Newtonsoft.Json.Linq
 open NodaTime.Text
@@ -11,7 +12,8 @@ open Newtonsoft.Json.Converters
 module Domain =
     
 
-   
+    // A function that, given a Paragraph, returns the order it appears in the document, starting from 0
+    type SequentialNumberingProvider = Paragraph -> string 
            
     let formatDate (d: LocalDate) = LocalDatePattern.Iso.Format(d)
     

@@ -1,72 +1,90 @@
 ﻿namespace FrlUtils
 
+open System.IO
+open System.Xml.Linq
 open DocumentFormat.OpenXml.Packaging
 open DocumentFormat.OpenXml.Wordprocessing
 open System
 open System.Collections.Generic
 open System.Linq
+open FrlUtils.Domain
+open OpenXmlPowerTools
 
-module WordDocumentParser =
+module WordParaNumbering =
+    
+    open HtmlAgilityPack
 
-    let private buildNumberingStyles (numberingPart: NumberingDefinitionsPart) =
-        let styles = Dictionary<_, _>()
-        if numberingPart <> null then
-            for num in numberingPart.Numbering.Elements<NumberingInstance>() do
-                let numId = num.NumberID
-                let abstractNumId = num.AbstractNumId.Val.Value
+    /// Represents a paragraph parsed from HTML exported from Word
+    type ParagraphFromHtml = {
+        WordId: string
+        WordStyle: string
+        WordNumberingLogical: string option
+        WordNumberingText: string option
+    }
+    
+    
+  
+    
+    let ofBytesToHtmlString (docxBytes: byte[]) : string =
+        if docxBytes = null || docxBytes.Length = 0 then
+            invalidArg (nameof docxBytes) "Empty input"
 
-                let levels = 
-                    numberingPart.Numbering.Elements<AbstractNum>()
-                    |> Seq.tryFind (fun a -> a.AbstractNumberId = abstractNumId)
-                    |> fun maybeAbstractNum -> maybeAbstractNum.Value.Descendants<Level>()
+        let wml = new WmlDocument("in-memory.docx", new MemoryStream(docxBytes, 0, docxBytes.Length, false, true))
+        let settings = new WmlToHtmlConverterSettings()
+        settings.PageTitle <- "Export"
+        settings.FabricateCssClasses <- true
+        settings.CssClassPrefix <- "pt-"
+        settings.RestrictToSupportedLanguages <- false
+        settings.RestrictToSupportedNumberingFormats <- false
 
-                if levels <> null then
-                    let numFormatList = List< string >()
-                    for level in levels do
-                        let numberFormat = level.NumberingFormat.Val.Value.ToString()
-                        numFormatList.Add(numberFormat)
+        let xhtml : XElement = WmlToHtmlConverter.ConvertToHtml(wml, settings)
+        "<!DOCTYPE html>\n" + xhtml.ToString(SaveOptions.DisableFormatting) 
 
-                    styles.[numId] <- numFormatList
-        styles
-
-
-    let private extractText (body: Body, numberingStyles: Dictionary<_, _>) =
-        let text = ref ""
-        let currentNumbers = Dictionary<_, _>() // Level, CurrentNumber
-
-        for para in body.Elements<Paragraph>() do
-
-            let numIdElement =
-                if para.ParagraphProperties <> null && para.ParagraphProperties.NumberingProperties <> null then para.ParagraphProperties.NumberingProperties.NumberingId else null
-
-            let levelIdElement =
-                if para.ParagraphProperties <> null && para.ParagraphProperties.NumberingProperties <> null then para.ParagraphProperties.NumberingProperties.NumberingLevelReference else null
-
-
-            if numIdElement <> null && levelIdElement <> null then
-                let numId = numIdElement.Val.Value
-                let levelId = levelIdElement.Val.Value
-
-                if not (currentNumbers.ContainsKey(levelId)) then
-                    currentNumbers.[levelId] <- 1
-                else
-                    currentNumbers.[levelId] <- currentNumbers.[levelId] + 1
-
-                for key in currentNumbers.Keys |> Seq.where (fun k -> k > levelId) |> Seq.toList do
-                    currentNumbers.[key] <- 1
-
-                if numberingStyles.TryGetValue(numId, &levels) && levelId < levels.Count then
-                    let numberFormat = levels.[levelId]
-                    text := !text + sprintf "%s%d. " numberFormat currentNumbers.[levelId]
-
-            text := !text + para.InnerText + Environment.NewLine
-        !text
-
-    let extractTextWithNumbering (filePath: string) =
-        use wordDoc = WordprocessingDocument.Open(filePath, false)
-        let mainPart = wordDoc.MainDocumentPart
-        if mainPart = null then
-            ""
+    /// Parse Word-exported HTML and return one ParagraphFromHtml per <p> element.
+    /// - WordId comes from data-w-paraId on the <p>
+    /// - WordStyle comes from data-w-style on the <p>
+    /// - WordNumbering comes from data-w-listItemRun on the first child <span> of the <p> (if present)
+    let  parseParagraphsFromHtml (html: string) : ParagraphFromHtml list =
+        if String.IsNullOrWhiteSpace html then
+            []
         else
-            let numberingStyles = buildNumberingStyles (mainPart.NumberingDefinitionsPart)
-            extractText (mainPart.Document.Body, numberingStyles)
+            let doc = HtmlDocument()
+            doc.OptionFixNestedTags <- true
+            doc.LoadHtml(html)
+
+            let pNodes = doc.DocumentNode.SelectNodes("//p")
+            if isNull pNodes then
+                []
+            else
+                [ for p in pNodes do
+                    let wordId = p.GetAttributeValue("data-w-paraId", "")
+                    let wordStyle = p.GetAttributeValue("data-w-style", "")
+
+                    // Per requirement: numbering is taken from the first span child of the p
+                    let firstSpan = p.SelectSingleNode("./span[1]")
+                    let numberingLogical =
+                        if isNull firstSpan then None
+                        else
+                            let v = firstSpan.GetAttributeValue("data-w-listItemRun", null)
+                            if String.IsNullOrEmpty v then None else Some v
+                    let numberingText =
+                        if isNull firstSpan then None
+                        else
+                            let t = firstSpan.InnerText
+                            if String.IsNullOrWhiteSpace t then None else Some t
+
+                    yield { WordId = wordId; WordStyle = wordStyle; WordNumberingLogical = numberingLogical; WordNumberingText = numberingText } ]
+    let getMapOfParasToNumbering (docxBytes: byte[]) : Map<string, ParagraphFromHtml> =
+        // converted html has sequential numbers of paras in attributes
+        let html = ofBytesToHtmlString docxBytes
+        let paras = parseParagraphsFromHtml html
+        paras |> List.map (fun p -> p.WordId,  p) |> Map.ofList
+    
+    let createNumberingProvider (wordDoc : WordprocessingDocument) : SequentialNumberingProvider =
+        let paras = wordDoc.MainDocumentPart.Document.Body.Elements<Paragraph>() |> Seq.toList
+        fun (p: Paragraph) ->
+            let index = paras |> List.tryFindIndex (fun x -> x.Equals(p))
+            match index with
+                | Some i -> (i).ToString() 
+                | None -> "" // not found, should not happen
+                

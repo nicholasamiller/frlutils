@@ -12,8 +12,8 @@
     <Compile Include="Domain.fs" />
     <Compile Include="Errors.fs" />
     <Compile Include="EmailParsing.fs" />
+    <Compile Include="WordParaNumbering.fs" />
     <Compile Include="DocParsing.fs" />
-    <None Include="WordParaNumbering.fs" />
     <Compile Include="AsyncExtensions.fs" />
     <Compile Include="FrlApiClient.fs" />
   </ItemGroup>
@@ -27,9 +27,9 @@
     <PackageReference Include="Shoshin.HtmlUtils" Version="0.1.0" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Update="FSharp.Core" Version="9.0.101" />
+    <PackageReference Update="FSharp.Core" Version="9.0.303" />
   </ItemGroup>
   <ItemGroup>
-    <OpenApiReference Include="swagger.json" />
+    <ProjectReference Include="OpenXmlPowerToolsFork\OpenXmlPowerToolsFork.csproj" />
   </ItemGroup>
 </Project>

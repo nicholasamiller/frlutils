@@ -1,4 +1,6 @@
 ﻿namespace FrlUtilsTests
+open System.Linq
+open System.Xml.Linq
 open Microsoft.VisualStudio.TestTools.UnitTesting
 open System.Net.Http
 open FrlUtils.Domain
@@ -13,6 +15,7 @@ open FrlUtils
 open System
 open Newtonsoft.Json.Linq
 open Newtonsoft.Json
+open FrlUtils.WordParaNumbering
 
 
 [<TestClass>]
@@ -106,13 +109,9 @@ https://www.legislation.gov.au/Details/F2015L01330""".Split('\n') |> List.ofArra
         printfn "%s" (result.PrettyPrint())
         Assert.IsTrue (result.Children.Length = 2)
     
-//    [<TestMethod>]
-//    member this.GetParaNumbers() =
+ 
         
-          
-
-
-    
+        
     [<TestMethod>]
     member this.ParseRealDocXToTree() = 
         let sequenceOfStyleLevels = ["Plainheader"; "LV1"; "LV2"; "LV3"; "LV4"; "LV5"; "LV6"; "LV7"; "LV8"; "LV9"; "LV10"]
@@ -286,6 +285,28 @@ https://www.legislation.gov.au/Details/F2015L01330""".Split('\n') |> List.ofArra
         | _ -> Assert.Fail()
 
 
+    [<TestMethod>]
+    member this.Test_ParseParagraphsFromHtml() =
+        let html = """<html><body><div><p dir="ltr" data-w-style="LV2" data-w-paraId="48D97008" class="pt-000000"><span lang="en-AU" data-w-listItemRun="1.1" class="pt-000001">(1)</span><a id="_Ref409598124" class="pt-000002"></a><a id="_Ref402529683" class="pt-000002"></a><span lang="en-AU" class="pt-DefaultParagraphFont">For the purposes of this Statement of Principles, tardive dyskinesia:</span></p><p dir="ltr" data-w-style="LV3" data-w-paraId="58ABCA15" class="pt-000003"><span lang="en-AU" data-w-listItemRun="1.1.1" class="pt-000001">(a)</span><span lang="en-AU" class="pt-DefaultParagraphFont">means a movement disorder which meets the following criteria (derived from DSM-5-TR):</span></p><p dir="ltr" data-w-style="LV4" data-w-paraId="5174660A" class="pt-000004"><span lang="en-AU" data-w-listItemRun="1.1.1.1" class="pt-000001">(i)</span><span lang="en-AU" class="pt-DefaultParagraphFont">abnormal, involuntary movements of the tongue, jaw, trunk, or extremities that develop in association with the use of medications that block postsynaptic dopamine receptors;</span></p><p dir="ltr" data-w-style="LV4" data-w-paraId="797B6260" class="pt-000004"><span lang="en-AU" data-w-listItemRun="1.1.1.2" class="pt-000001">(ii)</span><span lang="en-AU" xml:space="preserve" class="pt-DefaultParagraphFont">the movements are present over a period of at least 4 weeks; </span></p><p dir="ltr" data-w-style="LV4" data-w-paraId="0D79E76D" class="pt-000004"><span lang="en-AU" data-w-listItemRun="1.1.1.3" class="pt-000001">(iii)</span><span lang="en-AU" class="pt-DefaultParagraphFont">there must be a history of use of the offending agent for at least 3 months in individuals &lt;60 years of age or at least 1 month in individuals age 60 years or older; and</span></p><p dir="ltr" data-w-style="LV4" data-w-paraId="18AFFF77" class="pt-000004"><span lang="en-AU" data-w-listItemRun="1.1.1.4" class="pt-000001">(iv)</span><span lang="en-AU" xml:space="preserve" class="pt-DefaultParagraphFont">symptoms and signs develop during medication use or within 4 weeks of withdrawal from an oral agent or within 8 weeks of withdrawal of a long-acting injectable agent; and  </span></p><p dir="ltr" class="pt-Normal"><span xml:space="preserve" class="pt-000005"> </span></p></div></body></html>"""
+        let result = parseParagraphsFromHtml html
+        Assert.AreEqual(7, result.Length)
+        Assert.AreEqual("48D97008", result.[0].WordId)
+        Assert.AreEqual("LV2", result.[0].WordStyle)
+        Assert.AreEqual(Some "1.1", result.[0].WordNumberingLogical)
+        Assert.AreEqual("58ABCA15", result.[1].WordId)
+        Assert.AreEqual("LV3", result.[1].WordStyle)
+        Assert.AreEqual(Some "1.1.1", result.[1].WordNumberingLogical)
+        Assert.AreEqual("5174660A", result.[2].WordId)
+        Assert.AreEqual("LV4", result.[2].WordStyle)
+        Assert.AreEqual(Some "1.1.1.1", result.[2].WordNumberingLogical)
+        // Last p has no attributes; should be empty strings and no numbering
+        Assert.AreEqual("", result.[6].WordId)
+        Assert.AreEqual("", result.[6].WordStyle)
+        Assert.AreEqual(None, result.[6].WordNumberingLogical)
+    
+    [<TestMethod>]
+    member this.Test_GetMapOfParasToNumbering() =
+        let testDoc = System.IO.File.ReadAllBytes("TestData/Meaning of tardive dyskinesia.docx")
+        let result = getMapOfParasToNumbering testDoc
+        printf "%A" result
         
-        
-   

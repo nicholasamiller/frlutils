@@ -1,6 +1,10 @@
 ﻿namespace FrlUtils
+open System
+open System.Xml
+open System.Xml.Linq
 open DocumentFormat.OpenXml.Wordprocessing
 open DocumentFormat.OpenXml
+open Microsoft.FSharp.Core
 open Newtonsoft.Json
 open System.IO
 open DocumentFormat.OpenXml.Packaging
@@ -12,9 +16,11 @@ open Errors
 
 
 module DocParsing =
+    // get the position of the para in the document, starting from zero    
+            
+ 
+                
     
-    
-  
     type DocNode = {
         Element: OpenXmlElement;
         mutable Children: DocNode list;
@@ -26,6 +32,16 @@ module DocParsing =
                 let childrenString = node.Children |> List.map (fun i -> recurse i (indent + 2)) |> String.concat ""
                 indentString + elementString + System.Environment.NewLine + childrenString
             recurse this 0
+            
+        member this.PrettyPrintWithParaNumbering(numberingProvider : SequentialNumberingProvider) =
+            let rec recurse (node : DocNode) (indent : int) =
+                
+                let indentString = String.replicate indent " "
+                let elementString =  node.Element.InnerText 
+                
+                let childrenString = node.Children |> List.map (fun i -> recurse i (indent + 2)) |> String.concat ""
+                indentString + elementString + System.Environment.NewLine + childrenString
+            recurse this 0 
 
     let findFirstNode (node: DocNode) (predicate : DocNode -> bool) : DocNode option =
             let rec recurse (node : DocNode) =
@@ -39,6 +55,7 @@ module DocParsing =
                     | [] -> None
                     | _ -> childResults |> List.head
             recurse node
+    
     
     let getWordDoc (ms : MemoryStream) =
         WordprocessingDocument.Open(ms,false)
@@ -203,7 +220,6 @@ module DocParsing =
         with 
         | ex -> Error(DocParsingError.Message("Could not get tables."))
     
-
 
 
     
