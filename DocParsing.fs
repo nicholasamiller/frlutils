@@ -18,9 +18,6 @@ open Errors
 module DocParsing =
     // get the position of the para in the document, starting from zero    
             
- 
-                
-    
     type DocNode = {
         Element: OpenXmlElement;
         mutable Children: DocNode list;
@@ -33,12 +30,29 @@ module DocParsing =
                 indentString + elementString + System.Environment.NewLine + childrenString
             recurse this 0
             
-        member this.PrettyPrintWithParaNumbering(numberingProvider : SequentialNumberingProvider) =
+        member this.PrettyPrintWithParaNumbering(provider: ParagraphNumberTextProvider) =
             let rec recurse (node : DocNode) (indent : int) =
                 
                 let indentString = String.replicate indent " "
-                let elementString =  node.Element.InnerText 
+                let elementString =  node.Element.InnerText
+                let paragraph = match node.Element with 
+                                | :? Paragraph as p -> p
+                                | _ -> null
+                let paraId = 
+                    match paragraph with
+                    | null -> None
+                    | p -> WordParaNumbering.getParaId p
                 
+                let paraNumberText =
+                    match paraId with
+                    | Some(id) -> provider id
+                    | None -> None
+               
+                let elementString = 
+                    match paraNumberText with
+                    | Some(num) -> sprintf "%s %s" num elementString
+                    | None -> elementString
+                 
                 let childrenString = node.Children |> List.map (fun i -> recurse i (indent + 2)) |> String.concat ""
                 indentString + elementString + System.Environment.NewLine + childrenString
             recurse this 0 
@@ -58,7 +72,13 @@ module DocParsing =
     
     
     let getWordDoc (ms : MemoryStream) =
-        WordprocessingDocument.Open(ms,false)
+        let settings = new OpenSettings()
+        settings.MarkupCompatibilityProcessSettings <-
+            MarkupCompatibilityProcessSettings(
+                MarkupCompatibilityProcessMode.ProcessAllParts,
+                FileFormatVersions.Office2010) // or Office2013/2016 if you prefer
+        WordprocessingDocument.Open(ms,false, settings)
+         
 
     let getBodyParts (ba : byte[]) =
         use ms = new MemoryStream(ba)

@@ -12,8 +12,8 @@ open Newtonsoft.Json.Converters
 module Domain =
     
 
-    // A function that, given a Paragraph, returns the order it appears in the document, starting from 0
-    type SequentialNumberingProvider = Paragraph -> string 
+    // get the number text for a para ID
+    type ParagraphNumberTextProvider = string -> string option 
            
     let formatDate (d: LocalDate) = LocalDatePattern.Iso.Format(d)
     
