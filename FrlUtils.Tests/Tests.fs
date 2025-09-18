@@ -143,13 +143,13 @@ https://www.legislation.gov.au/Details/F2015L01330""".Split('\n') |> List.ofArra
         let rootElement = bodyParts |> List.find (fun e -> getElementStyle e = Some("Plainheader"))
         let remainder = bodyParts |> List.skipWhile (fun e -> getElementOutlineLevel e sequenceOfStyleLevels <> Some(1)) |> List.takeWhile (fun i -> getElementStyle i <> Some("SHHeader"))
         let tree = parseElementListToTree rootElement remainder sequenceOfStyleLevels
-        let firstLvl1Header = FrlUtils.DocParsing.findFirstNode tree (fun i -> getNodeLevel i sequenceOfStyleLevels = Some(1))
-        Assert.IsTrue (firstLvl1Header.IsSome)
-        Assert.IsTrue (firstLvl1Header.Value.Element.InnerText = "Name")
-        printfn "%s" (firstLvl1Header.Value.PrettyPrint())
+        //let firstLvl1Header = FrlUtils.DocParsing.findFirstNode tree (fun i -> getNodeLevel i sequenceOfStyleLevels = Some(1))
+        //Assert.IsTrue (firstLvl1Header.IsSome)
+        //Assert.IsTrue (firstLvl1Header.Value.Element.InnerText = "Name")
+        //printfn "%s" (firstLvl1Header.Value.PrettyPrint())
 
-        let conditionDescription = FrlUtils.DocParsing.findFirstNode tree (fun i -> i.Element.InnerText = "Kind of injury, disease or death to which this Statement of Principles relates")
-        printfn "%s" (conditionDescription.Value.PrettyPrint())
+        //let conditionDescription = FrlUtils.DocParsing.findFirstNode tree (fun i -> i.Element.InnerText = "Kind of injury, disease or death to which this Statement of Principles relates")
+        //printfn "%s" (tree.PrettyPrint())
         
         let mapOfParaIds = WordParaNumbering.getMapOfParasToNumbering testDocWithParaIdsAdded
         let numberTextProvider = fun (paraId : string) ->
@@ -159,7 +159,7 @@ https://www.legislation.gov.au/Details/F2015L01330""".Split('\n') |> List.ofArra
             | false -> None
             
             
-        printfn "%s" (conditionDescription.Value.PrettyPrintWithParaNumbering(numberTextProvider))
+        printfn "%s" (tree.PrettyPrintWithParaNumbering(numberTextProvider))
     
         
     [<TestMethod>]

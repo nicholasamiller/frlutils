@@ -79,7 +79,7 @@ module WordParaNumbering =
             doc.OptionFixNestedTags <- true
             doc.LoadHtml(html)
 
-            let pNodes = doc.DocumentNode.SelectNodes("//p") |> Seq.filter (fun n -> not (String.IsNullOrEmpty (n.GetAttributeValue("data-w-paraId", ""))))
+            let pNodes = doc.DocumentNode.Descendants() |> Seq.filter (fun n -> not (String.IsNullOrEmpty (n.GetAttributeValue("data-w-paraId", ""))))
                     
             [ for p in pNodes do
                 let wordId = p.GetAttributeValue("data-w-paraId", "")
@@ -123,46 +123,3 @@ module WordParaNumbering =
                 let a = p.GetAttribute("paraId", w14ns)
                 if String.IsNullOrEmpty a.Value then None else Some a.Value
             | sv -> Some sv.Value 
-    
-    let printParaIds (docxBytes: byte[]) =
-    // Ensure MC processing so w14:* is surfaced to SDK properties
-        let settings = OpenSettings()
-        settings.MarkupCompatibilityProcessSettings <-
-            MarkupCompatibilityProcessSettings(
-                MarkupCompatibilityProcessMode.ProcessAllParts,
-                FileFormatVersions.Office2010)
-
-        use ms  = new MemoryStream(docxBytes)      // read-only open is fine
-        use doc = WordprocessingDocument.Open(ms, false, settings)
-
-        let w14ns = "http://schemas.microsoft.com/office/word/2010/wordml"
-
-        let tryParaId (p: Paragraph) =
-            // Prefer the strongly-typed property (available with MC processing);
-            // fall back to raw attribute to be extra robust.
-            match p.ParagraphId with
-            | null -> 
-                let a = p.GetAttribute("paraId", w14ns)
-                if String.IsNullOrEmpty a.Value then None else Some a.Value
-            | sv when isNull sv.Value ->
-                let a = p.GetAttribute("paraId", w14ns)
-                if String.IsNullOrEmpty a.Value then None else Some a.Value
-            | sv -> Some sv.Value
-
-        let allParas : seq<Paragraph> =
-            seq {
-                let body = doc.MainDocumentPart.Document.Body
-                if not (isNull body) then yield! body.Descendants<Paragraph>()
-                for hp in doc.MainDocumentPart.HeaderParts  do yield! hp.Header.Descendants<Paragraph>()
-                for fp in doc.MainDocumentPart.FooterParts  do yield! fp.Footer.Descendants<Paragraph>()
-                match doc.MainDocumentPart.FootnotesPart with
-                | null -> ()
-                | fp   -> yield! fp.Footnotes.Descendants<Paragraph>()
-                match doc.MainDocumentPart.EndnotesPart with
-                | null -> ()
-                | ep   -> yield! ep.Endnotes.Descendants<Paragraph>()
-            }
-
-        allParas
-        |> Seq.mapi (fun i p -> i, tryParaId p |> Option.defaultValue "<none>")
-        |> Seq.iter (fun (i, pid) -> printfn "p[%04d] paraId=%s" i pid) 
