@@ -122,4 +122,7 @@ module WordParaNumbering =
             | sv when isNull sv.Value ->
                 let a = p.GetAttribute("paraId", w14ns)
                 if String.IsNullOrEmpty a.Value then None else Some a.Value
-            | sv -> Some sv.Value 
+            | sv -> Some sv.Value
+            
+            
+     

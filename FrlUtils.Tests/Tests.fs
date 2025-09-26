@@ -105,7 +105,7 @@ https://www.legislation.gov.au/Details/F2015L01330""".Split('\n') |> List.ofArra
         let rootElement = bodyParts |> List.find (fun e -> getElementStyle e = Some("Plainheader"))
         let rootElementIndex = bodyParts |> List.findIndex (fun e -> e = rootElement)
         let remaineder = bodyParts |> List.skip (rootElementIndex + 1)
-        let result = parseElementListToTree rootElement remaineder sequenceOfStyleLevels
+        let result = parseElementListToTree rootElement remaineder sequenceOfStyleLevels (fun i -> 0)
         printfn "%s" (result.PrettyPrint())
         Assert.IsTrue (result.Children.Length = 2)
     
@@ -119,7 +119,7 @@ https://www.legislation.gov.au/Details/F2015L01330""".Split('\n') |> List.ofArra
         let bodyParts = getBodyParts testDoc |> List.ofSeq
         let rootElement = bodyParts |> List.find (fun e -> getElementStyle e = Some("Plainheader"))
         let remainder = bodyParts |> List.skipWhile (fun e -> getElementOutlineLevel e sequenceOfStyleLevels <> Some(1)) |> List.takeWhile (fun i -> getElementStyle i <> Some("SHHeader"))
-        let result = parseElementListToTree rootElement remainder sequenceOfStyleLevels
+        let result = parseElementListToTree rootElement remainder sequenceOfStyleLevels (fun i -> 0)
         Assert.IsTrue (result.Children.Length = 10)
         printfn "%s" (result.PrettyPrint())
 
@@ -134,33 +134,7 @@ https://www.legislation.gov.au/Details/F2015L01330""".Split('\n') |> List.ofArra
         
     
 
-    [<TestMethod>]
-    member this.TestTreeTraversal() =
-        let sequenceOfStyleLevels = ["Plainheader"; "LV1"; "LV2"; "LV3"; "LV4"; "LV5"; "LV6"; "LV7"; "LV8"; "LV9"; "LV10"]
-        let testDoc = System.IO.File.ReadAllBytes("TestData/F2025L00723.docx")
-        let testDocWithParaIdsAdded = WordParaNumbering.addParaIds testDoc
-        let bodyParts = getBodyParts testDocWithParaIdsAdded |> List.ofSeq
-        let rootElement = bodyParts |> List.find (fun e -> getElementStyle e = Some("Plainheader"))
-        let remainder = bodyParts |> List.skipWhile (fun e -> getElementOutlineLevel e sequenceOfStyleLevels <> Some(1)) |> List.takeWhile (fun i -> getElementStyle i <> Some("SHHeader"))
-        let tree = parseElementListToTree rootElement remainder sequenceOfStyleLevels
-        //let firstLvl1Header = FrlUtils.DocParsing.findFirstNode tree (fun i -> getNodeLevel i sequenceOfStyleLevels = Some(1))
-        //Assert.IsTrue (firstLvl1Header.IsSome)
-        //Assert.IsTrue (firstLvl1Header.Value.Element.InnerText = "Name")
-        //printfn "%s" (firstLvl1Header.Value.PrettyPrint())
-
-        //let conditionDescription = FrlUtils.DocParsing.findFirstNode tree (fun i -> i.Element.InnerText = "Kind of injury, disease or death to which this Statement of Principles relates")
-        //printfn "%s" (tree.PrettyPrint())
-        
-        let mapOfParaIds = WordParaNumbering.getMapOfParasToNumbering testDocWithParaIdsAdded
-        let numberTextProvider = fun (paraId : string) ->
-            let existsInMap = mapOfParaIds.ContainsKey paraId
-            match existsInMap with
-            | true -> mapOfParaIds.[paraId].WordNumberingText
-            | false -> None
-            
-            
-        printfn "%s" (tree.PrettyPrintWithParaNumbering(numberTextProvider))
-    
+   
         
     [<TestMethod>]
     [<TestCategory("Integration")>]
@@ -295,9 +269,55 @@ https://www.legislation.gov.au/Details/F2015L01330""".Split('\n') |> List.ofArra
         | Ok(r) -> printf "%s" (r.ToString())
         | _ -> Assert.Fail()
 
-
-  
- 
+    [<TestMethod>]
+    member this.TestGetSectionParas() =
+        let testDoc = IO.File.ReadAllBytes("TestData/F2025L00149.docx")
+        let wordDoc, np = FrlUtils.DocParsing.getWordDocWithParaTextProvider testDoc
+        let factorSectionName = "Factors that must exist"
+        let sequenceOfStyleLevelsNewStyle = ["Plainheader"; "LV1"; "LV2"; "LV3"; "LV4"; "LV5"; "LV6"; "LV7"; "LV8"; "LV9"; "LV10"]
+        let factorSectionStyleLevel = 1
+        let factorsSection =  getSectionParagraphs (factorSectionName, sequenceOfStyleLevelsNewStyle, factorSectionStyleLevel , wordDoc)
+        let parsedToTree = FrlUtils.DocParsing.parseElementListToTree (factorsSection.Head :> OpenXmlElement) (factorsSection.Tail |> List.map (fun p -> p :> OpenXmlElement)) sequenceOfStyleLevelsNewStyle (fun i -> 0)
+        printfn "%s"  (parsedToTree.PrettyPrintWithParaNumbering np)
+        printfn "Children count: %d" (List.length parsedToTree.Children)
+        // LVL2 style
+        let firstLevelChildren = parsedToTree.Children |> List.filter (fun n -> getNodeLevel n sequenceOfStyleLevelsNewStyle = Some(2)) |> List.length
+        printfn "First level children: %d" firstLevelChildren
+        let noteChildren = parsedToTree.Children |> List.filter (fun n -> n.Element.InnerText.StartsWith("Note")) |> List.length
+        printfn "Note children: %d" noteChildren
+        for n in parsedToTree.Children do
+            let level = getNodeLevel n sequenceOfStyleLevelsNewStyle
+            let text = n.Element.InnerText
+            let paraId = np (n.Element :?> Paragraph)
+            let paraIdText = 
+                match paraId with
+                | Some(t) -> t
+                | None -> "No numbering"
+            printfn "Level: %A, ParaId: %s, Text: %s" level paraIdText text
+        Assert.IsTrue((firstLevelChildren = 66)) // includes paaras where there is a tail in LVL2
+         
+    [<TestMethod>]
+    member this.TestParseSectionWithHeadAndTail() =
+        let testDoc = IO.File.ReadAllBytes("TestData/sectionWithHeadAndTail.docx")
+        let wordDoc, np = FrlUtils.DocParsing.getWordDocWithParaTextProvider testDoc
+        let sequenceOfStyleLevelsNewStyle = ["LV1"; "LV2"; "LV3"; "LV4"; "LV5"; "LV6"; "LV7"; "LV8"; "LV9"; "LV10"]
+        let testSectionParas = getSectionParagraphs ("Section Head", sequenceOfStyleLevelsNewStyle, 0, wordDoc)
+        
+        let offsetProvider = fun (e : OpenXmlElement) ->
+            // if has number, then zero, else -1
+            match np (e :?> Paragraph) with
+            | Some(_) -> 0
+            | None -> -1
+        
+        
+        let parsedToTree = FrlUtils.DocParsing.parseSectionParaToTree testSectionParas sequenceOfStyleLevelsNewStyle offsetProvider
+        match parsedToTree with
+        | Error(e) ->
+            printfn "%s" (e.ToString())
+            Assert.Fail()
+        | Ok(t) ->
+            printfn "%s"  (t.PrettyPrintWithParaNumbering np)
+        
         
  
         

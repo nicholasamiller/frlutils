@@ -1,5 +1,6 @@
 ﻿namespace FrlUtils
 
+open DocumentFormat.OpenXml
 open DocumentFormat.OpenXml.Wordprocessing
 open NodaTime
 open Newtonsoft.Json.Linq
@@ -13,8 +14,11 @@ module Domain =
     
 
     // get the number text for a para ID
-    type ParagraphNumberTextProvider = string -> string option 
-           
+    type ParagraphNumberTextProvider = Paragraph -> string option 
+     
+    // get the level (0-based) for a para
+    type ParaLevelOffsetProvider = OpenXmlElement -> int
+       
     let formatDate (d: LocalDate) = LocalDatePattern.Iso.Format(d)
     
     let formatDateOpt (d: LocalDate option) =
@@ -155,8 +159,8 @@ module Domain =
         statusHistory: StatusHistory list
         statusPossibleFuture: StatusHistory list
     }
-
-
+    
+    
     type VersionInfo = {
         titleId: string option
         start: DateTime

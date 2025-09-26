@@ -1,9 +1,11 @@
 ﻿namespace FrlUtils
 open System
+open System.Diagnostics
 open System.Xml
 open System.Xml.Linq
 open DocumentFormat.OpenXml.Wordprocessing
 open DocumentFormat.OpenXml
+open FrlUtils.WordParaNumbering
 open Microsoft.FSharp.Core
 open Newtonsoft.Json
 open System.IO
@@ -16,12 +18,13 @@ open Errors
 
 
 module DocParsing =
-    // get the position of the para in the document, starting from zero    
             
     type DocNode = {
         Element: OpenXmlElement;
         mutable Children: DocNode list;
-    } with 
+    }
+    
+    with 
         member this.PrettyPrint() =
             let rec recurse (node : DocNode) (indent : int) =
                 let indentString = String.replicate indent " "
@@ -38,15 +41,9 @@ module DocParsing =
                 let paragraph = match node.Element with 
                                 | :? Paragraph as p -> p
                                 | _ -> null
-                let paraId = 
-                    match paragraph with
-                    | null -> None
-                    | p -> WordParaNumbering.getParaId p
                 
-                let paraNumberText =
-                    match paraId with
-                    | Some(id) -> provider id
-                    | None -> None
+                 
+                let paraNumberText = provider paragraph
                
                 let elementString = 
                     match paraNumberText with
@@ -70,6 +67,16 @@ module DocParsing =
                     | _ -> childResults |> List.head
             recurse node
     
+    // do bfs of all nodes matching predicate
+    let findAllNodes (node: DocNode) (predicate : DocNode -> bool) : DocNode list =
+        let rec recurse (node : DocNode) =
+            let isMatch = predicate node
+            let children = node.Children
+            let childResults = children |> List.collect (fun i -> recurse i) 
+            match isMatch with
+            | true -> node :: childResults
+            | false -> childResults
+        recurse node
     
     let getWordDoc (ms : MemoryStream) =
         let settings = new OpenSettings()
@@ -78,7 +85,19 @@ module DocParsing =
                 MarkupCompatibilityProcessMode.ProcessAllParts,
                 FileFormatVersions.Office2010) // or Office2013/2016 if you prefer
         WordprocessingDocument.Open(ms,false, settings)
-         
+    
+    let getWordDocWithParaTextProvider (docxBytes: byte[]) : WordprocessingDocument * (Paragraph -> string option) =
+        let wordDocWithParaIdsAdded = WordParaNumbering.addParaIds docxBytes
+        let wordDoc = getWordDoc (new MemoryStream(wordDocWithParaIdsAdded, 0, wordDocWithParaIdsAdded.Length, false, true))
+        let mapOfParaIds = WordParaNumbering.getMapOfParasToNumbering wordDocWithParaIdsAdded
+        
+        (wordDoc,fun (p : Paragraph) ->
+            match getParaId p with
+            | None -> None
+            | Some pid ->
+                match mapOfParaIds.TryFind pid with
+                | None -> None
+                | Some paraFromHtml -> paraFromHtml.WordNumberingText)
 
     let getBodyParts (ba : byte[]) =
         use ms = new MemoryStream(ba)
@@ -112,7 +131,8 @@ module DocParsing =
     
     let getNodeLevel (node : DocNode) (styleList: string list) = getElementOutlineLevel node.Element styleList
     
-    let unwindToNextAncestor (node: DocNode) (ancestorsStack : Stack<DocNode>) (styleList : string list) =
+    
+    let unwindToNextAncestor (node: DocNode) (ancestorsStack : Stack<DocNode>) (styleList : string list) (levelOffset: int) =
         // pop stack while level of ancestor is greater than current node or none
         let nodeLevel = getNodeLevel node styleList
         match nodeLevel with 
@@ -124,30 +144,43 @@ module DocParsing =
             let shouldPop = fun (n : DocNode) -> 
                 match getNodeLevel n styleList with 
                 | None -> true
-                | Some(nl) -> nl >= level
+                | Some(nl) -> nl + levelOffset >= level
             while (ancestorsStack.Count > 0 && shouldPop (ancestorsStack.Peek())) do
                 ancestorsStack.Pop() |> ignore
- 
+    
+    
+    // if a paragraph is the same level as the nearest ancestor but does not have a paragraph number, make it a child of the nearest ancestor instead of a sibling
+    // level offset keeps para down one level
+    let parseElementListToTree (rootElement: OpenXmlElement) (subsequentElements: OpenXmlElement list) (styleList : string list) (op: ParaLevelOffsetProvider)  : DocNode =
         
-    let parseElementListToTree (rootElement: OpenXmlElement) (subsequentElements: OpenXmlElement list) (styleList : string list) : DocNode =
+       
         let rootNode = {Element = rootElement; Children = []}
         let ancestorStack = new Stack<DocNode>()
         ancestorStack.Push(rootNode)
         for e in subsequentElements do
+           let levelOffset = op e
            let newNode = {Element = e; Children = []}
-           unwindToNextAncestor newNode ancestorStack styleList
+           Debug.Print(sprintf "Processing element: %s" e.InnerText)
+           unwindToNextAncestor newNode ancestorStack styleList levelOffset  
            let parent = ancestorStack.Pop()
            parent.Children <- parent.Children @ [newNode]
            ancestorStack.Push(parent)
            ancestorStack.Push(newNode)
         rootNode
-                
-    let parseElementListToTreeResult (rootElement: OpenXmlElement) (subsequentElements: OpenXmlElement list) (styleList : string list) : Result<DocNode,DocParsingError> =
+    
+    
+    let parseElementListToTreeResult (rootElement: OpenXmlElement) (subsequentElements: OpenXmlElement list) (styleList : string list) (op: ParaLevelOffsetProvider): Result<DocNode,DocParsingError> =
         try
-            Ok(parseElementListToTree rootElement subsequentElements styleList)
+            Ok(parseElementListToTree rootElement subsequentElements styleList op)
         with 
         | ex -> Error(DocParsingError.Exception(ex)) 
    
+    let parseSectionParaToTree (paraList : Paragraph list) (styleList: string list) (op: ParaLevelOffsetProvider) : Result<DocNode,DocParsingError>       =    
+        match paraList with
+        | [] -> Error(DocParsingError.Message("No paragraphs provided"))
+        | x :: xs -> parseElementListToTreeResult (x :> OpenXmlElement) (xs |> List.map (fun p -> p :> OpenXmlElement)) styleList op
+        
+  
     let hasStyle (p : Paragraph) (styleId : string) =
         match p.ParagraphProperties with
         | null -> false
@@ -180,7 +213,7 @@ module DocParsing =
                 children |> Seq.iter (fun c -> recurseTree c leafVisitor)
 
         recurseTree p visitor |> ignore
-        sb.ToString()
+        sb.ToString().Trim()
 
    
     let buildSyntheticRootElementForStyle (styleName : string) (elements: OpenXmlElement list) =
@@ -241,8 +274,22 @@ module DocParsing =
         | ex -> Error(DocParsingError.Message("Could not get tables."))
     
 
-
-    
+    let getSectionParagraphs(name: string, styleSequences: string list, styleLevel : int, wordDoc : WordprocessingDocument) =
+        let allParas = wordDoc.MainDocumentPart.Document.Body.Elements<Paragraph>() |> Seq.toList
+        let isStart (p: Paragraph) = stringifyPara p = name && getParagraphStyle p = Some(styleSequences.[styleLevel])
+        let isEnd (p: Paragraph) =
+            let outlineLevel = getElementOutlineLevel p styleSequences
+            match outlineLevel with
+            | Some(lv) when lv <= styleLevel -> true
+            | _ -> false
+        let indexOfStart = allParas |> Seq.tryFindIndex isStart
+        match indexOfStart with
+        | None -> []
+        | Some(i) ->
+            let startPara = allParas.[i]
+            let remaining = allParas |> Seq.skip (i + 1) |> Seq.takeWhile (fun p -> not (isEnd p)) |> Seq.toList
+            startPara :: remaining
+        
         
 
      

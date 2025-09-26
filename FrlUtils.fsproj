@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
     <PackageId>Shoshin.FrlUtils</PackageId>
-    <Version>6.4.1</Version>
+    <Version>6.5.8</Version>
     <Authors>Nick Miller</Authors>
     <Description>Utilities for scraping and parsing data from Federal Register of Legislation (Australia), in F# using RoP.</Description>
     <RepositoryUrl>https://github.com/nicholasamiller/frlutils</RepositoryUrl>
@@ -30,6 +30,7 @@
     <PackageReference Update="FSharp.Core" Version="9.0.303" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="OpenXmlPowerToolsFork\OpenXmlPowerToolsFork.csproj" />
+    <ProjectReference Include="OpenXmlPowerToolsFork\OpenXmlPowerToolsFork.csproj" Pack="true"/>
   </ItemGroup>
+    
 </Project>

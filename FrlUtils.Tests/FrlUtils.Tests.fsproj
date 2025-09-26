@@ -60,6 +60,12 @@
     <Content Include="TestData\F2025L00723.docx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="TestData\F2025L00149.docx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestData\sectionWithHeadAndTail.docx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Compile Include="Program.fs" />
   </ItemGroup>
 
@@ -84,5 +90,8 @@
   <ItemGroup>
     <PackageReference Update="FSharp.Core" Version="9.0.303" />
   </ItemGroup>
+    <PropertyGroup>
+        <IsPackable>false</IsPackable>
+    </PropertyGroup>
 
 </Project>
