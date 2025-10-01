@@ -18,7 +18,9 @@ module Domain =
      
     // get the level (0-based) for a para
     type ParaLevelOffsetProvider = OpenXmlElement -> int
-       
+      
+      // gets the outline level for a para, previous then current
+    type ParaLevelProvider = OpenXmlElement-> int option
     let formatDate (d: LocalDate) = LocalDatePattern.Iso.Format(d)
     
     let formatDateOpt (d: LocalDate option) =

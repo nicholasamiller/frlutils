@@ -71,7 +71,7 @@ https://www.legislation.gov.au/Details/F2015L01330""".Split('\n') |> List.ofArra
     member this.TestAncensorStackUnwind() =
         let sequenceOfStyleLevels = ["Plainheader"; "LV1"; "LV2"; "LV3"; "LV4"; "LV5"; "LV6"; "LV7"; "LV8"; "LV9"; "LV10"]
         let testDoc = System.IO.File.ReadAllBytes("TestData/treeParseTest.docx")
-        let bodyParts = getBodyParts testDoc
+        let bodyParts = getBodyParts testDoc |> List.ofSeq |> List.filter (fun e -> match e with | :? Paragraph -> true | _ -> false)
         let testStack = new Stack<DocNode>();
 
         let isParagraphNode (e : OpenXmlElement) =
@@ -81,58 +81,99 @@ https://www.legislation.gov.au/Details/F2015L01330""".Split('\n') |> List.ofArra
         
         let testDocNodes = bodyParts |> Seq.filter (fun e -> isParagraphNode e)
         
-        testDocNodes |> Seq.iter (fun e -> testStack.Push {Element = e; Children = []})
-        Assert.IsTrue (testStack.Count = 10)
+        testDocNodes |> Seq.iter (fun e -> testStack.Push {Element = e; Children = []; Parent = None})
+        
+        // print out the stack
+        for n in testStack do
+            let p = n.Element :?> Paragraph
+            let style = getElementStyle p
+            let text = p.InnerText
+            printfn "Style: %A, Text: %s" style text
         
         
-        let testNode = testStack.Peek();
+        Assert.IsTrue (testStack.Count = 12)
+                        
+        let testNode = testStack.Pop() // last node, let's texst if we can add it back to the stack
+        printfn "Test node text: %s" (testNode.Element.InnerText)
         
         let testNodeLevel = getNodeLevel testNode sequenceOfStyleLevels
-        Assert.IsTrue (testNodeLevel.Value = 3)
-        unwindToNextAncestor testNode testStack sequenceOfStyleLevels
-        Assert.IsTrue (testStack.Count = 8)
+        Assert.IsTrue (testNodeLevel.Value = 3) // the last node is level 3
+        let lp = buildStyleBasedParaLevelProvider sequenceOfStyleLevels
+        unwindToNextAncestor testNode testStack lp 0
+        // should remove the last lever 3: level 3A
+        // last node should be level 2
+        
+        Assert.IsTrue (testStack.Count() = 10)
         
         let topOfStack = testStack.Peek()
         let topOfStackText = topOfStack.Element.InnerText
         Assert.AreEqual (topOfStackText, "Level 2 D")
+        
+        // now pop stack until there are only 3 items
+        while testStack.Count() > 3 do
+            let n = testStack.Pop()
+            printfn "Popped node text: %s" (n.Element.InnerText)
+        
+        // node at top of stack should be level 2 A
+        let topOfStack2 = testStack.Peek()
+        let topOfStackText2 = topOfStack2.Element.InnerText
+        Assert.AreEqual (topOfStackText2, "Level 2 A")
+        
+        // test unwind for a node that has no style
+        // expected outcome is that the stack is unchanged
+        
+        let firstNote = bodyParts.[3]
+        printfn "First note text: %s" (firstNote.InnerText)
+        
+        let testNode = {Element = firstNote; Children = []; Parent = None}
+        
+        unwindToNextAncestor testNode testStack lp 0
+        // stack should be unchanged
+        Assert.IsTrue (testStack.Count() = 3)
+        
+        // push note onto stack
+        testStack.Push testNode
+        // stack size should now be 4
+        Assert.IsTrue (testStack.Count() = 4)
+        
+        // now test unwind again with another note - should wind back to the level 2A
+        let secondNote = bodyParts.[4]
+        printfn "Second note text: %s" (secondNote.InnerText)
+        let testNote2 =  {Element = secondNote; Children = []; Parent = None}
+        // stack size should now be 4
+        
+        unwindToNextAncestor testNote2 testStack lp 0
+        // stack size should now be 3 - should have removed note 1
+        Assert.IsTrue (testStack.Count() = 3)
+        
+        // top of stack should be Level 2 A
+        let topOfStack3 = testStack.Peek()
+        let topOfStackText3 = topOfStack3.Element.InnerText
+        Assert.AreEqual (topOfStackText3, "Level 2 A")
+
+        for n in testStack do
+            let p = n.Element :?> Paragraph
+            let style = getElementStyle p
+            let text = p.InnerText
+            printfn "Style: %A, Text: %s" style text  
+       
     
     
     [<TestMethod>]
     member this.TestParseDocXToTree() = 
         let sequenceOfStyleLevels = ["Plainheader"; "LV1"; "LV2"; "LV3"; "LV4"; "LV5"; "LV6"; "LV7"; "LV8"; "LV9"; "LV10"]
         let testDoc = System.IO.File.ReadAllBytes("TestData/treeParseTest.docx")
-        let bodyParts = getBodyParts testDoc |> List.ofSeq
-        let rootElement = bodyParts |> List.find (fun e -> getElementStyle e = Some("Plainheader"))
-        let rootElementIndex = bodyParts |> List.findIndex (fun e -> e = rootElement)
-        let remaineder = bodyParts |> List.skip (rootElementIndex + 1)
-        let result = parseElementListToTree rootElement remaineder sequenceOfStyleLevels (fun i -> 0)
+        let bodyParagraphs = getBodyParts testDoc |>  List.ofSeq |> List.filter (fun e -> match e with | :? Paragraph -> true | _ -> false)
+        let rootElement = bodyParagraphs |> List.find (fun e -> getElementStyle e = Some("Plainheader"))
+        let rootElementIndex = bodyParagraphs |> List.findIndex (fun e -> e = rootElement)
+        let remaineder = bodyParagraphs |> List.skip (rootElementIndex + 1)
+        let cplp = buildStyleBasedParaLevelProvider sequenceOfStyleLevels
+        
+        let result = parseElementListToTree rootElement remaineder cplp (fun i -> 0)
         printfn "%s" (result.PrettyPrint())
         Assert.IsTrue (result.Children.Length = 2)
-    
- 
-        
-        
-    [<TestMethod>]
-    member this.ParseRealDocXToTree() = 
-        let sequenceOfStyleLevels = ["Plainheader"; "LV1"; "LV2"; "LV3"; "LV4"; "LV5"; "LV6"; "LV7"; "LV8"; "LV9"; "LV10"]
-        let testDoc = System.IO.File.ReadAllBytes("TestData/F2023L01180.docx")
-        let bodyParts = getBodyParts testDoc |> List.ofSeq
-        let rootElement = bodyParts |> List.find (fun e -> getElementStyle e = Some("Plainheader"))
-        let remainder = bodyParts |> List.skipWhile (fun e -> getElementOutlineLevel e sequenceOfStyleLevels <> Some(1)) |> List.takeWhile (fun i -> getElementStyle i <> Some("SHHeader"))
-        let result = parseElementListToTree rootElement remainder sequenceOfStyleLevels (fun i -> 0)
-        Assert.IsTrue (result.Children.Length = 10)
-        printfn "%s" (result.PrettyPrint())
-
-    [<TestMethod>]
-    member this.TestSyntheticRootElement() = 
-        let style = "Plainheader"
-        let testDoc = System.IO.File.ReadAllBytes("TestData/F2023L01180.docx")
-        let bodyParts = getBodyParts testDoc |> List.ofSeq
-        let result = buildSyntheticRootElementForStyle style bodyParts
-        Assert.IsTrue (Option.isSome result)
-        printfn "%s" result.Value.InnerText
-        
-    
+        let firstChild = result.Children.Head
+        Assert.IsTrue (firstChild.Children.Length = 2)
 
    
         
@@ -277,7 +318,8 @@ https://www.legislation.gov.au/Details/F2015L01330""".Split('\n') |> List.ofArra
         let sequenceOfStyleLevelsNewStyle = ["Plainheader"; "LV1"; "LV2"; "LV3"; "LV4"; "LV5"; "LV6"; "LV7"; "LV8"; "LV9"; "LV10"]
         let factorSectionStyleLevel = 1
         let factorsSection =  getSectionParagraphs (factorSectionName, sequenceOfStyleLevelsNewStyle, factorSectionStyleLevel , wordDoc)
-        let parsedToTree = FrlUtils.DocParsing.parseElementListToTree (factorsSection.Head :> OpenXmlElement) (factorsSection.Tail |> List.map (fun p -> p :> OpenXmlElement)) sequenceOfStyleLevelsNewStyle (fun i -> 0)
+        let cplp = buildStyleBasedParaLevelProvider sequenceOfStyleLevelsNewStyle
+        let parsedToTree = FrlUtils.DocParsing.parseElementListToTree (factorsSection.Head :> OpenXmlElement) (factorsSection.Tail |> List.map (fun p -> p :> OpenXmlElement)) cplp (fun i -> 0)
         printfn "%s"  (parsedToTree.PrettyPrintWithParaNumbering np)
         printfn "Children count: %d" (List.length parsedToTree.Children)
         // LVL2 style
@@ -309,16 +351,37 @@ https://www.legislation.gov.au/Details/F2015L01330""".Split('\n') |> List.ofArra
             | Some(_) -> 0
             | None -> -1
         
-        
-        let parsedToTree = FrlUtils.DocParsing.parseSectionParaToTree testSectionParas sequenceOfStyleLevelsNewStyle offsetProvider
+        let cplp = buildStyleBasedParaLevelProvider sequenceOfStyleLevelsNewStyle
+        let parsedToTree = FrlUtils.DocParsing.parseSectionParaToTree testSectionParas cplp offsetProvider
         match parsedToTree with
         | Error(e) ->
             printfn "%s" (e.ToString())
             Assert.Fail()
         | Ok(t) ->
             printfn "%s"  (t.PrettyPrintWithParaNumbering np)
-        
-        
+            // root should have two children only
+            Assert.IsTrue((List.length t.Children) = 2)
+            // first child should have 3 children
+            let firstChild = t.Children.Head
+            Assert.IsTrue((List.length firstChild.Children) = 3)
+            let firstChildOfFirstChild = firstChild.Children.Head
+            Assert.IsTrue((List.length firstChildOfFirstChild.Children) = 0)
+            
+            let fullParaNumberTextForRoot = getFullParaNumberText t np
+            let fullParaNumberTextForFirstChild = getFullParaNumberText firstChild np
+            let fullParaNumberTextForFirstChildOfFirstChild = getFullParaNumberText firstChildOfFirstChild np
+            printfn "Full para number text for first child of first child: %s" (Option.defaultValue "No numbering" fullParaNumberTextForFirstChildOfFirstChild)
+            printfn "Full para number text for first child: %s" (Option.defaultValue "No numbering" fullParaNumberTextForFirstChild)
+            printfn "Full para number text for root: %s" (Option.defaultValue "No numbering" fullParaNumberTextForRoot)
+            let sectiontail = firstChild.Children.[2]
+            let fullParaNumberTextForSectionTail = getFullParaNumberText sectiontail np
+            printfn "Full para number text for section tail: %s" (Option.defaultValue "No numbering" fullParaNumberTextForSectionTail)
+            let sectionHead = firstChild
+            let fullParaNumberTextForSectionHead = getFullParaNumberText sectionHead np
+            printfn "Full para number text for section head: %s" (Option.defaultValue "No numbering" fullParaNumberTextForSectionHead)
+            Assert.AreEqual(fullParaNumberTextForSectionHead, fullParaNumberTextForSectionHead)
+            // test for structural equality
+            Assert.IsTrue(fullParaNumberTextForFirstChildOfFirstChild.Value = "1(1)(a)")
  
         
         

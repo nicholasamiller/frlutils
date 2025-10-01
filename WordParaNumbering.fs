@@ -99,7 +99,7 @@ module WordParaNumbering =
                         if String.IsNullOrWhiteSpace t then None else Some t
 
                 yield { WordId = wordId; WordStyle = wordStyle; WordNumberingLogical = numberingLogical; WordNumberingText = numberingText } ]
-            
+    
     let getMapOfParasToNumbering (docxBytes: byte[]) : Map<string, ParagraphFromHtml> =
         // converted html has sequential numbers of paras in attributes
         let html = ofBytesToHtmlString docxBytes
