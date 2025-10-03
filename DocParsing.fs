@@ -167,28 +167,12 @@ module DocParsing =
         fun (e: OpenXmlElement) -> getElementOutlineLevel e styleList
     
     let unwindToNextAncestor (node: DocNode) (ancestorsStack : Stack<DocNode>) (cplp: ParaLevelProvider) (levelOffset: int) =
-        
-        let printCurrentStateOfStack() =
-            let arr = ancestorsStack.ToArray()
-            // just print list of inner text of elements
-            let levels = arr |> Array.map (fun n -> match cplp(n.Element) with | None -> "N: " + n.Element.InnerText | Some(lv) -> lv.ToString() + ": " + n.Element.InnerText)
-            let list = String.concat ", " levels
-            printfn "CURRENT STACK STATE: %s" list |> ignore
-        
-        // Algorithm:
-        // if the current node has no level, pop until the stack has a node with a level or only the root node
-        // if the current node has a level, pop until the stack has a node with a level less than the current node's level, or only the root node
-        //   eg, if the top of the stack is level 4, and the current node is level 2, pop until the top of the stack is level 1 or less
-        //   if the top of the stack is level 4, and the current node is level 4, pop until the top of the stack is level 3 or less
-        
-        
+      
         match cplp(node.Element) with 
         | None ->
-            printCurrentStateOfStack()
             while (ancestorsStack.Count > 1 && (cplp(ancestorsStack.Peek().Element).IsNone)) do
                 ancestorsStack.Pop() |> ignore
         | Some(level) ->
-            printCurrentStateOfStack()
             
             let shouldPop = fun (n : DocNode) -> 
                 match cplp(n.Element) with 
