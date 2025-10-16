@@ -48,7 +48,14 @@ module DocParsing =
                
                 let elementString = 
                     match paraNumberText with
-                    | Some(num) -> sprintf "%s %s" num elementString
+                    | Some(num) ->
+                        // strip leading paraNumberText if present
+                        let elementStringWithLeadingParaStripped = 
+                            if elementString.StartsWith(num) then
+                                elementString.Substring(num.Length).Trim()
+                            else
+                                elementString
+                        sprintf "%s %s" num elementStringWithLeadingParaStripped
                     | None -> elementString
                  
                 let childrenString = node.Children |> List.map (fun i -> recurse i (indent + 2)) |> String.concat ""
@@ -325,14 +332,17 @@ module DocParsing =
         | ex -> Error(DocParsingError.Message("Could not get tables."))
     
     
-    let getSectionParagraphs(name: string, styleSequences: string list, styleLevel : int, wordDoc : WordprocessingDocument) =
+    let getSectionParagraphs(name: string, styleSequences: string list, styleLevel : int, wordDoc : WordprocessingDocument) (stop: Paragraph -> bool) =
         let allParas = wordDoc.MainDocumentPart.Document.Body.Elements<Paragraph>() |> Seq.filter (fun p -> not (String.IsNullOrWhiteSpace(stringifyPara p))) |> Seq.toList
         let isStart (p: Paragraph) = stringifyPara p = name && getParagraphStyle p = Some(styleSequences.[styleLevel])
         let isEnd (p: Paragraph) =
-            let outlineLevel = getElementOutlineLevel p styleSequences
-            match outlineLevel with
-            | Some(lv) when lv <= styleLevel -> true
-            | _ -> false
+            match stop p with
+            | true -> true
+            | false ->
+                let outlineLevel = getElementOutlineLevel p styleSequences
+                match outlineLevel with
+                | Some(lv) when lv <= styleLevel -> true
+                | _ -> false
         let indexOfStart = allParas |> Seq.tryFindIndex isStart
         match indexOfStart with
         | None -> []

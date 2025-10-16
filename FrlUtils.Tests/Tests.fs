@@ -317,7 +317,7 @@ https://www.legislation.gov.au/Details/F2015L01330""".Split('\n') |> List.ofArra
         let factorSectionName = "Factors that must exist"
         let sequenceOfStyleLevelsNewStyle = ["Plainheader"; "LV1"; "LV2"; "LV3"; "LV4"; "LV5"; "LV6"; "LV7"; "LV8"; "LV9"; "LV10"]
         let factorSectionStyleLevel = 1
-        let factorsSection =  getSectionParagraphs (factorSectionName, sequenceOfStyleLevelsNewStyle, factorSectionStyleLevel , wordDoc)
+        let factorsSection =  getSectionParagraphs (factorSectionName, sequenceOfStyleLevelsNewStyle, factorSectionStyleLevel , wordDoc) (fun i -> false)
         let cplp = buildStyleBasedParaLevelProvider sequenceOfStyleLevelsNewStyle
         let parsedToTree = FrlUtils.DocParsing.parseElementListToTree (factorsSection.Head :> OpenXmlElement) (factorsSection.Tail |> List.map (fun p -> p :> OpenXmlElement)) cplp (fun i -> 0)
         printfn "%s"  (parsedToTree.PrettyPrintWithParaNumbering np)
@@ -343,7 +343,7 @@ https://www.legislation.gov.au/Details/F2015L01330""".Split('\n') |> List.ofArra
         let testDoc = IO.File.ReadAllBytes("TestData/sectionWithHeadAndTail.docx")
         let wordDoc, np = FrlUtils.DocParsing.getWordDocWithParaTextProvider testDoc
         let sequenceOfStyleLevelsNewStyle = ["LV1"; "LV2"; "LV3"; "LV4"; "LV5"; "LV6"; "LV7"; "LV8"; "LV9"; "LV10"]
-        let testSectionParas = getSectionParagraphs ("Section Head", sequenceOfStyleLevelsNewStyle, 0, wordDoc)
+        let testSectionParas = getSectionParagraphs ("Section Head", sequenceOfStyleLevelsNewStyle, 0, wordDoc) (fun i -> false)
         
         let offsetProvider = fun (e : OpenXmlElement) ->
             // if has number, then zero, else -1
