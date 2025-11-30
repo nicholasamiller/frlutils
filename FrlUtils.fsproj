@@ -13,6 +13,7 @@
     <Compile Include="Errors.fs" />
     <Compile Include="EmailParsing.fs" />
     <Compile Include="WordParaNumbering.fs" />
+    <Compile Include="ParagraphText.fs" />
     <Compile Include="DocParsing.fs" />
     <Compile Include="AsyncExtensions.fs" />
     <Compile Include="FrlApiClient.fs" />

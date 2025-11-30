@@ -21,6 +21,10 @@ module Domain =
       
       // gets the outline level for a para, previous then current
     type ParaLevelProvider = OpenXmlElement-> int option
+    
+    // the bool is whether there are subparas
+    type ConditionVariantExtractor = string -> string option * bool  
+    
     let formatDate (d: LocalDate) = LocalDatePattern.Iso.Format(d)
     
     let formatDateOpt (d: LocalDate option) =

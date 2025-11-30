@@ -15,7 +15,7 @@ open System.Linq
 open System.Text
 open Domain
 open Errors
-
+open FrlUtils.ParagraphText
 
 module DocParsing =
             
@@ -311,19 +311,29 @@ module DocParsing =
         
 
     let getTablesBetweenParas (paraStartText : string) (paraEndText : string) (elements: IEnumerable<OpenXmlElement>)  =     
+     
         let isMatchingPara (x: OpenXmlElement) (s: string)=
             match x with 
-            | :? Paragraph as p -> ((stringifyPara p) = s)
+            | :? Paragraph as p -> (stringifyPara p) = s
             | _ -> false
         
-        let followingElements = elements |> Seq.skipWhile (fun i -> not (isMatchingPara i paraStartText))
-        let inBetweenTableElements = followingElements |> Seq.takeWhile (fun i -> not (isMatchingPara i paraEndText)) |> Seq.filter (fun i -> i :? Table) |> Seq.map (fun i -> i :?> Table)
+        let elementsFollowingStartParaIncludingStartPara = elements |> Seq.skipWhile (fun i -> not (isMatchingPara i paraStartText)) |> Seq.toList
+        let inBetweenTableElements = elementsFollowingStartParaIncludingStartPara |> Seq.takeWhile (fun i -> not (isMatchingPara i paraEndText)) |> Seq.filter (fun i -> i :? Table) |> Seq.map (fun i -> i :?> Table)
         let maxColumns = inBetweenTableElements |> Seq.map (fun i-> getCellCount i) |> Seq.max
         let rows = inBetweenTableElements |> Seq.collect (fun i -> i.OfType<TableRow>()) |> Seq.map (fun i -> {items = tableRowToRow i}) |> Seq.filter (fun i -> i.items.Count() = maxColumns) |> List.ofSeq
         let h = rows |> List.head
         let i = rows |> List.tail
         { headerRow = h; bodyRows = i}
             
+    let getTablesBetweenParasWithStyle (paraStartText : string) (paraEndText : string) (elements: IEnumerable<OpenXmlElement>) (styleName : string) =
+        let elementsWithStyleAndTables = elements |> Seq.filter (fun e -> getElementStyle e = Some(styleName) || e :? Table) |> Seq.toList
+        getTablesBetweenParas paraStartText paraEndText elementsWithStyleAndTables
+    
+    let getTablesBetweenParasWithStyleResult (paraStartText : string) (paraEndText : string) (docxBinary : byte[]) (styleName : string) : Result<LegTable,DocParsingError>=
+        try
+            Ok( getTablesBetweenParasWithStyle paraStartText paraEndText (getBodyParts docxBinary) styleName)
+        with
+        | ex -> Error(DocParsingError.Message("Could not get tables."))
     
     let getTables (paraStartText: string) (paraEndText: string) (docxBinary : byte[]) : Result<LegTable,DocParsingError>=
         try
