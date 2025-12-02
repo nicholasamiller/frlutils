@@ -289,8 +289,10 @@ module DocParsing =
             run.AddChild(text) |> ignore
             Some(new Paragraph(run, paraProperties))
    
- 
-    let stringifyTableCellText (t: TableCell) =
+    
+    
+     
+    let stringifyTableCellText (t: TableCell) (np: ParagraphNumberTextProvider option) =
         
         let rec getText (x : OpenXmlElement) = 
             match x with
@@ -301,16 +303,16 @@ module DocParsing =
                 let withLineBreak = texts + System.Environment.NewLine
                 withLineBreak
                 
-            | x -> "" 
+            | x -> ""
         let text = t.Descendants() |> Seq.map (fun c -> (getText c)) |> String.concat ""
         text.Trim()
         
 
     
-    let tableRowToRow (tr : TableRow) = tr.OfType<TableCell>() |> Seq.map (fun i -> stringifyTableCellText i) |> List.ofSeq
+    let tableRowToRow (tr : TableRow)  (np: ParagraphNumberTextProvider option) = tr.OfType<TableCell>() |> Seq.map (fun i -> stringifyTableCellText i np) |> List.ofSeq
         
 
-    let getTablesBetweenParas (paraStartText : string) (paraEndText : string) (elements: IEnumerable<OpenXmlElement>)  =     
+    let getTablesBetweenParas (paraStartText : string) (paraEndText : string) (elements: IEnumerable<OpenXmlElement>) (np: ParagraphNumberTextProvider option)  =     
      
         let isMatchingPara (x: OpenXmlElement) (s: string)=
             match x with 
@@ -320,24 +322,24 @@ module DocParsing =
         let elementsFollowingStartParaIncludingStartPara = elements |> Seq.skipWhile (fun i -> not (isMatchingPara i paraStartText)) |> Seq.toList
         let inBetweenTableElements = elementsFollowingStartParaIncludingStartPara |> Seq.takeWhile (fun i -> not (isMatchingPara i paraEndText)) |> Seq.filter (fun i -> i :? Table) |> Seq.map (fun i -> i :?> Table)
         let maxColumns = inBetweenTableElements |> Seq.map (fun i-> getCellCount i) |> Seq.max
-        let rows = inBetweenTableElements |> Seq.collect (fun i -> i.OfType<TableRow>()) |> Seq.map (fun i -> {items = tableRowToRow i}) |> Seq.filter (fun i -> i.items.Count() = maxColumns) |> List.ofSeq
+        let rows = inBetweenTableElements |> Seq.collect (fun i -> i.OfType<TableRow>()) |> Seq.map (fun i -> {items = tableRowToRow i np}) |> Seq.filter (fun i -> i.items.Count() = maxColumns) |> List.ofSeq
         let h = rows |> List.head
         let i = rows |> List.tail
         { headerRow = h; bodyRows = i}
             
-    let getTablesBetweenParasWithStyle (paraStartText : string) (paraEndText : string) (elements: IEnumerable<OpenXmlElement>) (styleName : string) =
+    let getTablesBetweenParasWithStyle (paraStartText : string) (paraEndText : string) (elements: IEnumerable<OpenXmlElement>) (styleName : string) (np: ParagraphNumberTextProvider option) =
         let elementsWithStyleAndTables = elements |> Seq.filter (fun e -> getElementStyle e = Some(styleName) || e :? Table) |> Seq.toList
-        getTablesBetweenParas paraStartText paraEndText elementsWithStyleAndTables
+        getTablesBetweenParas paraStartText paraEndText elementsWithStyleAndTables np
     
-    let getTablesBetweenParasWithStyleResult (paraStartText : string) (paraEndText : string) (docxBinary : byte[]) (styleName : string) : Result<LegTable,DocParsingError>=
+    let getTablesBetweenParasWithStyleResult (paraStartText : string) (paraEndText : string) (docxBinary : byte[]) (styleName : string) (np: ParagraphNumberTextProvider option)  : Result<LegTable,DocParsingError>=
         try
-            Ok( getTablesBetweenParasWithStyle paraStartText paraEndText (getBodyParts docxBinary) styleName)
+            Ok( getTablesBetweenParasWithStyle paraStartText paraEndText (getBodyParts docxBinary) styleName np)
         with
         | ex -> Error(DocParsingError.Message("Could not get tables."))
     
-    let getTables (paraStartText: string) (paraEndText: string) (docxBinary : byte[]) : Result<LegTable,DocParsingError>=
+    let getTables (paraStartText: string) (paraEndText: string) (docxBinary : byte[]) (np: ParagraphNumberTextProvider option) : Result<LegTable,DocParsingError>=
         try
-            Ok( getTablesBetweenParas paraStartText paraEndText (getBodyParts docxBinary))
+            Ok( getTablesBetweenParas paraStartText paraEndText (getBodyParts docxBinary) np)
         with 
         | ex -> Error(DocParsingError.Message("Could not get tables."))
     
