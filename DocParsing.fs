@@ -298,10 +298,12 @@ module DocParsing =
             match x with
             | :? NoBreakHyphen -> "-"
             | :? Text as t -> t.Text
-            | :? Paragraph as p -> 
+            | :? Paragraph as p ->
+                
+                let paraNumber  = np |> Option.bind (fun provider -> provider p ) |> Option.defaultValue "" 
                 let texts = p.ChildElements |> Seq.map ( fun c -> getText c) |> String.concat ""
                 let withLineBreak = texts + System.Environment.NewLine
-                withLineBreak
+                paraNumber + " " + withLineBreak
                 
             | x -> ""
         let text = t.Descendants() |> Seq.map (fun c -> (getText c)) |> String.concat ""
@@ -337,9 +339,11 @@ module DocParsing =
         with
         | ex -> Error(DocParsingError.Message("Could not get tables."))
     
-    let getTables (paraStartText: string) (paraEndText: string) (docxBinary : byte[]) (np: ParagraphNumberTextProvider option) : Result<LegTable,DocParsingError>=
+    let getTables (paraStartText: string) (paraEndText: string) (docxBinary : byte[])  : Result<LegTable,DocParsingError>=
         try
-            Ok( getTablesBetweenParas paraStartText paraEndText (getBodyParts docxBinary) np)
+            let wd, np = getWordDocWithParaTextProvider docxBinary
+            let bodyParts = wd.MainDocumentPart.Document.Body.OfType<OpenXmlElement>() |> Seq.toList
+            Ok( getTablesBetweenParas paraStartText paraEndText bodyParts (Some(np)))
         with 
         | ex -> Error(DocParsingError.Message("Could not get tables."))
     
