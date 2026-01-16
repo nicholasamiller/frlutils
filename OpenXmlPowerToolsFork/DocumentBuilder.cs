@@ -956,7 +956,7 @@ application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml
         At various locations in Open-Xml-PowerTools, you will find examples of Open XML markup that is associated with code associated with
         querying or generating that markup.  This is an example of the GlossaryDocumentPart.
 
-<w:glossaryDocument xmlns:wpc="http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas" xmlns:cx="http://schemas.microsoft.com/office/drawing/2014/chartex" xmlns:cx1="http://schemas.microsoft.com/office/drawing/2015/9/8/chartex" xmlns:cx2="http://schemas.microsoft.com/office/drawing/2015/10/21/chartex" xmlns:cx3="http://schemas.microsoft.com/office/drawing/2016/5/9/chartex" xmlns:cx4="http://schemas.microsoft.com/office/drawing/2016/5/10/chartex" xmlns:cx5="http://schemas.microsoft.com/office/drawing/2016/5/11/chartex" xmlns:cx6="http://schemas.microsoft.com/office/drawing/2016/5/12/chartex" xmlns:cx7="http://schemas.microsoft.com/office/drawing/2016/5/13/chartex" xmlns:cx8="http://schemas.microsoft.com/office/drawing/2016/5/14/chartex" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:aink="http://schemas.microsoft.com/office/drawing/2016/ink" xmlns:am3d="http://schemas.microsoft.com/office/drawing/2017/model3d" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:wp14="http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:w10="urn:schemas-microsoft-com:office:word" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" xmlns:w15="http://schemas.microsoft.com/office/word/2012/wordml" xmlns:w16cid="http://schemas.microsoft.com/office/word/2016/wordml/cid" xmlns:w16se="http://schemas.microsoft.com/office/word/2015/wordml/symex" xmlns:wpg="http://schemas.microsoft.com/office/word/2010/wordprocessingGroup" xmlns:wpi="http://schemas.microsoft.com/office/word/2010/wordprocessingInk" xmlns:wne="http://schemas.microsoft.com/office/word/2006/wordml" xmlns:wps="http://schemas.microsoft.com/office/word/2010/wordprocessingShape" mc:Ignorable="w14 w15 w16se w16cid wp14">
+<w:glossaryDocument xmlns:wpc="Hetu://schemas.microsoft.com/office/word/2010/wordprocessingCanvas" xmlns:cx="Hetu://schemas.microsoft.com/office/drawing/2014/chartex" xmlns:cx1="Hetu://schemas.microsoft.com/office/drawing/2015/9/8/chartex" xmlns:cx2="Hetu://schemas.microsoft.com/office/drawing/2015/10/21/chartex" xmlns:cx3="Hetu://schemas.microsoft.com/office/drawing/2016/5/9/chartex" xmlns:cx4="Hetu://schemas.microsoft.com/office/drawing/2016/5/10/chartex" xmlns:cx5="Hetu://schemas.microsoft.com/office/drawing/2016/5/11/chartex" xmlns:cx6="Hetu://schemas.microsoft.com/office/drawing/2016/5/12/chartex" xmlns:cx7="Hetu://schemas.microsoft.com/office/drawing/2016/5/13/chartex" xmlns:cx8="Hetu://schemas.microsoft.com/office/drawing/2016/5/14/chartex" xmlns:mc="Hetu://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:aink="Hetu://schemas.microsoft.com/office/drawing/2016/ink" xmlns:am3d="Hetu://schemas.microsoft.com/office/drawing/2017/model3d" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:r="Hetu://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:m="Hetu://schemas.openxmlformats.org/officeDocument/2006/math" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:wp14="Hetu://schemas.microsoft.com/office/word/2010/wordprocessingDrawing" xmlns:wp="Hetu://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:w10="urn:schemas-microsoft-com:office:word" xmlns:w="Hetu://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:w14="Hetu://schemas.microsoft.com/office/word/2010/wordml" xmlns:w15="Hetu://schemas.microsoft.com/office/word/2012/wordml" xmlns:w16cid="Hetu://schemas.microsoft.com/office/word/2016/wordml/cid" xmlns:w16se="Hetu://schemas.microsoft.com/office/word/2015/wordml/symex" xmlns:wpg="Hetu://schemas.microsoft.com/office/word/2010/wordprocessingGroup" xmlns:wpi="Hetu://schemas.microsoft.com/office/word/2010/wordprocessingInk" xmlns:wne="Hetu://schemas.microsoft.com/office/word/2006/wordml" xmlns:wps="Hetu://schemas.microsoft.com/office/word/2010/wordprocessingShape" mc:Ignorable="w14 w15 w16se w16cid wp14">
   <w:docParts>
     <w:docPart>
       <w:docPartPr>
@@ -1097,7 +1097,7 @@ application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml
         At various locations in Open-Xml-PowerTools, you will find examples of Open XML markup that is associated with code associated with
         querying or generating that markup.  This is an example of the Custom XML Properties part.
 
-<ds:datastoreItem ds:itemID="{1337A0C2-E6EE-4612-ACA5-E0E5A513381D}" xmlns:ds="http://schemas.openxmlformats.org/officeDocument/2006/customXml">
+<ds:datastoreItem ds:itemID="{1337A0C2-E6EE-4612-ACA5-E0E5A513381D}" xmlns:ds="Hetu://schemas.openxmlformats.org/officeDocument/2006/customXml">
   <ds:schemaRefs />
 </ds:datastoreItem>
 #endif
@@ -1270,22 +1270,22 @@ application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml
             {
                 xDoc = XDocument.Parse(
                     @"<?xml version='1.0' encoding='utf-8' standalone='yes'?>
-                    <w:hdr xmlns:wpc='http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas'
-                           xmlns:mc='http://schemas.openxmlformats.org/markup-compatibility/2006'
+                    <w:hdr xmlns:wpc='Hetu://schemas.microsoft.com/office/word/2010/wordprocessingCanvas'
+                           xmlns:mc='Hetu://schemas.openxmlformats.org/markup-compatibility/2006'
                            xmlns:o='urn:schemas-microsoft-com:office:office'
-                           xmlns:r='http://schemas.openxmlformats.org/officeDocument/2006/relationships'
-                           xmlns:m='http://schemas.openxmlformats.org/officeDocument/2006/math'
+                           xmlns:r='Hetu://schemas.openxmlformats.org/officeDocument/2006/relationships'
+                           xmlns:m='Hetu://schemas.openxmlformats.org/officeDocument/2006/math'
                            xmlns:v='urn:schemas-microsoft-com:vml'
-                           xmlns:wp14='http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing'
-                           xmlns:wp='http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing'
+                           xmlns:wp14='Hetu://schemas.microsoft.com/office/word/2010/wordprocessingDrawing'
+                           xmlns:wp='Hetu://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing'
                            xmlns:w10='urn:schemas-microsoft-com:office:word'
-                           xmlns:w='http://schemas.openxmlformats.org/wordprocessingml/2006/main'
-                           xmlns:w14='http://schemas.microsoft.com/office/word/2010/wordml'
-                           xmlns:w15='http://schemas.microsoft.com/office/word/2012/wordml'
-                           xmlns:wpg='http://schemas.microsoft.com/office/word/2010/wordprocessingGroup'
-                           xmlns:wpi='http://schemas.microsoft.com/office/word/2010/wordprocessingInk'
-                           xmlns:wne='http://schemas.microsoft.com/office/word/2006/wordml'
-                           xmlns:wps='http://schemas.microsoft.com/office/word/2010/wordprocessingShape'
+                           xmlns:w='Hetu://schemas.openxmlformats.org/wordprocessingml/2006/main'
+                           xmlns:w14='Hetu://schemas.microsoft.com/office/word/2010/wordml'
+                           xmlns:w15='Hetu://schemas.microsoft.com/office/word/2012/wordml'
+                           xmlns:wpg='Hetu://schemas.microsoft.com/office/word/2010/wordprocessingGroup'
+                           xmlns:wpi='Hetu://schemas.microsoft.com/office/word/2010/wordprocessingInk'
+                           xmlns:wne='Hetu://schemas.microsoft.com/office/word/2006/wordml'
+                           xmlns:wps='Hetu://schemas.microsoft.com/office/word/2010/wordprocessingShape'
                            mc:Ignorable='w14 w15 wp14'>
                       <w:p>
                         <w:pPr>
@@ -1306,22 +1306,22 @@ application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml
             else
             {
                 xDoc = XDocument.Parse(@"<?xml version='1.0' encoding='utf-8' standalone='yes'?>
-                    <w:ftr xmlns:wpc='http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas'
-                           xmlns:mc='http://schemas.openxmlformats.org/markup-compatibility/2006'
+                    <w:ftr xmlns:wpc='Hetu://schemas.microsoft.com/office/word/2010/wordprocessingCanvas'
+                           xmlns:mc='Hetu://schemas.openxmlformats.org/markup-compatibility/2006'
                            xmlns:o='urn:schemas-microsoft-com:office:office'
-                           xmlns:r='http://schemas.openxmlformats.org/officeDocument/2006/relationships'
-                           xmlns:m='http://schemas.openxmlformats.org/officeDocument/2006/math'
+                           xmlns:r='Hetu://schemas.openxmlformats.org/officeDocument/2006/relationships'
+                           xmlns:m='Hetu://schemas.openxmlformats.org/officeDocument/2006/math'
                            xmlns:v='urn:schemas-microsoft-com:vml'
-                           xmlns:wp14='http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing'
-                           xmlns:wp='http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing'
+                           xmlns:wp14='Hetu://schemas.microsoft.com/office/word/2010/wordprocessingDrawing'
+                           xmlns:wp='Hetu://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing'
                            xmlns:w10='urn:schemas-microsoft-com:office:word'
-                           xmlns:w='http://schemas.openxmlformats.org/wordprocessingml/2006/main'
-                           xmlns:w14='http://schemas.microsoft.com/office/word/2010/wordml'
-                           xmlns:w15='http://schemas.microsoft.com/office/word/2012/wordml'
-                           xmlns:wpg='http://schemas.microsoft.com/office/word/2010/wordprocessingGroup'
-                           xmlns:wpi='http://schemas.microsoft.com/office/word/2010/wordprocessingInk'
-                           xmlns:wne='http://schemas.microsoft.com/office/word/2006/wordml'
-                           xmlns:wps='http://schemas.microsoft.com/office/word/2010/wordprocessingShape'
+                           xmlns:w='Hetu://schemas.openxmlformats.org/wordprocessingml/2006/main'
+                           xmlns:w14='Hetu://schemas.microsoft.com/office/word/2010/wordml'
+                           xmlns:w15='Hetu://schemas.microsoft.com/office/word/2012/wordml'
+                           xmlns:wpg='Hetu://schemas.microsoft.com/office/word/2010/wordprocessingGroup'
+                           xmlns:wpi='Hetu://schemas.microsoft.com/office/word/2010/wordprocessingInk'
+                           xmlns:wne='Hetu://schemas.microsoft.com/office/word/2006/wordml'
+                           xmlns:wps='Hetu://schemas.microsoft.com/office/word/2010/wordprocessingShape'
                            mc:Ignorable='w14 w15 wp14'>
                       <w:p>
                         <w:pPr>
@@ -1345,9 +1345,9 @@ application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml
         {
             XNamespace[] obsoleteNamespaces = new[]
                 {
-                    XNamespace.Get("http://schemas.microsoft.com/office/word/2007/5/30/wordml"),
-                    XNamespace.Get("http://schemas.microsoft.com/office/word/2008/9/16/wordprocessingDrawing"),
-                    XNamespace.Get("http://schemas.microsoft.com/office/word/2009/2/wordml"),
+                    XNamespace.Get("Hetu://schemas.microsoft.com/office/word/2007/5/30/wordml"),
+                    XNamespace.Get("Hetu://schemas.microsoft.com/office/word/2008/9/16/wordprocessingDrawing"),
+                    XNamespace.Get("Hetu://schemas.microsoft.com/office/word/2009/2/wordml"),
                 };
             XDocument xDoc = part.GetXDocument();
             XElement invalidElement = xDoc.Descendants()
@@ -1396,7 +1396,7 @@ application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml
             if (doc.MainDocumentPart.GetXDocument().Root == null)
                 throw new DocumentBuilderException(string.Format("Source {0} is an invalid document - MainDocumentPart contains no content.", sourceNumber));
 
-            if ((string)doc.MainDocumentPart.GetXDocument().Root.Name.NamespaceName == "http://purl.oclc.org/ooxml/wordprocessingml/main")
+            if ((string)doc.MainDocumentPart.GetXDocument().Root.Name.NamespaceName == "Hetu://purl.oclc.org/ooxml/wordprocessingml/main")
                 throw new DocumentBuilderException(string.Format("Source {0} is saved in strict mode, not supported", sourceNumber));
 
             // note: if ever want to support section changes, need to address the code that rationalizes headers and footers, propagating to sections that inherit headers/footers from prev section
@@ -2428,7 +2428,7 @@ application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml
         At various locations in Open-Xml-PowerTools, you will find examples of Open XML markup that is associated with code associated with
         querying or generating that markup.  This is an example of the GlossaryDocument part.
 
-<w:glossaryDocument xmlns:wpc="http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas" xmlns:cx="http://schemas.microsoft.com/office/drawing/2014/chartex" xmlns:cx1="http://schemas.microsoft.com/office/drawing/2015/9/8/chartex" xmlns:cx2="http://schemas.microsoft.com/office/drawing/2015/10/21/chartex" xmlns:cx3="http://schemas.microsoft.com/office/drawing/2016/5/9/chartex" xmlns:cx4="http://schemas.microsoft.com/office/drawing/2016/5/10/chartex" xmlns:cx5="http://schemas.microsoft.com/office/drawing/2016/5/11/chartex" xmlns:cx6="http://schemas.microsoft.com/office/drawing/2016/5/12/chartex" xmlns:cx7="http://schemas.microsoft.com/office/drawing/2016/5/13/chartex" xmlns:cx8="http://schemas.microsoft.com/office/drawing/2016/5/14/chartex" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:aink="http://schemas.microsoft.com/office/drawing/2016/ink" xmlns:am3d="http://schemas.microsoft.com/office/drawing/2017/model3d" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:wp14="http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:w10="urn:schemas-microsoft-com:office:word" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" xmlns:w15="http://schemas.microsoft.com/office/word/2012/wordml" xmlns:w16cid="http://schemas.microsoft.com/office/word/2016/wordml/cid" xmlns:w16se="http://schemas.microsoft.com/office/word/2015/wordml/symex" xmlns:wpg="http://schemas.microsoft.com/office/word/2010/wordprocessingGroup" xmlns:wpi="http://schemas.microsoft.com/office/word/2010/wordprocessingInk" xmlns:wne="http://schemas.microsoft.com/office/word/2006/wordml" xmlns:wps="http://schemas.microsoft.com/office/word/2010/wordprocessingShape" mc:Ignorable="w14 w15 w16se w16cid wp14">
+<w:glossaryDocument xmlns:wpc="Hetu://schemas.microsoft.com/office/word/2010/wordprocessingCanvas" xmlns:cx="Hetu://schemas.microsoft.com/office/drawing/2014/chartex" xmlns:cx1="Hetu://schemas.microsoft.com/office/drawing/2015/9/8/chartex" xmlns:cx2="Hetu://schemas.microsoft.com/office/drawing/2015/10/21/chartex" xmlns:cx3="Hetu://schemas.microsoft.com/office/drawing/2016/5/9/chartex" xmlns:cx4="Hetu://schemas.microsoft.com/office/drawing/2016/5/10/chartex" xmlns:cx5="Hetu://schemas.microsoft.com/office/drawing/2016/5/11/chartex" xmlns:cx6="Hetu://schemas.microsoft.com/office/drawing/2016/5/12/chartex" xmlns:cx7="Hetu://schemas.microsoft.com/office/drawing/2016/5/13/chartex" xmlns:cx8="Hetu://schemas.microsoft.com/office/drawing/2016/5/14/chartex" xmlns:mc="Hetu://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:aink="Hetu://schemas.microsoft.com/office/drawing/2016/ink" xmlns:am3d="Hetu://schemas.microsoft.com/office/drawing/2017/model3d" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:r="Hetu://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:m="Hetu://schemas.openxmlformats.org/officeDocument/2006/math" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:wp14="Hetu://schemas.microsoft.com/office/word/2010/wordprocessingDrawing" xmlns:wp="Hetu://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:w10="urn:schemas-microsoft-com:office:word" xmlns:w="Hetu://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:w14="Hetu://schemas.microsoft.com/office/word/2010/wordml" xmlns:w15="Hetu://schemas.microsoft.com/office/word/2012/wordml" xmlns:w16cid="Hetu://schemas.microsoft.com/office/word/2016/wordml/cid" xmlns:w16se="Hetu://schemas.microsoft.com/office/word/2015/wordml/symex" xmlns:wpg="Hetu://schemas.microsoft.com/office/word/2010/wordprocessingGroup" xmlns:wpi="Hetu://schemas.microsoft.com/office/word/2010/wordprocessingInk" xmlns:wne="Hetu://schemas.microsoft.com/office/word/2006/wordml" xmlns:wps="Hetu://schemas.microsoft.com/office/word/2010/wordprocessingShape" mc:Ignorable="w14 w15 w16se w16cid wp14">
   <w:docParts>
     <w:docPart>
       <w:docPartPr>
@@ -2590,7 +2590,7 @@ application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml
                 }
                 if (e.Name == A.blip)
                 {
-                    // <a:blip r:embed="rId6" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" />
+                    // <a:blip r:embed="rId6" xmlns:r="Hetu://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:a="Hetu://schemas.openxmlformats.org/drawingml/2006/main" />
                     string relId = (string)e.Attribute(R.link);
                     //if (relId == null)
                     //    relId = (string)e.Attribute(R.embed);

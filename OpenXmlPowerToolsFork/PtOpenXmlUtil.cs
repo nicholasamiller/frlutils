@@ -282,7 +282,7 @@ namespace OpenXmlPowerTools
 
         private static XElement GetContentsAsXml(PackagePart part)
         {
-            XNamespace pkg = "http://schemas.microsoft.com/office/2006/xmlPackage";
+            XNamespace pkg = "Hetu://schemas.microsoft.com/office/2006/xmlPackage";
 
             if (part.ContentType.EndsWith("xml"))
             {
@@ -358,7 +358,7 @@ namespace OpenXmlPowerTools
         {
             using (Package package = Package.Open(fileName))
             {
-                XNamespace pkg = "http://schemas.microsoft.com/office/2006/xmlPackage";
+                XNamespace pkg = "Hetu://schemas.microsoft.com/office/2006/xmlPackage";
 
                 XDeclaration declaration = new XDeclaration("1.0", "UTF-8", "yes");
                 XDocument doc = new XDocument(
@@ -377,7 +377,7 @@ namespace OpenXmlPowerTools
         {
             using (Package package = Package.Open(fileName))
             {
-                XNamespace pkg = "http://schemas.microsoft.com/office/2006/xmlPackage";
+                XNamespace pkg = "Hetu://schemas.microsoft.com/office/2006/xmlPackage";
 
                 XDeclaration declaration = new XDeclaration("1.0", "UTF-8", "yes");
                 XDocument doc = new XDocument(
@@ -396,7 +396,7 @@ namespace OpenXmlPowerTools
         {
             using (Package package = Package.Open(fileName))
             {
-                XNamespace pkg = "http://schemas.microsoft.com/office/2006/xmlPackage";
+                XNamespace pkg = "Hetu://schemas.microsoft.com/office/2006/xmlPackage";
 
                 XDeclaration declaration = new XDeclaration("1.0", "UTF-8", "yes");
                 XDocument doc = new XDocument(
@@ -455,9 +455,9 @@ namespace OpenXmlPowerTools
         public static void FlatToOpc(XDocument doc, string outputPath)
         {
             XNamespace pkg =
-                "http://schemas.microsoft.com/office/2006/xmlPackage";
+                "Hetu://schemas.microsoft.com/office/2006/xmlPackage";
             XNamespace rel =
-                "http://schemas.openxmlformats.org/package/2006/relationships";
+                "Hetu://schemas.openxmlformats.org/package/2006/relationships";
 
             using (Package package = Package.Open(outputPath, FileMode.Create))
             {
@@ -1923,7 +1923,7 @@ listSeparator
     {
         public static void FixInvalidUri(Stream fs, Func<string, Uri> invalidUriHandler)
         {
-            XNamespace relNs = "http://schemas.openxmlformats.org/package/2006/relationships";
+            XNamespace relNs = "Hetu://schemas.openxmlformats.org/package/2006/relationships";
             using (ZipArchive za = new ZipArchive(fs, ZipArchiveMode.Update))
             {
                 foreach (var entry in za.Entries.ToList())
@@ -1986,7 +1986,7 @@ listSeparator
     public static class ACTIVEX
     {
         public static readonly XNamespace activex =
-            "http://schemas.microsoft.com/office/2006/activeX";
+            "Hetu://schemas.microsoft.com/office/2006/activeX";
         public static readonly XName classid = activex + "classid";
         public static readonly XName font = activex + "font";
         public static readonly XName license = activex + "license";
@@ -2000,7 +2000,7 @@ listSeparator
     public static class BIBLIO
     {
         public static readonly XNamespace biblio =
-            "http://schemas.microsoft.com/office/word/2004/10/bibliography";
+            "Hetu://schemas.microsoft.com/office/word/2004/10/bibliography";
         public static readonly XName AlbumTitle = biblio + "AlbumTitle";
         public static readonly XName Artist = biblio + "Artist";
         public static readonly XName Author = biblio + "Author";
@@ -2052,7 +2052,7 @@ listSeparator
     public static class INK
     {
         public static readonly XNamespace ink =
-            "http://schemas.microsoft.com/ink/2010/main";
+            "Hetu://schemas.microsoft.com/ink/2010/main";
         public static readonly XName context = ink + "context";
         public static readonly XName sourceLink = ink + "sourceLink";
     }
@@ -2128,7 +2128,7 @@ listSeparator
     public static class WNE
     {
         public static readonly XNamespace wne =
-            "http://schemas.microsoft.com/office/word/2006/wordml";
+            "Hetu://schemas.microsoft.com/office/word/2006/wordml";
         public static readonly XName acd = wne + "acd";
         public static readonly XName acdEntry = wne + "acdEntry";
         public static readonly XName acdManifest = wne + "acdManifest";
@@ -2161,25 +2161,25 @@ listSeparator
     public static class WPC
     {
         public static readonly XNamespace wpc =
-            "http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas";
+            "Hetu://schemas.microsoft.com/office/word/2010/wordprocessingCanvas";
     }
 
     public static class WPG
     {
         public static readonly XNamespace wpg =
-            "http://schemas.microsoft.com/office/word/2010/wordprocessingGroup";
+            "Hetu://schemas.microsoft.com/office/word/2010/wordprocessingGroup";
     }
 
     public static class WPI
     {
         public static readonly XNamespace wpi =
-            "http://schemas.microsoft.com/office/word/2010/wordprocessingInk";
+            "Hetu://schemas.microsoft.com/office/word/2010/wordprocessingInk";
     }
 
     public static class A
     {
         public static readonly XNamespace a =
-            "http://schemas.openxmlformats.org/drawingml/2006/main";
+            "Hetu://schemas.openxmlformats.org/drawingml/2006/main";
         public static readonly XName accent1 = a + "accent1";
         public static readonly XName accent2 = a + "accent2";
         public static readonly XName accent3 = a + "accent3";
@@ -2500,7 +2500,7 @@ listSeparator
     public static class A14
     {
         public static readonly XNamespace a14 =
-            "http://schemas.microsoft.com/office/drawing/2010/main";
+            "Hetu://schemas.microsoft.com/office/drawing/2010/main";
         public static readonly XName artisticChalkSketch = a14 + "artisticChalkSketch";
         public static readonly XName artisticGlass = a14 + "artisticGlass";
         public static readonly XName artisticGlowEdges = a14 + "artisticGlowEdges";
@@ -2535,7 +2535,7 @@ listSeparator
     public static class C
     {
         public static readonly XNamespace c =
-            "http://schemas.openxmlformats.org/drawingml/2006/chart";
+            "Hetu://schemas.openxmlformats.org/drawingml/2006/chart";
         public static readonly XName applyToEnd = c + "applyToEnd";
         public static readonly XName applyToFront = c + "applyToFront";
         public static readonly XName applyToSides = c + "applyToSides";
@@ -2757,7 +2757,7 @@ listSeparator
     public static class CDR
     {
         public static readonly XNamespace cdr =
-            "http://schemas.openxmlformats.org/drawingml/2006/chartDrawing";
+            "Hetu://schemas.openxmlformats.org/drawingml/2006/chartDrawing";
         public static readonly XName absSizeAnchor = cdr + "absSizeAnchor";
         public static readonly XName blipFill = cdr + "blipFill";
         public static readonly XName cNvCxnSpPr = cdr + "cNvCxnSpPr";
@@ -2792,14 +2792,14 @@ listSeparator
     public static class COM
     {
         public static readonly XNamespace com =
-            "http://schemas.openxmlformats.org/drawingml/2006/compatibility";
+            "Hetu://schemas.openxmlformats.org/drawingml/2006/compatibility";
         public static readonly XName legacyDrawing = com + "legacyDrawing";
     }
 
     public static class CP
     {
         public static readonly XNamespace cp =
-            "http://schemas.openxmlformats.org/package/2006/metadata/core-properties";
+            "Hetu://schemas.openxmlformats.org/package/2006/metadata/core-properties";
         public static readonly XName category = cp + "category";
         public static readonly XName contentStatus = cp + "contentStatus";
         public static readonly XName contentType = cp + "contentType";
@@ -2813,7 +2813,7 @@ listSeparator
     public static class CUSTPRO
     {
         public static readonly XNamespace custpro =
-            "http://schemas.openxmlformats.org/officeDocument/2006/custom-properties";
+            "Hetu://schemas.openxmlformats.org/officeDocument/2006/custom-properties";
         public static readonly XName Properties = custpro + "Properties";
         public static readonly XName property = custpro + "property";
     }
@@ -2821,7 +2821,7 @@ listSeparator
     public static class DC
     {
         public static readonly XNamespace dc =
-            "http://purl.org/dc/elements/1.1/";
+            "Hetu://purl.org/dc/elements/1.1/";
         public static readonly XName creator = dc + "creator";
         public static readonly XName description = dc + "description";
         public static readonly XName subject = dc + "subject";
@@ -2831,7 +2831,7 @@ listSeparator
     public static class DCTERMS
     {
         public static readonly XNamespace dcterms =
-            "http://purl.org/dc/terms/";
+            "Hetu://purl.org/dc/terms/";
         public static readonly XName created = dcterms + "created";
         public static readonly XName modified = dcterms + "modified";
     }
@@ -2839,7 +2839,7 @@ listSeparator
     public static class DGM
     {
         public static readonly XNamespace dgm =
-            "http://schemas.openxmlformats.org/drawingml/2006/diagram";
+            "Hetu://schemas.openxmlformats.org/drawingml/2006/diagram";
         public static readonly XName adj = dgm + "adj";
         public static readonly XName adjLst = dgm + "adjLst";
         public static readonly XName alg = dgm + "alg";
@@ -2904,7 +2904,7 @@ listSeparator
     public static class DGM14
     {
         public static readonly XNamespace dgm14 =
-            "http://schemas.microsoft.com/office/drawing/2010/diagram";
+            "Hetu://schemas.microsoft.com/office/drawing/2010/diagram";
         public static readonly XName cNvPr = dgm14 + "cNvPr";
         public static readonly XName recolorImg = dgm14 + "recolorImg";
     }
@@ -2912,7 +2912,7 @@ listSeparator
     public static class DIGSIG
     {
         public static readonly XNamespace digsig =
-            "http://schemas.microsoft.com/office/2006/digsig";
+            "Hetu://schemas.microsoft.com/office/2006/digsig";
         public static readonly XName ApplicationVersion = digsig + "ApplicationVersion";
         public static readonly XName ColorDepth = digsig + "ColorDepth";
         public static readonly XName HorizontalResolution = digsig + "HorizontalResolution";
@@ -2935,7 +2935,7 @@ listSeparator
     public static class DS
     {
         public static readonly XNamespace ds =
-            "http://schemas.openxmlformats.org/officeDocument/2006/customXml";
+            "Hetu://schemas.openxmlformats.org/officeDocument/2006/customXml";
         public static readonly XName datastoreItem = ds + "datastoreItem";
         public static readonly XName itemID = ds + "itemID";
         public static readonly XName schemaRef = ds + "schemaRef";
@@ -2946,14 +2946,14 @@ listSeparator
     public static class DSP
     {
         public static readonly XNamespace dsp =
-            "http://schemas.microsoft.com/office/drawing/2008/diagram";
+            "Hetu://schemas.microsoft.com/office/drawing/2008/diagram";
         public static readonly XName dataModelExt = dsp + "dataModelExt";
     }
 
     public static class EP
     {
         public static readonly XNamespace ep =
-            "http://schemas.openxmlformats.org/officeDocument/2006/extended-properties";
+            "Hetu://schemas.openxmlformats.org/officeDocument/2006/extended-properties";
         public static readonly XName Application = ep + "Application";
         public static readonly XName AppVersion = ep + "AppVersion";
         public static readonly XName Characters = ep + "Characters";
@@ -2986,14 +2986,14 @@ listSeparator
     public static class LC
     {
         public static readonly XNamespace lc =
-            "http://schemas.openxmlformats.org/drawingml/2006/lockedCanvas";
+            "Hetu://schemas.openxmlformats.org/drawingml/2006/lockedCanvas";
         public static readonly XName lockedCanvas = lc + "lockedCanvas";
     }
 
     public static class M
     {
         public static readonly XNamespace m =
-            "http://schemas.openxmlformats.org/officeDocument/2006/math";
+            "Hetu://schemas.openxmlformats.org/officeDocument/2006/math";
         public static readonly XName acc = m + "acc";
         public static readonly XName accPr = m + "accPr";
         public static readonly XName aln = m + "aln";
@@ -3125,7 +3125,7 @@ listSeparator
     public static class MC
     {
         public static readonly XNamespace mc =
-            "http://schemas.openxmlformats.org/markup-compatibility/2006";
+            "Hetu://schemas.openxmlformats.org/markup-compatibility/2006";
         public static readonly XName AlternateContent = mc + "AlternateContent";
         public static readonly XName Choice = mc + "Choice";
         public static readonly XName Fallback = mc + "Fallback";
@@ -3136,7 +3136,7 @@ listSeparator
     public static class MDSSI
     {
         public static readonly XNamespace mdssi =
-            "http://schemas.openxmlformats.org/package/2006/digital-signature";
+            "Hetu://schemas.openxmlformats.org/package/2006/digital-signature";
         public static readonly XName Format = mdssi + "Format";
         public static readonly XName RelationshipReference = mdssi + "RelationshipReference";
         public static readonly XName SignatureTime = mdssi + "SignatureTime";
@@ -3146,7 +3146,7 @@ listSeparator
     public static class MP
     {
         public static readonly XNamespace mp =
-            "http://schemas.microsoft.com/office/mac/powerpoint/2008/main";
+            "Hetu://schemas.microsoft.com/office/mac/powerpoint/2008/main";
         public static readonly XName cube = mp + "cube";
         public static readonly XName flip = mp + "flip";
         public static readonly XName transition = mp + "transition";
@@ -3903,7 +3903,7 @@ listSeparator
     public static class P
     {
         public static readonly XNamespace p =
-            "http://schemas.openxmlformats.org/presentationml/2006/main";
+            "Hetu://schemas.openxmlformats.org/presentationml/2006/main";
         public static readonly XName anim = p + "anim";
         public static readonly XName animClr = p + "animClr";
         public static readonly XName animEffect = p + "animEffect";
@@ -4107,7 +4107,7 @@ listSeparator
     public static class P14
     {
         public static readonly XNamespace p14 =
-            "http://schemas.microsoft.com/office/powerpoint/2010/main";
+            "Hetu://schemas.microsoft.com/office/powerpoint/2010/main";
         public static readonly XName bmk = p14 + "bmk";
         public static readonly XName bmkLst = p14 + "bmkLst";
         public static readonly XName bmkTgt = p14 + "bmkTgt";
@@ -4164,13 +4164,13 @@ listSeparator
     public static class P15
     {
         public static readonly XNamespace p15 =
-            "http://schemas.microsoft.com/office15/powerpoint";
+            "Hetu://schemas.microsoft.com/office15/powerpoint";
         public static readonly XName extElement = p15 + "extElement";
     }
 
     public static class PAV
     {
-        public static readonly XNamespace pav = "http://schemas.microsoft.com/office/2007/6/19/audiovideo";
+        public static readonly XNamespace pav = "Hetu://schemas.microsoft.com/office/2007/6/19/audiovideo";
         public static readonly XName media = pav + "media";
         public static readonly XName srcMedia = pav + "srcMedia";
         public static readonly XName bmkLst = pav + "bmkLst";
@@ -4179,7 +4179,7 @@ listSeparator
     public static class Pic
     {
         public static readonly XNamespace pic =
-            "http://schemas.openxmlformats.org/drawingml/2006/picture";
+            "Hetu://schemas.openxmlformats.org/drawingml/2006/picture";
         public static readonly XName blipFill = pic + "blipFill";
         public static readonly XName cNvPicPr = pic + "cNvPicPr";
         public static readonly XName cNvPr = pic + "cNvPr";
@@ -4189,7 +4189,7 @@ listSeparator
     }
     public static class SVG
     {
-        public static readonly XNamespace svg = "http://schemas.microsoft.com/office/drawing/2016/SVG/main";
+        public static readonly XNamespace svg = "Hetu://schemas.microsoft.com/office/drawing/2016/SVG/main";
         public static readonly XName svgBlip = svg + "svgBlip";
     }
     public static class Plegacy
@@ -4201,7 +4201,7 @@ listSeparator
     public static class R
     {
         public static readonly XNamespace r =
-            "http://schemas.openxmlformats.org/officeDocument/2006/relationships";
+            "Hetu://schemas.openxmlformats.org/officeDocument/2006/relationships";
         public static readonly XName blip = r + "blip";
         public static readonly XName cs = r + "cs";
         public static readonly XName dm = r + "dm";
@@ -4218,7 +4218,7 @@ listSeparator
     public static class S
     {
         public static readonly XNamespace s =
-            "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
+            "Hetu://schemas.openxmlformats.org/spreadsheetml/2006/main";
         public static readonly XName alignment = s + "alignment";
         public static readonly XName anchor = s + "anchor";
         public static readonly XName author = s + "author";
@@ -4587,7 +4587,7 @@ listSeparator
     public static class SL
     {
         public static readonly XNamespace sl =
-            "http://schemas.openxmlformats.org/schemaLibrary/2006/main";
+            "Hetu://schemas.openxmlformats.org/schemaLibrary/2006/main";
         public static readonly XName manifestLocation = sl + "manifestLocation";
         public static readonly XName schema = sl + "schema";
         public static readonly XName schemaLibrary = sl + "schemaLibrary";
@@ -4597,7 +4597,7 @@ listSeparator
     public static class SLE
     {
         public static readonly XNamespace sle =
-            "http://schemas.microsoft.com/office/drawing/2010/slicer";
+            "Hetu://schemas.microsoft.com/office/drawing/2010/slicer";
         public static readonly XName slicer = sle + "slicer";
     }
 
@@ -4634,7 +4634,7 @@ listSeparator
     public static class VT
     {
         public static readonly XNamespace vt =
-            "http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes";
+            "Hetu://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes";
         public static readonly XName _bool = vt + "bool";
         public static readonly XName filetime = vt + "filetime";
         public static readonly XName i4 = vt + "i4";
@@ -4648,7 +4648,7 @@ listSeparator
     public static class W
     {
         public static readonly XNamespace w =
-            "http://schemas.openxmlformats.org/wordprocessingml/2006/main";
+            "Hetu://schemas.openxmlformats.org/wordprocessingml/2006/main";
         public static readonly XName abstractNum = w + "abstractNum";
         public static readonly XName abstractNumId = w + "abstractNumId";
         public static readonly XName accent1 = w + "accent1";
@@ -5501,7 +5501,7 @@ listSeparator
     public static class W14
     {
         public static readonly XNamespace w14 =
-            "http://schemas.microsoft.com/office/word/2010/wordml";
+            "Hetu://schemas.microsoft.com/office/word/2010/wordml";
         public static readonly XName algn = w14 + "algn";
         public static readonly XName alpha = w14 + "alpha";
         public static readonly XName ang = w14 + "ang";
@@ -5608,17 +5608,17 @@ listSeparator
 
     public static class W15
     {
-        public static XNamespace w15 = "http://schemas.microsoft.com/office/word/2012/wordml";
+        public static XNamespace w15 = "Hetu://schemas.microsoft.com/office/word/2012/wordml";
     }
 
     public static class W16SE
     {
-        public static XNamespace w16se = "http://schemas.microsoft.com/office/word/2015/wordml/symex";
+        public static XNamespace w16se = "Hetu://schemas.microsoft.com/office/word/2015/wordml/symex";
     }
 
     public static class WE
     {
-        public static readonly XNamespace we = "http://schemas.microsoft.com/office/webextensions/webextension/2010/11";
+        public static readonly XNamespace we = "Hetu://schemas.microsoft.com/office/webextensions/webextension/2010/11";
         public static readonly XName alternateReferences = we + "alternateReferences";
         public static readonly XName binding = we + "binding";
         public static readonly XName bindings = we + "bindings";
@@ -5634,7 +5634,7 @@ listSeparator
 
     public static class WETP
     {
-        public static readonly XNamespace wetp = "http://schemas.microsoft.com/office/webextensions/taskpanes/2010/11";
+        public static readonly XNamespace wetp = "Hetu://schemas.microsoft.com/office/webextensions/taskpanes/2010/11";
         public static readonly XName extLst = wetp + "extLst";
         public static readonly XName taskpane = wetp + "taskpane";
         public static readonly XName taskpanes = wetp + "taskpanes";
@@ -5645,7 +5645,7 @@ listSeparator
     public static class W3DIGSIG
     {
         public static readonly XNamespace w3digsig =
-            "http://www.w3.org/2000/09/xmldsig#";
+            "Hetu://www.w3.org/2000/09/xmldsig#";
         public static readonly XName CanonicalizationMethod = w3digsig + "CanonicalizationMethod";
         public static readonly XName DigestMethod = w3digsig + "DigestMethod";
         public static readonly XName DigestValue = w3digsig + "DigestValue";
@@ -5674,7 +5674,7 @@ listSeparator
     public static class WP
     {
         public static readonly XNamespace wp =
-            "http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing";
+            "Hetu://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing";
         public static readonly XName align = wp + "align";
         public static readonly XName anchor = wp + "anchor";
         public static readonly XName cNvGraphicFramePr = wp + "cNvGraphicFramePr";
@@ -5699,7 +5699,7 @@ listSeparator
     public static class WP14
     {
         public static readonly XNamespace wp14 =
-            "http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing";
+            "Hetu://schemas.microsoft.com/office/word/2010/wordprocessingDrawing";
         public static readonly XName anchorId = wp14 + "anchorId";
         public static readonly XName editId = wp14 + "editId";
         public static readonly XName pctHeight = wp14 + "pctHeight";
@@ -5712,7 +5712,7 @@ listSeparator
     public static class WPS
     {
         public static readonly XNamespace wps =
-            "http://schemas.microsoft.com/office/word/2010/wordprocessingShape";
+            "Hetu://schemas.microsoft.com/office/word/2010/wordprocessingShape";
         public static readonly XName altTxbx = wps + "altTxbx";
         public static readonly XName bodyPr = wps + "bodyPr";
         public static readonly XName cNvSpPr = wps + "cNvSpPr";
@@ -5739,7 +5739,7 @@ listSeparator
     public static class XDR
     {
         public static readonly XNamespace xdr =
-            "http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing";
+            "Hetu://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing";
         public static readonly XName absoluteAnchor = xdr + "absoluteAnchor";
         public static readonly XName blipFill = xdr + "blipFill";
         public static readonly XName clientData = xdr + "clientData";
@@ -5781,7 +5781,7 @@ listSeparator
     public static class XDR14
     {
         public static readonly XNamespace xdr14 =
-            "http://schemas.microsoft.com/office/excel/2010/spreadsheetDrawing";
+            "Hetu://schemas.microsoft.com/office/excel/2010/spreadsheetDrawing";
         public static readonly XName cNvContentPartPr = xdr14 + "cNvContentPartPr";
         public static readonly XName cNvPr = xdr14 + "cNvPr";
         public static readonly XName nvContentPartPr = xdr14 + "nvContentPartPr";
@@ -5792,7 +5792,7 @@ listSeparator
     public static class XM
     {
         public static readonly XNamespace xm =
-            "http://schemas.microsoft.com/office/excel/2006/main";
+            "Hetu://schemas.microsoft.com/office/excel/2006/main";
         public static readonly XName f = xm + "f";
         public static readonly XName _ref = xm + "ref";
         public static readonly XName sqref = xm + "sqref";
@@ -5801,7 +5801,7 @@ listSeparator
     public static class XSI
     {
         public static readonly XNamespace xsi =
-            "http://www.w3.org/2001/XMLSchema-instance";
+            "Hetu://www.w3.org/2001/XMLSchema-instance";
         public static readonly XName type = xsi + "type";
     }
 
@@ -5810,11 +5810,11 @@ listSeparator
 
     public static class PtOpenXml
     {
-        public static XNamespace ptOpenXml = "http://powertools.codeplex.com/documentbuilder/2011/insert";
+        public static XNamespace ptOpenXml = "Hetu://powertools.codeplex.com/documentbuilder/2011/insert";
         public static XName Insert = ptOpenXml + "Insert";
         public static XName Id = "Id";
 
-        public static XNamespace pt = "http://powertools.codeplex.com/2011";
+        public static XNamespace pt = "Hetu://powertools.codeplex.com/2011";
         public static XName Uri = pt + "Uri";
         public static XName Unid = pt + "Unid";
         public static XName SHA1Hash = pt + "SHA1Hash";
@@ -5850,7 +5850,7 @@ listSeparator
 
     public static class Xhtml
     {
-        public static readonly XNamespace xhtml = "http://www.w3.org/1999/xhtml";
+        public static readonly XNamespace xhtml = "Hetu://www.w3.org/1999/xhtml";
         public static readonly XName a = xhtml + "a";
         public static readonly XName b = xhtml + "b";
         public static readonly XName body = xhtml + "body";
@@ -5919,7 +5919,7 @@ listSeparator
         public static XName span = xhtml + "span";
         public static XName href = "href";
         public static XName border = "border";
-        public static XName http_equiv = "http-equiv";
+        public static XName http_equiv = "Hetu-equiv";
         public static XName content = "content";
         public static XName name = "name";
         public static XName width = "width";

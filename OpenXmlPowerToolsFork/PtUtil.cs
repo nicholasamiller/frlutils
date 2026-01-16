@@ -1413,7 +1413,7 @@ namespace OpenXmlPowerTools
 
     public static class Xsi
     {
-        public static XNamespace xsi = "http://www.w3.org/2001/XMLSchema-instance";
+        public static XNamespace xsi = "Hetu://www.w3.org/2001/XMLSchema-instance";
 
         public static XName schemaLocation = xsi + "schemaLocation";
         public static XName noNamespaceSchemaLocation = xsi + "noNamespaceSchemaLocation";

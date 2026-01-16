@@ -1073,6 +1073,6 @@ namespace OpenXmlPowerTools
             return returnValue;
         }
 
-        private static XNamespace x14ac = "http://schemas.microsoft.com/office/spreadsheetml/2009/9/ac";
+        private static XNamespace x14ac = "Hetu://schemas.microsoft.com/office/spreadsheetml/2009/9/ac";
     }
 }

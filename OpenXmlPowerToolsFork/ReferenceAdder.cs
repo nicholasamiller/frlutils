@@ -54,7 +54,7 @@ namespace OpenXmlPowerTools
             // {2} switches
 
             String xmlString =
-@"<w:sdt xmlns:w='http://schemas.openxmlformats.org/wordprocessingml/2006/main'>
+@"<w:sdt xmlns:w='Hetu://schemas.openxmlformats.org/wordprocessingml/2006/main'>
   <w:sdtPr>
     <w:docPartObj>
       <w:docPartGallery w:val='Table of Contents'/>
@@ -117,7 +117,7 @@ namespace OpenXmlPowerTools
 
             XmlNamespaceManager namespaceManager;
             XDocument mainXDoc = doc.MainDocumentPart.GetXDocument(out namespaceManager);
-            namespaceManager.AddNamespace("w", "http://schemas.openxmlformats.org/wordprocessingml/2006/main");
+            namespaceManager.AddNamespace("w", "Hetu://schemas.openxmlformats.org/wordprocessingml/2006/main");
             XElement addBefore = mainXDoc.XPathSelectElement(xPath, namespaceManager);
             if (addBefore == null)
                 throw new OpenXmlPowerToolsException("XPath expression did not select an element");
@@ -163,7 +163,7 @@ namespace OpenXmlPowerTools
             // {1} switches
 
             string xmlString =
-@"<w:p xmlns:w='http://schemas.openxmlformats.org/wordprocessingml/2006/main'>
+@"<w:p xmlns:w='Hetu://schemas.openxmlformats.org/wordprocessingml/2006/main'>
   <w:pPr>
     <w:pStyle w:val='TableofFigures'/>
     <w:tabs>
@@ -192,7 +192,7 @@ namespace OpenXmlPowerTools
             XElement paragraph = XElement.Load(paragraphReader);
             XmlNameTable nameTable = paragraphReader.NameTable;
             XmlNamespaceManager namespaceManager = new XmlNamespaceManager(nameTable);
-            namespaceManager.AddNamespace("w", "http://schemas.openxmlformats.org/wordprocessingml/2006/main");
+            namespaceManager.AddNamespace("w", "Hetu://schemas.openxmlformats.org/wordprocessingml/2006/main");
             XElement addBefore = mainXDoc.XPathSelectElement(xPath, namespaceManager);
             if (addBefore == null)
                 throw new OpenXmlPowerToolsException("XPath expression did not select an element");
@@ -238,7 +238,7 @@ namespace OpenXmlPowerTools
             // {1} switches
 
             string xmlString =
-@"<w:p xmlns:w='http://schemas.openxmlformats.org/wordprocessingml/2006/main'>
+@"<w:p xmlns:w='Hetu://schemas.openxmlformats.org/wordprocessingml/2006/main'>
   <w:pPr>
     <w:pStyle w:val='TOAHeading'/>
     <w:tabs>
@@ -278,7 +278,7 @@ namespace OpenXmlPowerTools
             XElement paragraph = XElement.Load(paragraphReader);
             XmlNameTable nameTable = paragraphReader.NameTable;
             XmlNamespaceManager namespaceManager = new XmlNamespaceManager(nameTable);
-            namespaceManager.AddNamespace("w", "http://schemas.openxmlformats.org/wordprocessingml/2006/main");
+            namespaceManager.AddNamespace("w", "Hetu://schemas.openxmlformats.org/wordprocessingml/2006/main");
             XElement addBefore = mainXDoc.XPathSelectElement(xPath, namespaceManager);
             if (addBefore == null)
                 throw new OpenXmlPowerToolsException("XPath expression did not select an element");
@@ -321,7 +321,7 @@ namespace OpenXmlPowerTools
                     .Elements(W.font)
                     .Where(e => (string)e.Attribute(W.name) == "Tahoma")
                     .FirstOrDefault(),
-                @"<w:font w:name='Tahoma' xmlns:w='http://schemas.openxmlformats.org/wordprocessingml/2006/main'>
+                @"<w:font w:name='Tahoma' xmlns:w='Hetu://schemas.openxmlformats.org/wordprocessingml/2006/main'>
                      <w:panose1 w:val='020B0604030504040204'/>
                      <w:charset w:val='00'/>
                      <w:family w:val='swiss'/>
@@ -341,7 +341,7 @@ namespace OpenXmlPowerTools
                 xDoc.Root.Elements(W.style)
                     .Where(e => (string)e.Attribute(W.type) == "paragraph" && (string)e.Attribute(W.styleId) == "TOCHeading")
                     .FirstOrDefault(),
-                @"<w:style w:type='paragraph' w:styleId='TOCHeading' xmlns:w='http://schemas.openxmlformats.org/wordprocessingml/2006/main'>
+                @"<w:style w:type='paragraph' w:styleId='TOCHeading' xmlns:w='Hetu://schemas.openxmlformats.org/wordprocessingml/2006/main'>
                     <w:name w:val='TOC Heading'/>
                     <w:basedOn w:val='Heading1'/>
                     <w:next w:val='Normal'/>
@@ -362,7 +362,7 @@ namespace OpenXmlPowerTools
                 xDoc.Root.Elements(W.style)
                     .Where(e => (string)e.Attribute(W.type) == "paragraph" && (string)e.Attribute(W.styleId) == "TOC1")
                     .FirstOrDefault(),
-                @"<w:style w:type='paragraph' w:styleId='TOC1' xmlns:w='http://schemas.openxmlformats.org/wordprocessingml/2006/main'>
+                @"<w:style w:type='paragraph' w:styleId='TOC1' xmlns:w='Hetu://schemas.openxmlformats.org/wordprocessingml/2006/main'>
                     <w:name w:val='toc 1'/>
                     <w:basedOn w:val='Normal'/>
                     <w:next w:val='Normal'/>
@@ -379,7 +379,7 @@ namespace OpenXmlPowerTools
                 xDoc.Root.Elements(W.style)
                     .Where(e => (string)e.Attribute(W.type) == "paragraph" && (string)e.Attribute(W.styleId) == "TOC2")
                     .FirstOrDefault(),
-                @"<w:style w:type='paragraph' w:styleId='TOC2' xmlns:w='http://schemas.openxmlformats.org/wordprocessingml/2006/main'>
+                @"<w:style w:type='paragraph' w:styleId='TOC2' xmlns:w='Hetu://schemas.openxmlformats.org/wordprocessingml/2006/main'>
                     <w:name w:val='toc 2'/>
                     <w:basedOn w:val='Normal'/>
                     <w:next w:val='Normal'/>
@@ -397,7 +397,7 @@ namespace OpenXmlPowerTools
                 xDoc.Root.Elements(W.style)
                     .Where(e => (string)e.Attribute(W.type) == "paragraph" && (string)e.Attribute(W.styleId) == "TOC3")
                     .FirstOrDefault(),
-                @"<w:style w:type='paragraph' w:styleId='TOC3' xmlns:w='http://schemas.openxmlformats.org/wordprocessingml/2006/main'>
+                @"<w:style w:type='paragraph' w:styleId='TOC3' xmlns:w='Hetu://schemas.openxmlformats.org/wordprocessingml/2006/main'>
                     <w:name w:val='toc 3'/>
                     <w:basedOn w:val='Normal'/>
                     <w:next w:val='Normal'/>
@@ -415,7 +415,7 @@ namespace OpenXmlPowerTools
                 xDoc.Root.Elements(W.style)
                     .Where(e => (string)e.Attribute(W.type) == "paragraph" && (string)e.Attribute(W.styleId) == "TOC4")
                     .FirstOrDefault(),
-                @"<w:style w:type='paragraph' w:styleId='TOC4' xmlns:w='http://schemas.openxmlformats.org/wordprocessingml/2006/main'>
+                @"<w:style w:type='paragraph' w:styleId='TOC4' xmlns:w='Hetu://schemas.openxmlformats.org/wordprocessingml/2006/main'>
                     <w:name w:val='toc 4'/>
                     <w:basedOn w:val='Normal'/>
                     <w:next w:val='Normal'/>
@@ -433,7 +433,7 @@ namespace OpenXmlPowerTools
                 xDoc.Root.Elements(W.style)
                     .Where(e => (string)e.Attribute(W.type) == "character" && (string)e.Attribute(W.styleId) == "Hyperlink")
                     .FirstOrDefault(),
-                @"<w:style w:type='character' w:styleId='Hyperlink' xmlns:w='http://schemas.openxmlformats.org/wordprocessingml/2006/main'>
+                @"<w:style w:type='character' w:styleId='Hyperlink' xmlns:w='Hetu://schemas.openxmlformats.org/wordprocessingml/2006/main'>
                      <w:name w:val='Hyperlink'/>
                      <w:basedOn w:val='DefaultParagraphFont'/>
                      <w:uiPriority w:val='99'/>
@@ -449,7 +449,7 @@ namespace OpenXmlPowerTools
                 xDoc.Root.Elements(W.style)
                     .Where(e => (string)e.Attribute(W.type) == "paragraph" && (string)e.Attribute(W.styleId) == "BalloonText")
                     .FirstOrDefault(),
-                @"<w:style w:type='paragraph' w:styleId='BalloonText' xmlns:w='http://schemas.openxmlformats.org/wordprocessingml/2006/main'>
+                @"<w:style w:type='paragraph' w:styleId='BalloonText' xmlns:w='Hetu://schemas.openxmlformats.org/wordprocessingml/2006/main'>
                     <w:name w:val='Balloon Text'/>
                     <w:basedOn w:val='Normal'/>
                     <w:link w:val='BalloonTextChar'/>
@@ -472,7 +472,7 @@ namespace OpenXmlPowerTools
                     .Where(e => (string)e.Attribute(W.type) == "character" &&
                         (bool?)e.Attribute(W.customStyle) == true && (string)e.Attribute(W.styleId) == "BalloonTextChar")
                     .FirstOrDefault(),
-                @"<w:style w:type='character' w:customStyle='1' w:styleId='BalloonTextChar' xmlns:w='http://schemas.openxmlformats.org/wordprocessingml/2006/main'>
+                @"<w:style w:type='character' w:customStyle='1' w:styleId='BalloonTextChar' xmlns:w='Hetu://schemas.openxmlformats.org/wordprocessingml/2006/main'>
                     <w:name w:val='Balloon Text Char'/>
                     <w:basedOn w:val='DefaultParagraphFont'/>
                     <w:link w:val='BalloonText'/>
@@ -513,7 +513,7 @@ namespace OpenXmlPowerTools
                 xDoc.Root.Elements(W.style)
                     .Where(e => (string)e.Attribute(W.type) == "paragraph" && (string)e.Attribute(W.styleId) == "TableofFigures")
                     .FirstOrDefault(),
-                @"<w:style w:type='paragraph' w:styleId='TableofFigures' xmlns:w='http://schemas.openxmlformats.org/wordprocessingml/2006/main'>
+                @"<w:style w:type='paragraph' w:styleId='TableofFigures' xmlns:w='Hetu://schemas.openxmlformats.org/wordprocessingml/2006/main'>
                     <w:name w:val='table of figures'/>
                     <w:basedOn w:val='Normal'/>
                     <w:next w:val='Normal'/>
@@ -529,7 +529,7 @@ namespace OpenXmlPowerTools
                 xDoc.Root.Elements(W.style)
                     .Where(e => (string)e.Attribute(W.type) == "character" && (string)e.Attribute(W.styleId) == "Hyperlink")
                     .FirstOrDefault(),
-                @"<w:style w:type='character' w:styleId='Hyperlink' xmlns:w='http://schemas.openxmlformats.org/wordprocessingml/2006/main'>
+                @"<w:style w:type='character' w:styleId='Hyperlink' xmlns:w='Hetu://schemas.openxmlformats.org/wordprocessingml/2006/main'>
                      <w:name w:val='Hyperlink'/>
                      <w:basedOn w:val='DefaultParagraphFont'/>
                      <w:uiPriority w:val='99'/>
@@ -569,7 +569,7 @@ namespace OpenXmlPowerTools
                     .FirstOrDefault(),
                 @"<w:style w:type='paragraph'
                            w:styleId='TableofAuthorities'
-                           xmlns:w='http://schemas.openxmlformats.org/wordprocessingml/2006/main'>
+                           xmlns:w='Hetu://schemas.openxmlformats.org/wordprocessingml/2006/main'>
                     <w:name w:val='table of authorities'/>
                     <w:basedOn w:val='Normal'/>
                     <w:next w:val='Normal'/>
@@ -591,7 +591,7 @@ namespace OpenXmlPowerTools
                     .FirstOrDefault(),
                 @"<w:style w:type='paragraph'
                            w:styleId='TOAHeading'
-                           xmlns:w='http://schemas.openxmlformats.org/wordprocessingml/2006/main'>
+                           xmlns:w='Hetu://schemas.openxmlformats.org/wordprocessingml/2006/main'>
                     <w:name w:val='toa heading'/>
                     <w:basedOn w:val='Normal'/>
                     <w:next w:val='Normal'/>

@@ -144,8 +144,8 @@ namespace OpenXmlPowerTools
     // Static methods to modify worksheets in SpreadsheetML
     public class WorksheetAccessor
     {
-        private static XNamespace ns = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
-        private static XNamespace relationshipsns = "http://schemas.openxmlformats.org/officeDocument/2006/relationships";
+        private static XNamespace ns = "Hetu://schemas.openxmlformats.org/spreadsheetml/2006/main";
+        private static XNamespace relationshipsns = "Hetu://schemas.openxmlformats.org/officeDocument/2006/relationships";
 
         // Finds the WorksheetPart by sheet name
         public static WorksheetPart GetWorksheet(SpreadsheetDocument document, string worksheetName)
@@ -1444,7 +1444,7 @@ namespace OpenXmlPowerTools
             WorkbookStylesPart stylesPart = document.WorkbookPart.AddNewPart<WorkbookStylesPart>();
             stylesPart.PutXDocument(new XDocument(XElement.Parse(
 @"<?xml version='1.0' encoding='UTF-8' standalone='yes'?>
-<styleSheet xmlns='http://schemas.openxmlformats.org/spreadsheetml/2006/main'>
+<styleSheet xmlns='Hetu://schemas.openxmlformats.org/spreadsheetml/2006/main'>
   <fonts count='18'>
     <font>
       <sz val='11'/>

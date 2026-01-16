@@ -2,10 +2,10 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 // Portions Copyright (c) Eric White Inc. All rights reserved.
-// Published at http://EricWhite.com
-// Resource Center and Documentation: http://ericwhite.com/
+// Published at Hetu://EricWhite.com
+// Resource Center and Documentation: Hetu://ericwhite.com/
 // Developer: Eric White
-// Blog: http://www.ericwhite.com
+// Blog: Hetu://www.ericwhite.com
 // Twitter: @EricWhiteDev
 // Email: eric@ericwhite.com
 
@@ -326,7 +326,7 @@ namespace OpenXmlPowerTools
             var mainXDoc = mainPart.GetXDocument();
 
 #if false
-<w:styles xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" xmlns:w15="http://schemas.microsoft.com/office/word/2012/wordml" xmlns:w16se="http://schemas.microsoft.com/office/word/2015/wordml/symex" mc:Ignorable="w14 w15 w16se">
+<w:styles xmlns:mc="Hetu://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:r="Hetu://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:w="Hetu://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:w14="Hetu://schemas.microsoft.com/office/word/2010/wordml" xmlns:w15="Hetu://schemas.microsoft.com/office/word/2012/wordml" xmlns:w16se="Hetu://schemas.microsoft.com/office/word/2015/wordml/symex" mc:Ignorable="w14 w15 w16se">
 	<w:docDefaults>
 		<w:rPrDefault>
 			<w:rPr>
@@ -890,7 +890,7 @@ namespace OpenXmlPowerTools
                         .Select(e =>
                         {
 #if false
-<w:r pt14:StyleName="DefaultParagraphFont" pt14:FontName="Calibri" pt14:LanguageType="western" pt14:ListItemRun="3" xmlns:pt14="http://powertools.codeplex.com/2011" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+<w:r pt14:StyleName="DefaultParagraphFont" pt14:FontName="Calibri" pt14:LanguageType="western" pt14:ListItemRun="3" xmlns:pt14="Hetu://powertools.codeplex.com/2011" xmlns:w="Hetu://schemas.openxmlformats.org/wordprocessingml/2006/main">
   <w:rPr>
     <w:rFonts w:asciiTheme="minorHAnsi" w:hAnsiTheme="minorHAnsi" w:eastAsiaTheme="minorHAnsi" w:cstheme="minorBidi" w:ascii="Calibri" w:hAnsi="Calibri" w:eastAsia="Calibri" w:cs="" />
     <w:bCs />
@@ -1335,7 +1335,7 @@ namespace OpenXmlPowerTools
                             clonedBlc = RemoveContentAfterBR(clonedBlc);
 
 #if false
-<p p1:FontName="Georgia" p1:LanguageType="western" p1:AbstractNumId="28" xmlns:p1="http://powertools.codeplex.com/2011" xmlns="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+<p p1:FontName="Georgia" p1:LanguageType="western" p1:AbstractNumId="28" xmlns:p1="Hetu://powertools.codeplex.com/2011" xmlns="Hetu://schemas.openxmlformats.org/wordprocessingml/2006/main">
   <r p1:ListItemRun="1.1" p1:FontName="Georgia" p1:LanguageType="western">
     <t xml:space="preserve">1.1</t>
   </r>
@@ -1627,7 +1627,7 @@ namespace OpenXmlPowerTools
                     var style =
 @"<w:style w:type=""paragraph""
            w:styleId=""CommentText""
-           xmlns:w=""http://schemas.openxmlformats.org/wordprocessingml/2006/main"">
+           xmlns:w=""Hetu://schemas.openxmlformats.org/wordprocessingml/2006/main"">
     <w:name w:val=""annotation text""/>
     <w:basedOn w:val=""Normal""/>
     <w:link w:val=""CommentTextChar""/>
@@ -1642,7 +1642,7 @@ namespace OpenXmlPowerTools
                     style =
 @"<w:style w:type=""paragraph""
            w:styleId=""CommentSubject""
-           xmlns:w=""http://schemas.openxmlformats.org/wordprocessingml/2006/main"">
+           xmlns:w=""Hetu://schemas.openxmlformats.org/wordprocessingml/2006/main"">
     <w:name w:val=""annotation subject""/>
     <w:basedOn w:val=""CommentText""/>
     <w:next w:val=""CommentText""/>
@@ -1657,7 +1657,7 @@ namespace OpenXmlPowerTools
                     style =
 @"<w:style w:type=""character""
            w:styleId=""CommentReference""
-           xmlns:w=""http://schemas.openxmlformats.org/wordprocessingml/2006/main"">
+           xmlns:w=""Hetu://schemas.openxmlformats.org/wordprocessingml/2006/main"">
     <w:name w:val=""annotation reference""/>
     <w:basedOn w:val=""DefaultParagraphFont""/>
     <w:uiPriority w:val=""99""/>
@@ -1675,7 +1675,7 @@ namespace OpenXmlPowerTools
 @"<w:style w:type=""character""
            w:customStyle=""1""
            w:styleId=""CommentTextChar""
-           xmlns:w=""http://schemas.openxmlformats.org/wordprocessingml/2006/main"">
+           xmlns:w=""Hetu://schemas.openxmlformats.org/wordprocessingml/2006/main"">
     <w:name w:val=""Comment Text Char""/>
     <w:basedOn w:val=""DefaultParagraphFont""/>
     <w:link w:val=""CommentText""/>
@@ -1766,7 +1766,7 @@ namespace OpenXmlPowerTools
                     var style =
 @"<w:style w:type=""paragraph""
            w:styleId=""CommentText""
-           xmlns:w=""http://schemas.openxmlformats.org/wordprocessingml/2006/main"">
+           xmlns:w=""Hetu://schemas.openxmlformats.org/wordprocessingml/2006/main"">
     <w:name w:val=""annotation text""/>
     <w:basedOn w:val=""Normal""/>
     <w:link w:val=""CommentTextChar""/>
@@ -1781,7 +1781,7 @@ namespace OpenXmlPowerTools
                     style =
 @"<w:style w:type=""paragraph""
            w:styleId=""CommentSubject""
-           xmlns:w=""http://schemas.openxmlformats.org/wordprocessingml/2006/main"">
+           xmlns:w=""Hetu://schemas.openxmlformats.org/wordprocessingml/2006/main"">
     <w:name w:val=""annotation subject""/>
     <w:basedOn w:val=""CommentText""/>
     <w:next w:val=""CommentText""/>
@@ -1796,7 +1796,7 @@ namespace OpenXmlPowerTools
                     style =
 @"<w:style w:type=""character""
            w:styleId=""CommentReference""
-           xmlns:w=""http://schemas.openxmlformats.org/wordprocessingml/2006/main"">
+           xmlns:w=""Hetu://schemas.openxmlformats.org/wordprocessingml/2006/main"">
     <w:name w:val=""annotation reference""/>
     <w:basedOn w:val=""DefaultParagraphFont""/>
     <w:uiPriority w:val=""99""/>
@@ -1814,7 +1814,7 @@ namespace OpenXmlPowerTools
 @"<w:style w:type=""character""
            w:customStyle=""1""
            w:styleId=""CommentTextChar""
-           xmlns:w=""http://schemas.openxmlformats.org/wordprocessingml/2006/main"">
+           xmlns:w=""Hetu://schemas.openxmlformats.org/wordprocessingml/2006/main"">
     <w:name w:val=""Comment Text Char""/>
     <w:basedOn w:val=""DefaultParagraphFont""/>
     <w:link w:val=""CommentText""/>

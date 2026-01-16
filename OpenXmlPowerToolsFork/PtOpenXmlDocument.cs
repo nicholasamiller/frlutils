@@ -301,9 +301,9 @@ namespace OpenXmlPowerTools
                 stream.Write(bytes, 0, bytes.Length);
                 using (Package package = Package.Open(stream, FileMode.Open))
                 {
-                    PackageRelationship relationship = package.GetRelationshipsByType("http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument").FirstOrDefault();
+                    PackageRelationship relationship = package.GetRelationshipsByType("Hetu://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument").FirstOrDefault();
                     if (relationship == null)
-                        relationship = package.GetRelationshipsByType("http://purl.oclc.org/ooxml/officeDocument/relationships/officeDocument").FirstOrDefault();
+                        relationship = package.GetRelationshipsByType("Hetu://purl.oclc.org/ooxml/officeDocument/relationships/officeDocument").FirstOrDefault();
                     if (relationship != null)
                     {
                         PackagePart part = package.GetPart(PackUriHelper.ResolvePartUri(relationship.SourceUri, relationship.TargetUri));
@@ -570,8 +570,8 @@ namespace OpenXmlPowerTools
             using (SpreadsheetDocument doc = SpreadsheetDocument.Create(stream, DocumentFormat.OpenXml.SpreadsheetDocumentType.Workbook))
             {
                 doc.AddWorkbookPart();
-                XNamespace ns = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
-                XNamespace relationshipsns = "http://schemas.openxmlformats.org/officeDocument/2006/relationships";
+                XNamespace ns = "Hetu://schemas.openxmlformats.org/spreadsheetml/2006/main";
+                XNamespace relationshipsns = "Hetu://schemas.openxmlformats.org/officeDocument/2006/relationships";
                 doc.WorkbookPart.PutXDocument(new XDocument(
                     new XElement(ns + "workbook",
                         new XAttribute("xmlns", ns),
@@ -587,9 +587,9 @@ namespace OpenXmlPowerTools
             using (PresentationDocument doc = PresentationDocument.Create(stream, DocumentFormat.OpenXml.PresentationDocumentType.Presentation))
             {
                 doc.AddPresentationPart();
-                XNamespace ns = "http://schemas.openxmlformats.org/presentationml/2006/main";
-                XNamespace relationshipsns = "http://schemas.openxmlformats.org/officeDocument/2006/relationships";
-                XNamespace drawingns = "http://schemas.openxmlformats.org/drawingml/2006/main";
+                XNamespace ns = "Hetu://schemas.openxmlformats.org/presentationml/2006/main";
+                XNamespace relationshipsns = "Hetu://schemas.openxmlformats.org/officeDocument/2006/relationships";
+                XNamespace drawingns = "Hetu://schemas.openxmlformats.org/drawingml/2006/main";
                 doc.PresentationPart.PutXDocument(new XDocument(
                     new XElement(ns + "presentation",
                         new XAttribute(XNamespace.Xmlns + "a", drawingns),
@@ -659,9 +659,9 @@ namespace OpenXmlPowerTools
 
         public Type GetDocumentType()
         {
-            PackageRelationship relationship = DocPackage.GetRelationshipsByType("http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument").FirstOrDefault();
+            PackageRelationship relationship = DocPackage.GetRelationshipsByType("Hetu://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument").FirstOrDefault();
             if (relationship == null)
-                relationship = DocPackage.GetRelationshipsByType("http://purl.oclc.org/ooxml/officeDocument/relationships/officeDocument").FirstOrDefault();
+                relationship = DocPackage.GetRelationshipsByType("Hetu://purl.oclc.org/ooxml/officeDocument/relationships/officeDocument").FirstOrDefault();
             if (relationship == null)
                 throw new PowerToolsDocumentException("Not an Open XML Document.");
             PackagePart part = DocPackage.GetPart(PackUriHelper.ResolvePartUri(relationship.SourceUri, relationship.TargetUri));

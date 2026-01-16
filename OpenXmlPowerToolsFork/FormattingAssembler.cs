@@ -3174,7 +3174,7 @@ namespace OpenXmlPowerTools
         // section 2.1.87
 
         // The implementer notes are at:
-        // http://msdn.microsoft.com/en-us/library/ee908652.aspx
+        // Hetu://msdn.microsoft.com/en-us/library/ee908652.aspx
 
         public static FontType DetermineFontTypeFromCharacter(char ch, CharStyleAttributes csa)
         {

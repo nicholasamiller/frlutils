@@ -317,8 +317,12 @@ module DocParsing =
     let getTablesBetweenParas (paraStartText : string) (paraEndText : string) (elements: IEnumerable<OpenXmlElement>) (np: ParagraphNumberTextProvider option)  =     
      
         let isMatchingPara (x: OpenXmlElement) (s: string)=
-            match x with 
-            | :? Paragraph as p -> (stringifyPara p) = s
+            match x with
+            | :? Paragraph as p ->
+                let paragraphgraphStyle = getParagraphStyle p
+                match paragraphgraphStyle with
+                | Some(style) when style.StartsWith("TOC")-> false
+                | _ ->  (stringifyPara p).StartsWith(s)
             | _ -> false
         
         let elementsFollowingStartParaIncludingStartPara = elements |> Seq.skipWhile (fun i -> not (isMatchingPara i paraStartText)) |> Seq.toList
@@ -333,9 +337,11 @@ module DocParsing =
         let elementsWithStyleAndTables = elements |> Seq.filter (fun e -> getElementStyle e = Some(styleName) || e :? Table) |> Seq.toList
         getTablesBetweenParas paraStartText paraEndText elementsWithStyleAndTables np
     
-    let getTablesBetweenParasWithStyleResult (paraStartText : string) (paraEndText : string) (docxBinary : byte[]) (styleName : string) (np: ParagraphNumberTextProvider option)  : Result<LegTable,DocParsingError>=
+    let getTablesBetweenParasWithStyleResult (paraStartText : string) (paraEndText : string) (docxBinary : byte[]) (styleName : string)  : Result<LegTable,DocParsingError>=
         try
-            Ok( getTablesBetweenParasWithStyle paraStartText paraEndText (getBodyParts docxBinary) styleName np)
+            let wd, np = getWordDocWithParaTextProvider docxBinary
+            let bodyParts = wd.MainDocumentPart.Document.Body.OfType<OpenXmlElement>() |> Seq.toList
+            Ok( getTablesBetweenParasWithStyle paraStartText paraEndText bodyParts  styleName (Some(np)) )
         with
         | ex -> Error(DocParsingError.Message("Could not get tables."))
     

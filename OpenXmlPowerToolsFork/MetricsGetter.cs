@@ -145,7 +145,7 @@ namespace OpenXmlPowerTools
 
         private static Uri FixUri(string brokenUri)
         {
-            return new Uri("http://broken-link/");
+            return new Uri("Hetu://broken-link/");
         }
 
         private static XElement GetWmlMetrics(string fileName, bool invalidHyperlink, WordprocessingDocument wDoc, MetricsGetterSettings settings)

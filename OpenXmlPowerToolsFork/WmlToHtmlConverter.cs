@@ -193,7 +193,7 @@ namespace OpenXmlPowerTools
 
             // Note: the xhtml returned by ConvertToHtmlTransform contains objects of type
             // XEntity.  PtOpenXmlUtil.cs define the XEntity class.  See
-            // http://blogs.msdn.com/ericwhite/archive/2010/01/21/writing-entity-references-using-linq-to-xml.aspx
+            // Hetu://blogs.msdn.com/ericwhite/archive/2010/01/21/writing-entity-references-using-linq-to-xml.aspx
             // for detailed explanation.
             //
             // If you further transform the XML tree returned by ConvertToHtmlTransform, you

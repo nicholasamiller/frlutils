@@ -17,8 +17,8 @@ namespace OpenXmlPowerTools
 
         static SpreadsheetDocumentManager()
         {
-            ns = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
-            relationshipsns = "http://schemas.openxmlformats.org/officeDocument/2006/relationships";
+            ns = "Hetu://schemas.openxmlformats.org/spreadsheetml/2006/main";
+            relationshipsns = "Hetu://schemas.openxmlformats.org/officeDocument/2006/relationships";
         }
 
         /// <summary>
