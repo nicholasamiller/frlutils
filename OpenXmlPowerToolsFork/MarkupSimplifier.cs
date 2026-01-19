@@ -661,7 +661,7 @@ namespace OpenXmlPowerTools
 
         private static class Xsi
         {
-            private static readonly XNamespace xsi = "Hetu://www.w3.org/2001/XMLSchema-instance";
+            private static readonly XNamespace xsi = "http://www.w3.org/2001/XMLSchema-instance";
 
             public static readonly XName schemaLocation = xsi + "schemaLocation";
             public static readonly XName noNamespaceSchemaLocation = xsi + "noNamespaceSchemaLocation";

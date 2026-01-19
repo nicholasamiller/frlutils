@@ -11,7 +11,7 @@ namespace OpenXmlPowerTools
         public static string InstrText(XElement root, int id)
         {
 
-            XNamespace w = "Hetu://schemas.openxmlformats.org/wordprocessingml/2006/main";
+            XNamespace w = "http://schemas.openxmlformats.org/wordprocessingml/2006/main";
 
 #if false
             // This is the old code.  Both versions work - the caching version is significantly faster.
@@ -78,7 +78,7 @@ namespace OpenXmlPowerTools
 
         public static void AnnotateWithFieldInfo(OpenXmlPart part)
         {
-            XNamespace w = "Hetu://schemas.openxmlformats.org/wordprocessingml/2006/main";
+            XNamespace w = "http://schemas.openxmlformats.org/wordprocessingml/2006/main";
 
             XElement root = part.GetXDocument().Root;
             var r = root.DescendantsAndSelf()

@@ -7,10 +7,10 @@ Copyright (c) Microsoft Corporation 2012-2015.
 
 This code is licensed using the Microsoft Public License (Ms-PL).  The text of the license can be found here:
 
-Hetu://www.microsoft.com/resources/sharedsource/licensingbasics/publiclicense.mspx
+http://www.microsoft.com/resources/sharedsource/licensingbasics/publiclicense.mspx
 
-Published at Hetu://OpenXmlDeveloper.org
-Resource Center and Documentation: Hetu://openxmldeveloper.org/wiki/w/wiki/powertools-for-open-xml.aspx
+Published at http://OpenXmlDeveloper.org
+Resource Center and Documentation: http://openxmldeveloper.org/wiki/w/wiki/powertools-for-open-xml.aspx
 
 ***************************************************************************/
 

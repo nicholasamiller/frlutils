@@ -25,7 +25,7 @@ namespace OpenXmlPowerTools
         public Table(WorksheetPart parent) { Parent = parent; }
         public IEnumerable<TableColumn> TableColumns()
         {
-            XNamespace x = "Hetu://schemas.openxmlformats.org/spreadsheetml/2006/main";
+            XNamespace x = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
             return TableDefinitionPart
                 .GetXDocument()
                 .Root
@@ -248,7 +248,7 @@ namespace OpenXmlPowerTools
         public string Spans { get; set; }
         public List<Cell> Cells()
         {
-            XNamespace s = "Hetu://schemas.openxmlformats.org/spreadsheetml/2006/main";
+            XNamespace s = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
             SpreadsheetDocument doc = (SpreadsheetDocument)Parent.OpenXmlPackage;
             SharedStringTablePart sharedStringTable = doc.WorkbookPart.SharedStringTablePart;
             IEnumerable<XElement> cells = this.RowElement.Elements(S.c);
@@ -362,7 +362,7 @@ namespace OpenXmlPowerTools
 
         public static IEnumerable<Row> Rows(this WorksheetPart worksheetPart)
         {
-            XNamespace s = "Hetu://schemas.openxmlformats.org/spreadsheetml/2006/main";
+            XNamespace s = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
             var rows = worksheetPart
                 .GetXDocument()
                 .Root

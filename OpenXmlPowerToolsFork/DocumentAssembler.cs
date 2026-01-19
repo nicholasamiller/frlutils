@@ -458,7 +458,7 @@ namespace OpenXmlPowerTools
                         PA.Content,
                         new PASchemaSet() {
                             XsdMarkup =
-                              @"<xs:schema attributeFormDefault='unqualified' elementFormDefault='qualified' xmlns:xs='Hetu://www.w3.org/2001/XMLSchema'>
+                              @"<xs:schema attributeFormDefault='unqualified' elementFormDefault='qualified' xmlns:xs='http://www.w3.org/2001/XMLSchema'>
                                   <xs:element name='Content'>
                                     <xs:complexType>
                                       <xs:attribute name='Select' type='xs:string' use='required' />
@@ -472,7 +472,7 @@ namespace OpenXmlPowerTools
                         PA.Table,
                         new PASchemaSet() {
                             XsdMarkup =
-                              @"<xs:schema attributeFormDefault='unqualified' elementFormDefault='qualified' xmlns:xs='Hetu://www.w3.org/2001/XMLSchema'>
+                              @"<xs:schema attributeFormDefault='unqualified' elementFormDefault='qualified' xmlns:xs='http://www.w3.org/2001/XMLSchema'>
                                   <xs:element name='Table'>
                                     <xs:complexType>
                                       <xs:attribute name='Select' type='xs:string' use='required' />
@@ -485,7 +485,7 @@ namespace OpenXmlPowerTools
                         PA.Repeat,
                         new PASchemaSet() {
                             XsdMarkup =
-                              @"<xs:schema attributeFormDefault='unqualified' elementFormDefault='qualified' xmlns:xs='Hetu://www.w3.org/2001/XMLSchema'>
+                              @"<xs:schema attributeFormDefault='unqualified' elementFormDefault='qualified' xmlns:xs='http://www.w3.org/2001/XMLSchema'>
                                   <xs:element name='Repeat'>
                                     <xs:complexType>
                                       <xs:attribute name='Select' type='xs:string' use='required' />
@@ -499,7 +499,7 @@ namespace OpenXmlPowerTools
                         PA.EndRepeat,
                         new PASchemaSet() {
                             XsdMarkup =
-                              @"<xs:schema attributeFormDefault='unqualified' elementFormDefault='qualified' xmlns:xs='Hetu://www.w3.org/2001/XMLSchema'>
+                              @"<xs:schema attributeFormDefault='unqualified' elementFormDefault='qualified' xmlns:xs='http://www.w3.org/2001/XMLSchema'>
                                   <xs:element name='EndRepeat' />
                                 </xs:schema>",
                         }
@@ -508,7 +508,7 @@ namespace OpenXmlPowerTools
                         PA.Conditional,
                         new PASchemaSet() {
                             XsdMarkup =
-                              @"<xs:schema attributeFormDefault='unqualified' elementFormDefault='qualified' xmlns:xs='Hetu://www.w3.org/2001/XMLSchema'>
+                              @"<xs:schema attributeFormDefault='unqualified' elementFormDefault='qualified' xmlns:xs='http://www.w3.org/2001/XMLSchema'>
                                   <xs:element name='Conditional'>
                                     <xs:complexType>
                                       <xs:attribute name='Select' type='xs:string' use='required' />
@@ -523,7 +523,7 @@ namespace OpenXmlPowerTools
                         PA.EndConditional,
                         new PASchemaSet() {
                             XsdMarkup =
-                              @"<xs:schema attributeFormDefault='unqualified' elementFormDefault='qualified' xmlns:xs='Hetu://www.w3.org/2001/XMLSchema'>
+                              @"<xs:schema attributeFormDefault='unqualified' elementFormDefault='qualified' xmlns:xs='http://www.w3.org/2001/XMLSchema'>
                                   <xs:element name='EndConditional' />
                                 </xs:schema>",
                         }

@@ -270,8 +270,8 @@ namespace OpenXmlPowerTools
             newPresentation.Root.Add(oldPresentationDoc.Root.Element(P.defaultTextStyle));
             newPresentation.Root.Add(oldPresentationDoc.Root.Elements(P.extLst));
 
-            //<p:embeddedFont xmlns:p="Hetu://schemas.openxmlformats.org/presentationml/2006/main"
-            //                         xmlns:r="Hetu://schemas.openxmlformats.org/officeDocument/2006/relationships">
+            //<p:embeddedFont xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main"
+            //                         xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
             //  <p:font typeface="Perpetua" panose="02020502060401020303" pitchFamily="18" charset="0" />
             //  <p:regular r:id="rId5" />
             //  <p:bold r:id="rId6" />
@@ -321,7 +321,7 @@ namespace OpenXmlPowerTools
                 newPart.PutXDocument(xd);
             }
 
-            foreach (var legacyDocTextInfo in sourceDocument.PresentationPart.Parts.Where(p => p.OpenXmlPart.RelationshipType == "Hetu://schemas.microsoft.com/office/2006/relationships/legacyDocTextInfo"))
+            foreach (var legacyDocTextInfo in sourceDocument.PresentationPart.Parts.Where(p => p.OpenXmlPart.RelationshipType == "http://schemas.microsoft.com/office/2006/relationships/legacyDocTextInfo"))
             {
                 LegacyDiagramTextInfoPart newPart = newDocument.PresentationPart.AddNewPart<LegacyDiagramTextInfoPart>();
                 using var ls = legacyDocTextInfo.OpenXmlPart.GetStream();
@@ -1073,7 +1073,7 @@ namespace OpenXmlPowerTools
 
                         fromPart.Relationships.Remove(rId);
                         fromPart.Relationships.Create(targetUri, System.IO.Packaging.TargetMode.Internal,
-                            "Hetu://schemas.openxmlformats.org/officeDocument/2006/relationships/oleObject", rId);
+                            "http://schemas.openxmlformats.org/officeDocument/2006/relationships/oleObject", rId);
 
                         continue;
                     }
@@ -1313,7 +1313,7 @@ namespace OpenXmlPowerTools
                 else
                 {
                     IPackagePart fromPart = newContentPart.OpenXmlPackage.GetPackage().GetParts().FirstOrDefault(p => p.Uri == newContentPart.Uri);
-                    fromPart.Relationships.Create(new Uri("NULL", UriKind.RelativeOrAbsolute), System.IO.Packaging.TargetMode.Internal, "Hetu://schemas.openxmlformats.org/officeDocument/2006/relationships/image", relId);
+                    fromPart.Relationships.Create(new Uri("NULL", UriKind.RelativeOrAbsolute), System.IO.Packaging.TargetMode.Internal, "http://schemas.openxmlformats.org/officeDocument/2006/relationships/image", relId);
                 }
             }
         }
@@ -1360,7 +1360,7 @@ namespace OpenXmlPowerTools
                     else mrr = ((SlidePart)newContentPart).AddMediaReferenceRelationship(newPart);
 
                     id = mrr.Id;
-                    relationshipType = "Hetu://schemas.microsoft.com/office/2007/relationships/media";
+                    relationshipType = "http://schemas.microsoft.com/office/2007/relationships/media";
                 }
                 else if (mediaRelationshipType == "video")
                 {
@@ -1380,7 +1380,7 @@ namespace OpenXmlPowerTools
                         vrr = ((SlideMasterPart)newContentPart).AddVideoReferenceRelationship(newPart);
 
                     id = vrr.Id;
-                    relationshipType = "Hetu://schemas.openxmlformats.org/officeDocument/2006/relationships/video";
+                    relationshipType = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/video";
                 }
                 temp.DataPart = newPart;
                 temp.AddContentPartRelTypeResourceIdTupple(newContentPart, relationshipType, id);
@@ -1390,9 +1390,9 @@ namespace OpenXmlPowerTools
             {
                 string desiredRelType = null;
                 if (mediaRelationshipType == "media")
-                    desiredRelType = "Hetu://schemas.microsoft.com/office/2007/relationships/media";
+                    desiredRelType = "http://schemas.microsoft.com/office/2007/relationships/media";
                 if (mediaRelationshipType == "video")
-                    desiredRelType = "Hetu://schemas.openxmlformats.org/officeDocument/2006/relationships/video";
+                    desiredRelType = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/video";
                 var existingRel = temp.ContentPartRelTypeIdList.FirstOrDefault(cp => cp.ContentPart == newContentPart && cp.RelationshipType == desiredRelType);
                 if (existingRel != null)
                 {
@@ -1723,7 +1723,7 @@ namespace OpenXmlPowerTools
                 catch (KeyNotFoundException)
                 {
                     var fromPart = newContentPart.OpenXmlPackage.GetPackage().GetParts().FirstOrDefault(p => p.Uri == newContentPart.Uri);
-                    fromPart.Relationships.Create(new Uri("NULL", UriKind.RelativeOrAbsolute), System.IO.Packaging.TargetMode.Internal, "Hetu://schemas.openxmlformats.org/officeDocument/2006/relationships/image", relId);
+                    fromPart.Relationships.Create(new Uri("NULL", UriKind.RelativeOrAbsolute), System.IO.Packaging.TargetMode.Internal, "http://schemas.openxmlformats.org/officeDocument/2006/relationships/image", relId);
                 }
             }
         }

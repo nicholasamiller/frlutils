@@ -285,21 +285,21 @@ namespace OpenXmlPowerTools.HtmlToWml
         private static void UpdateMainDocumentPart(WordprocessingDocument wDoc, XElement html, HtmlToWmlConverterSettings settings)
         {
             XDocument xDoc = XDocument.Parse(
-@"<w:document xmlns:wpc='Hetu://schemas.microsoft.com/office/word/2010/wordprocessingCanvas'
-            xmlns:mc='Hetu://schemas.openxmlformats.org/markup-compatibility/2006'
+@"<w:document xmlns:wpc='http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas'
+            xmlns:mc='http://schemas.openxmlformats.org/markup-compatibility/2006'
             xmlns:o='urn:schemas-microsoft-com:office:office'
-            xmlns:r='Hetu://schemas.openxmlformats.org/officeDocument/2006/relationships'
-            xmlns:m='Hetu://schemas.openxmlformats.org/officeDocument/2006/math'
+            xmlns:r='http://schemas.openxmlformats.org/officeDocument/2006/relationships'
+            xmlns:m='http://schemas.openxmlformats.org/officeDocument/2006/math'
             xmlns:v='urn:schemas-microsoft-com:vml'
-            xmlns:wp14='Hetu://schemas.microsoft.com/office/word/2010/wordprocessingDrawing'
-            xmlns:wp='Hetu://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing'
+            xmlns:wp14='http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing'
+            xmlns:wp='http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing'
             xmlns:w10='urn:schemas-microsoft-com:office:word'
-            xmlns:w='Hetu://schemas.openxmlformats.org/wordprocessingml/2006/main'
-            xmlns:w14='Hetu://schemas.microsoft.com/office/word/2010/wordml'
-            xmlns:wpg='Hetu://schemas.microsoft.com/office/word/2010/wordprocessingGroup'
-            xmlns:wpi='Hetu://schemas.microsoft.com/office/word/2010/wordprocessingInk'
-            xmlns:wne='Hetu://schemas.microsoft.com/office/word/2006/wordml'
-            xmlns:wps='Hetu://schemas.microsoft.com/office/word/2010/wordprocessingShape'
+            xmlns:w='http://schemas.openxmlformats.org/wordprocessingml/2006/main'
+            xmlns:w14='http://schemas.microsoft.com/office/word/2010/wordml'
+            xmlns:wpg='http://schemas.microsoft.com/office/word/2010/wordprocessingGroup'
+            xmlns:wpi='http://schemas.microsoft.com/office/word/2010/wordprocessingInk'
+            xmlns:wne='http://schemas.microsoft.com/office/word/2006/wordml'
+            xmlns:wps='http://schemas.microsoft.com/office/word/2010/wordprocessingShape'
             mc:Ignorable='w14 wp14'/>");
 
             XElement body = new XElement(W.body,
@@ -873,9 +873,9 @@ namespace OpenXmlPowerTools.HtmlToWml
                 {
                     int i = GetNextRectId();
                     XElement hr = XElement.Parse(
-                      @"<w:p xmlns:w='Hetu://schemas.openxmlformats.org/wordprocessingml/2006/main'
+                      @"<w:p xmlns:w='http://schemas.openxmlformats.org/wordprocessingml/2006/main'
                                xmlns:o='urn:schemas-microsoft-com:office:office'
-                               xmlns:w14='Hetu://schemas.microsoft.com/office/word/2010/wordml'
+                               xmlns:w14='http://schemas.microsoft.com/office/word/2010/wordml'
                                xmlns:v='urn:schemas-microsoft-com:vml'>
                           <w:r>
                             <w:pict w14:anchorId='0DBC9ADE'>
@@ -1206,7 +1206,7 @@ namespace OpenXmlPowerTools.HtmlToWml
         // section 2.1.87
 
         // The implementer notes are at:
-        // Hetu://msdn.microsoft.com/en-us/library/ee908652.aspx
+        // http://msdn.microsoft.com/en-us/library/ee908652.aspx
 
         public enum FontType
         {
@@ -2449,12 +2449,12 @@ namespace OpenXmlPowerTools.HtmlToWml
                       name="Picture 1"
                       descr="img.png"/>
             <wp:cNvGraphicFramePr>
-              <a:graphicFrameLocks xmlns:a="Hetu://schemas.openxmlformats.org/drawingml/2006/main"
+              <a:graphicFrameLocks xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"
                                    noChangeAspect="1"/>
             </wp:cNvGraphicFramePr>
-            <a:graphic xmlns:a="Hetu://schemas.openxmlformats.org/drawingml/2006/main">
-              <a:graphicData uri="Hetu://schemas.openxmlformats.org/drawingml/2006/picture">
-                <pic:pic xmlns:pic="Hetu://schemas.openxmlformats.org/drawingml/2006/picture">
+            <a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">
+              <a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture">
+                <pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture">
                   <pic:nvPicPr>
                     <pic:cNvPr id="0"
                                name="Picture 1"
@@ -2468,7 +2468,7 @@ namespace OpenXmlPowerTools.HtmlToWml
                     <a:blip r:embed="rId5">
                       <a:extLst>
                         <a:ext uri="{28A0092B-C50C-407E-A947-70E740481C1C}">
-                          <a14:useLocalDpi xmlns:a14="Hetu://schemas.microsoft.com/office/drawing/2010/main"
+                          <a14:useLocalDpi xmlns:a14="http://schemas.microsoft.com/office/drawing/2010/main"
                                            val="0"/>
                         </a:ext>
                       </a:extLst>
@@ -2621,9 +2621,9 @@ namespace OpenXmlPowerTools.HtmlToWml
         }
 
 #if false
-            <a:graphic xmlns:a="Hetu://schemas.openxmlformats.org/drawingml/2006/main">
-              <a:graphicData uri="Hetu://schemas.openxmlformats.org/drawingml/2006/picture">
-                <pic:pic xmlns:pic="Hetu://schemas.openxmlformats.org/drawingml/2006/picture">
+            <a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">
+              <a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture">
+                <pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture">
                   <pic:nvPicPr>
                     <pic:cNvPr id="0" name="Picture 1" descr="img.png"/>
                     <pic:cNvPicPr>
@@ -2634,7 +2634,7 @@ namespace OpenXmlPowerTools.HtmlToWml
                     <a:blip r:link="rId5">
                       <a:extLst>
                         <a:ext uri="{28A0092B-C50C-407E-A947-70E740481C1C}">
-                          <a14:useLocalDpi xmlns:a14="Hetu://schemas.microsoft.com/office/drawing/2010/main" val="0"/>
+                          <a14:useLocalDpi xmlns:a14="http://schemas.microsoft.com/office/drawing/2010/main" val="0"/>
                         </a:ext>
                       </a:extLst>
                     </a:blip>
@@ -3309,9 +3309,9 @@ namespace OpenXmlPowerTools.HtmlToWml
 //  w:lastColumn='0'
 //  w:noHBand='1'
 //  w:noVBand='1'
-//  xmlns:w='Hetu://schemas.openxmlformats.org/wordprocessingml/2006/main'/>"
+//  xmlns:w='http://schemas.openxmlformats.org/wordprocessingml/2006/main'/>"
 
-@"<w:tblLook w:val='0600' xmlns:w='Hetu://schemas.openxmlformats.org/wordprocessingml/2006/main'/>"
+@"<w:tblLook w:val='0600' xmlns:w='http://schemas.openxmlformats.org/wordprocessingml/2006/main'/>"
 
 );
             tblLook.Attributes().Where(a => a.IsNamespaceDeclaration).Remove();
@@ -3609,7 +3609,7 @@ namespace OpenXmlPowerTools.HtmlToWml
         {
             // todo very incomplete
             XElement tblCellMar = XElement.Parse(
-@"<w:tblCellMar xmlns:w='Hetu://schemas.openxmlformats.org/wordprocessingml/2006/main'>
+@"<w:tblCellMar xmlns:w='http://schemas.openxmlformats.org/wordprocessingml/2006/main'>
   <w:top w:w='15'
           w:type='dxa'/>
   <w:left w:w='15'
@@ -4149,7 +4149,7 @@ namespace OpenXmlPowerTools.HtmlToWml
                     .Elements(W.style)
                     .Where(e => (string)e.Attribute(W.type) == "paragraph" && (string)e.Attribute(W.styleId) == "Heading1")
                     .FirstOrDefault(),
-@"<w:font w:name='Verdana' xmlns:w='Hetu://schemas.openxmlformats.org/wordprocessingml/2006/main'>
+@"<w:font w:name='Verdana' xmlns:w='http://schemas.openxmlformats.org/wordprocessingml/2006/main'>
   <w:panose1 w:val='020B0604030504040204'/>
   <w:charset w:val='00'/>
   <w:family w:val='swiss'/>
@@ -4191,7 +4191,7 @@ namespace OpenXmlPowerTools.HtmlToWml
 
         // decimal, lowerLetter
         private static string OrderedListAbstractXml =
-@"<w:abstractNum w:abstractNumId='{0}' xmlns:w='Hetu://schemas.openxmlformats.org/wordprocessingml/2006/main'>
+@"<w:abstractNum w:abstractNumId='{0}' xmlns:w='http://schemas.openxmlformats.org/wordprocessingml/2006/main'>
     <w:multiLevelType w:val='multilevel'/>
     <w:tmpl w:val='7D26959A'/>
     <w:lvl w:ilvl='0'>
@@ -4331,7 +4331,7 @@ namespace OpenXmlPowerTools.HtmlToWml
   </w:abstractNum>";
 
         private static string BulletAbstractXml =
-@"<w:abstractNum w:abstractNumId='{0}' xmlns:w='Hetu://schemas.openxmlformats.org/wordprocessingml/2006/main'>
+@"<w:abstractNum w:abstractNumId='{0}' xmlns:w='http://schemas.openxmlformats.org/wordprocessingml/2006/main'>
   <w:multiLevelType w:val='multilevel' />
   <w:tmpl w:val='02BEA0DA' />
   <w:lvl w:ilvl='0'>
@@ -4660,7 +4660,7 @@ namespace OpenXmlPowerTools.HtmlToWml
                         .FirstOrDefault(),
 @"<w:style w:type='paragraph'
         w:styleId='Heading1'
-        xmlns:w='Hetu://schemas.openxmlformats.org/wordprocessingml/2006/main'>
+        xmlns:w='http://schemas.openxmlformats.org/wordprocessingml/2006/main'>
     <w:name w:val='heading 1'/>
     <w:basedOn w:val='Normal'/>
     <w:next w:val='Normal'/>
@@ -4698,7 +4698,7 @@ namespace OpenXmlPowerTools.HtmlToWml
                         .FirstOrDefault(),
 @"<w:style w:type='paragraph'
          w:styleId='Heading2'
-         xmlns:w='Hetu://schemas.openxmlformats.org/wordprocessingml/2006/main'>
+         xmlns:w='http://schemas.openxmlformats.org/wordprocessingml/2006/main'>
   <w:name w:val='heading 2'/>
   <w:basedOn w:val='Normal'/>
   <w:next w:val='Normal'/>
@@ -4736,7 +4736,7 @@ namespace OpenXmlPowerTools.HtmlToWml
                     .FirstOrDefault(),
 @"<w:style w:type='paragraph'
          w:styleId='Heading3'
-         xmlns:w='Hetu://schemas.openxmlformats.org/wordprocessingml/2006/main'>
+         xmlns:w='http://schemas.openxmlformats.org/wordprocessingml/2006/main'>
   <w:name w:val='heading 3'/>
   <w:basedOn w:val='Normal'/>
   <w:next w:val='Normal'/>
@@ -4772,7 +4772,7 @@ namespace OpenXmlPowerTools.HtmlToWml
                     .FirstOrDefault(),
 @"<w:style w:type='paragraph'
          w:styleId='Heading4'
-         xmlns:w='Hetu://schemas.openxmlformats.org/wordprocessingml/2006/main'>
+         xmlns:w='http://schemas.openxmlformats.org/wordprocessingml/2006/main'>
   <w:name w:val='heading 4'/>
   <w:basedOn w:val='Normal'/>
   <w:next w:val='Normal'/>
@@ -4810,7 +4810,7 @@ namespace OpenXmlPowerTools.HtmlToWml
                     .FirstOrDefault(),
 @"<w:style w:type='paragraph'
          w:styleId='Heading5'
-         xmlns:w='Hetu://schemas.openxmlformats.org/wordprocessingml/2006/main'>
+         xmlns:w='http://schemas.openxmlformats.org/wordprocessingml/2006/main'>
   <w:name w:val='heading 5'/>
   <w:basedOn w:val='Normal'/>
   <w:next w:val='Normal'/>
@@ -4845,7 +4845,7 @@ namespace OpenXmlPowerTools.HtmlToWml
                     .FirstOrDefault(),
 @"<w:style w:type='paragraph'
          w:styleId='Heading6'
-         xmlns:w='Hetu://schemas.openxmlformats.org/wordprocessingml/2006/main'>
+         xmlns:w='http://schemas.openxmlformats.org/wordprocessingml/2006/main'>
   <w:name w:val='heading 6'/>
   <w:basedOn w:val='Normal'/>
   <w:next w:val='Normal'/>
@@ -4882,7 +4882,7 @@ namespace OpenXmlPowerTools.HtmlToWml
                     .FirstOrDefault(),
 @"<w:style w:type='paragraph'
          w:styleId='Heading7'
-         xmlns:w='Hetu://schemas.openxmlformats.org/wordprocessingml/2006/main'>
+         xmlns:w='http://schemas.openxmlformats.org/wordprocessingml/2006/main'>
   <w:name w:val='heading 7'/>
   <w:basedOn w:val='Normal'/>
   <w:next w:val='Normal'/>
@@ -4919,7 +4919,7 @@ namespace OpenXmlPowerTools.HtmlToWml
                     .FirstOrDefault(),
 @"<w:style w:type='paragraph'
          w:styleId='Heading8'
-         xmlns:w='Hetu://schemas.openxmlformats.org/wordprocessingml/2006/main'>
+         xmlns:w='http://schemas.openxmlformats.org/wordprocessingml/2006/main'>
   <w:name w:val='heading 8'/>
   <w:basedOn w:val='Normal'/>
   <w:next w:val='Normal'/>
@@ -4956,7 +4956,7 @@ namespace OpenXmlPowerTools.HtmlToWml
                     .FirstOrDefault(),
 @"<w:style w:type='paragraph'
          w:styleId='Heading9'
-         xmlns:w='Hetu://schemas.openxmlformats.org/wordprocessingml/2006/main'>
+         xmlns:w='http://schemas.openxmlformats.org/wordprocessingml/2006/main'>
   <w:name w:val='heading 9'/>
   <w:basedOn w:val='Normal'/>
   <w:next w:val='Normal'/>
@@ -4996,7 +4996,7 @@ namespace OpenXmlPowerTools.HtmlToWml
 @"<w:style w:type='character'
          w:customStyle='1'
          w:styleId='Heading1Char'
-         xmlns:w='Hetu://schemas.openxmlformats.org/wordprocessingml/2006/main'>
+         xmlns:w='http://schemas.openxmlformats.org/wordprocessingml/2006/main'>
   <w:name w:val='Heading 1 Char'/>
   <w:basedOn w:val='DefaultParagraphFont'/>
   <w:link w:val='Heading1'/>
@@ -5026,7 +5026,7 @@ namespace OpenXmlPowerTools.HtmlToWml
 @"<w:style w:type='character'
          w:customStyle='1'
          w:styleId='Heading2Char'
-         xmlns:w='Hetu://schemas.openxmlformats.org/wordprocessingml/2006/main'>
+         xmlns:w='http://schemas.openxmlformats.org/wordprocessingml/2006/main'>
   <w:name w:val='Heading 2 Char'/>
   <w:basedOn w:val='DefaultParagraphFont'/>
   <w:link w:val='Heading2'/>
@@ -5055,7 +5055,7 @@ namespace OpenXmlPowerTools.HtmlToWml
 @"<w:style w:type='character'
          w:customStyle='1'
          w:styleId='Heading3Char'
-         xmlns:w='Hetu://schemas.openxmlformats.org/wordprocessingml/2006/main'>
+         xmlns:w='http://schemas.openxmlformats.org/wordprocessingml/2006/main'>
   <w:name w:val='Heading 3 Char'/>
   <w:basedOn w:val='DefaultParagraphFont'/>
   <w:link w:val='Heading3'/>
@@ -5082,7 +5082,7 @@ namespace OpenXmlPowerTools.HtmlToWml
 @"<w:style w:type='character'
          w:customStyle='1'
          w:styleId='Heading4Char'
-         xmlns:w='Hetu://schemas.openxmlformats.org/wordprocessingml/2006/main'>
+         xmlns:w='http://schemas.openxmlformats.org/wordprocessingml/2006/main'>
   <w:name w:val='Heading 4 Char'/>
   <w:basedOn w:val='DefaultParagraphFont'/>
   <w:link w:val='Heading4'/>
@@ -5111,7 +5111,7 @@ namespace OpenXmlPowerTools.HtmlToWml
 @"<w:style w:type='character'
          w:customStyle='1'
          w:styleId='Heading5Char'
-         xmlns:w='Hetu://schemas.openxmlformats.org/wordprocessingml/2006/main'>
+         xmlns:w='http://schemas.openxmlformats.org/wordprocessingml/2006/main'>
   <w:name w:val='Heading 5 Char'/>
   <w:basedOn w:val='DefaultParagraphFont'/>
   <w:link w:val='Heading5'/>
@@ -5137,7 +5137,7 @@ namespace OpenXmlPowerTools.HtmlToWml
 @"<w:style w:type='character'
          w:customStyle='1'
          w:styleId='Heading6Char'
-         xmlns:w='Hetu://schemas.openxmlformats.org/wordprocessingml/2006/main'>
+         xmlns:w='http://schemas.openxmlformats.org/wordprocessingml/2006/main'>
   <w:name w:val='Heading 6 Char'/>
   <w:basedOn w:val='DefaultParagraphFont'/>
   <w:link w:val='Heading6'/>
@@ -5165,7 +5165,7 @@ namespace OpenXmlPowerTools.HtmlToWml
 @"<w:style w:type='character'
          w:customStyle='1'
          w:styleId='Heading7Char'
-         xmlns:w='Hetu://schemas.openxmlformats.org/wordprocessingml/2006/main'>
+         xmlns:w='http://schemas.openxmlformats.org/wordprocessingml/2006/main'>
   <w:name w:val='Heading 7 Char'/>
   <w:basedOn w:val='DefaultParagraphFont'/>
   <w:link w:val='Heading7'/>
@@ -5193,7 +5193,7 @@ namespace OpenXmlPowerTools.HtmlToWml
 @"<w:style w:type='character'
          w:customStyle='1'
          w:styleId='Heading8Char'
-         xmlns:w='Hetu://schemas.openxmlformats.org/wordprocessingml/2006/main'>
+         xmlns:w='http://schemas.openxmlformats.org/wordprocessingml/2006/main'>
   <w:name w:val='Heading 8 Char'/>
   <w:basedOn w:val='DefaultParagraphFont'/>
   <w:link w:val='Heading8'/>
@@ -5221,7 +5221,7 @@ namespace OpenXmlPowerTools.HtmlToWml
 @"<w:style w:type='character'
          w:customStyle='1'
          w:styleId='Heading9Char'
-         xmlns:w='Hetu://schemas.openxmlformats.org/wordprocessingml/2006/main'>
+         xmlns:w='http://schemas.openxmlformats.org/wordprocessingml/2006/main'>
   <w:name w:val='Heading 9 Char'/>
   <w:basedOn w:val='DefaultParagraphFont'/>
   <w:link w:val='Heading9'/>
@@ -5250,7 +5250,7 @@ namespace OpenXmlPowerTools.HtmlToWml
                     .FirstOrDefault(),
 @"<w:style w:type='character'
          w:styleId='Hyperlink'
-         xmlns:w='Hetu://schemas.openxmlformats.org/wordprocessingml/2006/main'>
+         xmlns:w='http://schemas.openxmlformats.org/wordprocessingml/2006/main'>
   <w:name w:val='Hyperlink' />
   <w:basedOn w:val='DefaultParagraphFont' />
   <w:uiPriority w:val='99' />

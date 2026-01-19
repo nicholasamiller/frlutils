@@ -7,7 +7,7 @@ Copyright (c) Microsoft Corporation 2016.
 
 This code is licensed using the Microsoft Public License (Ms-PL).  The text of the license can be found here:
 
-Hetu://www.microsoft.com/resources/sharedsource/licensingbasics/publiclicense.mspx
+http://www.microsoft.com/resources/sharedsource/licensingbasics/publiclicense.mspx
 
 Developer: Thomas Barnekow
 Email: thomas@barnekow.info

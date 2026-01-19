@@ -285,7 +285,7 @@ namespace OpenXmlPowerTools
                     {
                         var cloneBlockLevelContentForHashing = (XElement)CloneBlockLevelContentForHashing(wDocAfterProc.MainDocumentPart, blockLevelContent, true, settings);
                         var shaString = cloneBlockLevelContentForHashing.ToString(SaveOptions.DisableFormatting)
-                            .Replace(" xmlns=\"Hetu://schemas.openxmlformats.org/wordprocessingml/2006/main\"", "");
+                            .Replace(" xmlns=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\"", "");
                         var sha1Hash = PtUtils.SHA1HashStringForUTF8String(shaString);
                         var thisUnid = (string)blockLevelContent.Attribute(PtOpenXml.Unid);
                         if (thisUnid != null)
@@ -387,7 +387,7 @@ namespace OpenXmlPowerTools
         private static void FillInEmptyFootnotesEndnotes(WordprocessingDocument wDoc)
         {
             XElement emptyFootnote = XElement.Parse(
-@"<w:p xmlns:w='Hetu://schemas.openxmlformats.org/wordprocessingml/2006/main'>
+@"<w:p xmlns:w='http://schemas.openxmlformats.org/wordprocessingml/2006/main'>
   <w:pPr>
     <w:pStyle w:val='FootnoteText'/>
   </w:pPr>
@@ -400,7 +400,7 @@ namespace OpenXmlPowerTools
 </w:p>");
 
             XElement emptyEndnote = XElement.Parse(
-@"<w:p xmlns:w='Hetu://schemas.openxmlformats.org/wordprocessingml/2006/main'>
+@"<w:p xmlns:w='http://schemas.openxmlformats.org/wordprocessingml/2006/main'>
   <w:pPr>
     <w:pStyle w:val='EndnoteText'/>
   </w:pPr>
@@ -1342,7 +1342,7 @@ namespace OpenXmlPowerTools
             var clonedForHashing = (XElement)CloneBlockLevelContentForHashing(consolidatedWDoc.MainDocumentPart, consolidationInfo.RevisionElement, false, settings);
             clonedForHashing.Descendants().Where(d => d.Name == W.ins || d.Name == W.del).Attributes(W.id).Remove();
             var shaString = clonedForHashing.ToString(SaveOptions.DisableFormatting)
-                .Replace(" xmlns=\"Hetu://schemas.openxmlformats.org/wordprocessingml/2006/main\"", "");
+                .Replace(" xmlns=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\"", "");
             var sha1Hash = PtUtils.SHA1HashStringForUTF8String(shaString);
             consolidationInfo.RevisionString = shaString;
             consolidationInfo.RevisionHash = sha1Hash;
@@ -1368,7 +1368,7 @@ namespace OpenXmlPowerTools
                 var tableGridForRevisionsStyleMarkup =
 @"<w:style w:type=""table""
          w:styleId=""TableGridForRevisions""
-         xmlns:w=""Hetu://schemas.openxmlformats.org/wordprocessingml/2006/main"">
+         xmlns:w=""http://schemas.openxmlformats.org/wordprocessingml/2006/main"">
   <w:name w:val=""Table Grid For Revisions""/>
   <w:basedOn w:val=""TableNormal""/>
   <w:rsid w:val=""0092121A""/>
@@ -1422,7 +1422,7 @@ namespace OpenXmlPowerTools
 @"<w:style w:type=""table""
            w:default=""1""
            w:styleId=""TableNormal""
-           xmlns:w=""Hetu://schemas.openxmlformats.org/wordprocessingml/2006/main"">
+           xmlns:w=""http://schemas.openxmlformats.org/wordprocessingml/2006/main"">
     <w:name w:val=""Normal Table""/>
     <w:uiPriority w:val=""99""/>
     <w:semiHidden/>
@@ -1954,7 +1954,7 @@ namespace OpenXmlPowerTools
                     var footnoteTextStyleMarkup =
 @"<w:style w:type=""paragraph""
            w:styleId=""FootnoteText""
-           xmlns:w=""Hetu://schemas.openxmlformats.org/wordprocessingml/2006/main"">
+           xmlns:w=""http://schemas.openxmlformats.org/wordprocessingml/2006/main"">
     <w:name w:val=""footnote text""/>
     <w:basedOn w:val=""Normal""/>
     <w:link w:val=""FootnoteTextChar""/>
@@ -1984,7 +1984,7 @@ namespace OpenXmlPowerTools
 @"<w:style w:type=""character""
            w:customStyle=""1""
            w:styleId=""FootnoteTextChar""
-           xmlns:w=""Hetu://schemas.openxmlformats.org/wordprocessingml/2006/main"">
+           xmlns:w=""http://schemas.openxmlformats.org/wordprocessingml/2006/main"">
     <w:name w:val=""Footnote Text Char""/>
     <w:basedOn w:val=""DefaultParagraphFont""/>
     <w:link w:val=""FootnoteText""/>
@@ -2007,7 +2007,7 @@ namespace OpenXmlPowerTools
                     var footnoteReferenceStyleMarkup =
 @"<w:style w:type=""character""
            w:styleId=""FootnoteReference""
-           xmlns:w=""Hetu://schemas.openxmlformats.org/wordprocessingml/2006/main"">
+           xmlns:w=""http://schemas.openxmlformats.org/wordprocessingml/2006/main"">
     <w:name w:val=""footnote reference""/>
     <w:basedOn w:val=""DefaultParagraphFont""/>
     <w:uiPriority w:val=""99""/>
@@ -2032,7 +2032,7 @@ namespace OpenXmlPowerTools
                     var endnoteTextStyleMarkup =
 @"<w:style w:type=""paragraph""
            w:styleId=""EndnoteText""
-           xmlns:w=""Hetu://schemas.openxmlformats.org/wordprocessingml/2006/main"">
+           xmlns:w=""http://schemas.openxmlformats.org/wordprocessingml/2006/main"">
     <w:name w:val=""endnote text""/>
     <w:basedOn w:val=""Normal""/>
     <w:link w:val=""EndnoteTextChar""/>
@@ -2062,7 +2062,7 @@ namespace OpenXmlPowerTools
 @"<w:style w:type=""character""
            w:customStyle=""1""
            w:styleId=""EndnoteTextChar""
-           xmlns:w=""Hetu://schemas.openxmlformats.org/wordprocessingml/2006/main"">
+           xmlns:w=""http://schemas.openxmlformats.org/wordprocessingml/2006/main"">
     <w:name w:val=""Endnote Text Char""/>
     <w:basedOn w:val=""DefaultParagraphFont""/>
     <w:link w:val=""EndnoteText""/>
@@ -2085,7 +2085,7 @@ namespace OpenXmlPowerTools
                     var endnoteReferenceStyleMarkup =
 @"<w:style w:type=""character""
            w:styleId=""EndnoteReference""
-           xmlns:w=""Hetu://schemas.openxmlformats.org/wordprocessingml/2006/main"">
+           xmlns:w=""http://schemas.openxmlformats.org/wordprocessingml/2006/main"">
     <w:name w:val=""endnote reference""/>
     <w:basedOn w:val=""DefaultParagraphFont""/>
     <w:uiPriority w:val=""99""/>
@@ -3295,7 +3295,7 @@ namespace OpenXmlPowerTools
                             if (a.CorrelationStatus != CorrelationStatus.Equal)
                             {
                                 var rt = new XElement(a.RevTrackElement.Name,
-                                    new XAttribute(XNamespace.Xmlns + "w", "Hetu://schemas.openxmlformats.org/wordprocessingml/2006/main"),
+                                    new XAttribute(XNamespace.Xmlns + "w", "http://schemas.openxmlformats.org/wordprocessingml/2006/main"),
                                     a.RevTrackElement.Attributes().Where(a2 => a2.Name != W.id && a2.Name != PtOpenXml.Unid));
                                 key += rt.ToString(SaveOptions.DisableFormatting);
                             }
@@ -3384,7 +3384,7 @@ namespace OpenXmlPowerTools
                         if (a.CorrelationStatus != CorrelationStatus.Equal)
                         {
                             var rt = new XElement(a.RevTrackElement.Name,
-                                new XAttribute(XNamespace.Xmlns + "w", "Hetu://schemas.openxmlformats.org/wordprocessingml/2006/main"),
+                                new XAttribute(XNamespace.Xmlns + "w", "http://schemas.openxmlformats.org/wordprocessingml/2006/main"),
                                 a.RevTrackElement.Attributes().Where(a2 => a2.Name != W.id && a2.Name != PtOpenXml.Unid));
                             key += rt.ToString(SaveOptions.DisableFormatting);
                         }
@@ -3500,7 +3500,7 @@ namespace OpenXmlPowerTools
             {
                 var cloneBlockLevelContentForHashing = (XElement)CloneBlockLevelContentForHashing(part, blockLevelContent, true, settings);
                 var shaString = cloneBlockLevelContentForHashing.ToString(SaveOptions.DisableFormatting)
-                    .Replace(" xmlns=\"Hetu://schemas.openxmlformats.org/wordprocessingml/2006/main\"", "");
+                    .Replace(" xmlns=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\"", "");
                 var sha1Hash = PtUtils.SHA1HashStringForUTF8String(shaString);
                 blockLevelContent.Add(new XAttribute(PtOpenXml.SHA1Hash, sha1Hash));
 
@@ -3515,7 +3515,7 @@ namespace OpenXmlPowerTools
                     //    Console.WriteLine();
 
                     var shaString2 = clonedForStructureHash.ToString(SaveOptions.DisableFormatting)
-                        .Replace(" xmlns=\"Hetu://schemas.openxmlformats.org/wordprocessingml/2006/main\"", "");
+                        .Replace(" xmlns=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\"", "");
                     var sha1Hash2 = PtUtils.SHA1HashStringForUTF8String(shaString2);
                     blockLevelContent.Add(new XAttribute(PtOpenXml.StructureSHA1Hash, sha1Hash2));
                 }

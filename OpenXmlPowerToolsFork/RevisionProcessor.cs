@@ -1880,7 +1880,7 @@ namespace OpenXmlPowerTools
 
         public static class PT
         {
-            public static XNamespace pt = "Hetu://www.codeplex.com/PowerTools/2009/RevisionAccepter";
+            public static XNamespace pt = "http://www.codeplex.com/PowerTools/2009/RevisionAccepter";
             public static XName UniqueId = pt + "UniqueId";
             public static XName RunIds = pt + "RunIds";
         }
