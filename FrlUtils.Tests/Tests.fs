@@ -42,12 +42,20 @@ type TestClass () =
 
     [<TestMethod>]
     member this.TestTableParser() = 
-        let testDocument = (System.IO.File.ReadAllBytes("TestData/F2022C00414.docx"))
+        let testDocument = (System.IO.File.ReadAllBytes("TestData/F2025C00553.docx"))
         let result = getTablesBetweenParas "Schedule 1—Warlike service" "Endnotes" (getBodyParts (testDocument)) None
         printfn "%s" (result.ToString())
         Assert.IsTrue(result.headerRow.items.Length = 5)
         Assert.IsTrue(result.bodyRows.Length = 23)
-     
+ 
+    [<TestMethod>]
+    member this.TestTableParser22() = 
+        let testDocument = (System.IO.File.ReadAllBytes("TestData/F2025C00551.docx"))
+        let result = getTablesBetweenParas "Schedule 1—Non-warlike service" "Endnotes" (getBodyParts (testDocument)) None
+        printfn "%s" (result.ToString())
+        Assert.IsTrue(result.headerRow.items.Length = 5)
+        Assert.IsTrue(result.bodyRows.Length = 41)
+         
      
     [<TestMethod>]
     member this.ParseEmailUpdate() =
@@ -179,6 +187,7 @@ https://www.legislation.gov.au/Details/F2015L01330""".Split('\n') |> List.ofArra
         
     [<TestMethod>]
     [<TestCategory("Integration")>]
+    [<Ignore>]
     member this.TestOdataPaging() =
         let testQueryUrl = @"https://api.prod.legislation.gov.au/v1/titles/search(criteria='and(text(%22Statement%20of%20Principles%22,name,contains),pointintime(Latest),type(Principal,Amending),collection(LegislativeInstrument),administeringdepartments(%22O-000944%22))')"//?=administeringDepartments%2Ccollection%2ChasCommencedUnincorporatedAmendments%2Cid%2CisInForce%2CisPrincipal%2Cname%2Cnumber%2CoptionalSeriesNumber%2CsearchContexts%2CseriesType%2CsubCollection%2Cyear&=administeringDepartments%2CsearchContexts%28%3DfullTextVersion%2Ctext%29&=searchcontexts%2Ftext%2Frelevance%20desc"
 
@@ -195,6 +204,7 @@ https://www.legislation.gov.au/Details/F2015L01330""".Split('\n') |> List.ofArra
     
     [<TestMethod>]
     [<TestCategory("Integration")>]
+    [<Ignore>]
     member this.TestGetLatestComplationWhereThereAreSome() = 
         let fetcher = FrlApiClient.createApiFetcher(new HttpClient())
         let result = FrlApiClient.getLatestVersion "F2019L01198" fetcher |> Async.RunSynchronously

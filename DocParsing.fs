@@ -273,7 +273,7 @@ module DocParsing =
         recurseTree p visitor |> ignore
         sb.ToString().Trim()
 
-   
+
     let buildSyntheticRootElementForStyle (styleName : string) (elements: OpenXmlElement list) =
         let elementsWithStyle = elements |> Seq.filter (fun e -> getElementStyle e = Some(styleName) && e.LocalName = "p")  |> Seq.cast<Paragraph> |> Seq.toList
         match elementsWithStyle with
@@ -324,15 +324,56 @@ module DocParsing =
                 | Some(style) when style.StartsWith("TOC")-> false
                 | _ ->  (stringifyPara p).StartsWith(s)
             | _ -> false
-        
-        let elementsFollowingStartParaIncludingStartPara = elements |> Seq.skipWhile (fun i -> not (isMatchingPara i paraStartText)) |> Seq.toList
-        let inBetweenTableElements = elementsFollowingStartParaIncludingStartPara |> Seq.takeWhile (fun i -> not (isMatchingPara i paraEndText)) |> Seq.filter (fun i -> i :? Table) |> Seq.map (fun i -> i :?> Table)
-        let maxColumns = inBetweenTableElements |> Seq.map (fun i-> getCellCount i) |> Seq.max
-        let rows = inBetweenTableElements |> Seq.collect (fun i -> i.OfType<TableRow>()) |> Seq.map (fun i -> {items = tableRowToRow i np}) |> Seq.filter (fun i -> i.items.Count() = maxColumns) |> List.ofSeq
-        let h = rows |> List.head
-        let i = rows |> List.tail
-        { headerRow = h; bodyRows = i}
-            
+
+        // NEW: row header detection (handles repeated header rows in body)
+        let isHeaderTableRow (tr: TableRow) =
+            let trp = tr.TableRowProperties
+            if isNull trp then false
+            else trp.OfType<TableHeader>().Any()
+
+        let sameRowText (a: string list) (b: string list) =
+            // normalize to reduce false negatives due to whitespace differences
+            let norm (s: string) = if isNull s then "" else s.Replace("\u00A0"," ").Trim()
+            if a.Length <> b.Length then false
+            else (a, b) ||> List.forall2 (fun x y -> String.Equals(norm x, norm y, StringComparison.Ordinal))
+
+        let elementsFollowingStartParaIncludingStartPara =
+            elements |> Seq.skipWhile (fun i -> not (isMatchingPara i paraStartText)) |> Seq.toList
+
+        let inBetweenTableElements =
+            elementsFollowingStartParaIncludingStartPara
+            |> Seq.takeWhile (fun i -> not (isMatchingPara i paraEndText))
+            |> Seq.filter (fun i -> i :? Table)
+            |> Seq.map (fun i -> i :?> Table)
+
+        let maxColumns =
+            inBetweenTableElements |> Seq.map (fun i-> getCellCount i) |> Seq.max
+
+        // Build candidate rows with metadata
+        let candidateRows =
+            inBetweenTableElements
+            |> Seq.collect (fun t -> t.OfType<TableRow>())
+            |> Seq.map (fun tr ->
+                let items = tableRowToRow tr np
+                let colsOk = items.Count() = maxColumns
+                (tr, items, colsOk, isHeaderTableRow tr))
+            |> Seq.filter (fun (_,_,colsOk,_) -> colsOk)
+            |> Seq.toList
+
+        // First row becomes the headerRow (as before)
+        let headerItems =
+            candidateRows |> List.head |> fun (_,items,_,_) -> items
+
+        // Body rows: exclude rows that are explicit header rows, and also exclude
+        // any repeated header-text rows (common when header is repeated across pages/tables).
+        let bodyRows =
+            candidateRows
+            |> List.tail
+            |> List.filter (fun (_,items,_,isHdr) -> (not isHdr) && (not (sameRowText items headerItems)))
+            |> List.map (fun (_,items,_,_) -> { items = items })
+
+        { headerRow = { items = headerItems }; bodyRows = bodyRows }
+
     let getTablesBetweenParasWithStyle (paraStartText : string) (paraEndText : string) (elements: IEnumerable<OpenXmlElement>) (styleName : string) (np: ParagraphNumberTextProvider option) =
         let elementsWithStyleAndTables = elements |> Seq.filter (fun e -> getElementStyle e = Some(styleName) || e :? Table) |> Seq.toList
         getTablesBetweenParas paraStartText paraEndText elementsWithStyleAndTables np
@@ -376,4 +417,7 @@ module DocParsing =
         
     
      
+
+
+
 
