@@ -47,6 +47,8 @@ module FrlApiClient =
             | ex -> return Error(ScrapeError.Exception(ex))
         }
     
+    
+     
     // example https://www.legislation.gov.au/F2025L00144/asmade/2025-02-19/text/original/word
     let getWordDocInstrumentById(id: string) (fetcher: asyncPageFetcher) =
         async {
@@ -66,7 +68,26 @@ module FrlApiClient =
                 | ex -> return Error(ScrapeError.Exception(ex)) // Assuming Error takes a string message
             | Error e -> return Error(e)
         }
+    
+    let getLatestCompilationWordDocForTitleId(titleId: string) (fetcher: asyncPageFetcher) =
+        async {
+            let todaysDate = getTodaysDateInSydneyAsIsoString()
+            //https://www.legislation.gov.au/F2019L01198/2025-06-04/2025-06-04/text/original/word
+            let url = $"{frlSiteBaseUrl}/{titleId}/{todaysDate}/{todaysDate}/text/original/word"
+            let! contentResult = fetcher url
+            match contentResult with
+            | Ok stream ->
+                try
+                    use ms = new MemoryStream()
+                    do! stream.CopyToAsync(ms) |> Async.AwaitTask
+                    ms.Seek(0L, SeekOrigin.Begin) |> ignore
+                    let array = ms.ToArray()
+                    return Ok array
+                with
+                | ex -> return Error(ScrapeError.Exception(ex)) // Assuming Error takes a string message
+            | Error e -> return Error(e)
 
+        }
 
     let getPdfDocInstrumentById(id: string) (fetcher: asyncPageFetcher) =
         async {

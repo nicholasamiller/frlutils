@@ -49,7 +49,7 @@ type TestClass () =
         Assert.IsTrue(result.bodyRows.Length = 23)
  
     [<TestMethod>]
-    member this.TestTableParser22() = 
+    member this.TestTableParser2() = 
         let testDocument = (System.IO.File.ReadAllBytes("TestData/F2025C00551.docx"))
         let result = getTablesBetweenParas "Schedule 1—Non-warlike service" "Endnotes" (getBodyParts (testDocument)) None
         printfn "%s" (result.ToString())

@@ -392,7 +392,7 @@ module DocParsing =
             let bodyParts = wd.MainDocumentPart.Document.Body.OfType<OpenXmlElement>() |> Seq.toList
             Ok( getTablesBetweenParas paraStartText paraEndText bodyParts (Some(np)))
         with 
-        | ex -> Error(DocParsingError.Message("Could not get tables."))
+        | ex -> Error(DocParsingError.Message("Could not get tables:" + ex.Message))
     
     
     let getSectionParagraphs(name: string, styleSequences: string list, styleLevel : int, wordDoc : WordprocessingDocument) (stop: Paragraph -> bool) =
